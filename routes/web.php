@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('el');
 })->name('home');
 
 Route::get('el/', 'ElController@index')->name('el');
