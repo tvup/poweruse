@@ -41,7 +41,9 @@ class RequestMadeEventSubscriber
         }
 
         if ($hasColumn){
-            DB::select('call nabovaern.insert_to_statistics(?,?,?)',array($event->getVerb(),$event->getEndpoint(),$code));
+            $defaultDatabaseConnectionName = config('database.default');
+            $databaseName = config('database.connections.' . $defaultDatabaseConnectionName. ' . database');
+            DB::select('call '.$databaseName.'.insert_to_statistics(?,?,?)',array($event->getVerb(),$event->getEndpoint(),$code));
             return;
         }
 
