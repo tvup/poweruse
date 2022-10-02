@@ -221,7 +221,7 @@ class GetPreliminaryInvoice
 
 
         $supplierSubscriptionDisplayText = 'Elabonnement (forholdsvis antal dage pr. måned, månedspris: ' . $subscription_at_elsupplier . ')';
-        $bill[$supplierSubscriptionDisplayText] = count($months) * $subscription_at_elsupplier * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
+        $bill[$supplierSubscriptionDisplayText] = count($months) * str_replace(',','.',$subscription_at_elsupplier) * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
         $bill[$supplierSubscriptionDisplayText] = round($bill[$supplierSubscriptionDisplayText], 2);
 
         $bill['Moms'] = 0;
