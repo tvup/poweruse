@@ -35,7 +35,7 @@ class GetPreliminaryInvoice
      */
     public function getBill(string $start_date, string $end_date, $smartMe, $dataSource=null, $refreshToken=null, $ewiiCredentials=null, $price_area, $subscription_at_elsupplier=23.20, $overhead=0.015): array
     {
-
+        $overhead = str_replace(',','.',$overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMe) {
@@ -91,14 +91,15 @@ class GetPreliminaryInvoice
 
             if ($smartMe) {
                 $source = ($source? : '') . ', Smart-Me';
-                $start_from = Carbon::now('UTC')->startOfDay()->subHour();
+                $start_from = Carbon::now('UTC')->startOfMonth()->startOfDay()->subHour();
+                $smart_me_end_date = Carbon::parse($end_date,'Europe/Copenhagen')->timezone('UTC')->addDay()->startOfDay()->subHour();
                 if(count($meterData)>0) {
                     $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour();
                 }
                 $start_from = $start_from->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
 
                 $getSmartMeMeterData = new GetSmartMeMeterData();
-                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($smartMe, $start_from, $end_date);
+                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($smartMe, $start_from, $smart_me_end_date);
                 $meterData = array_merge($meterData, $smartMeIntervalFromDate);
             }
 
@@ -141,12 +142,11 @@ class GetPreliminaryInvoice
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
         }
         $diff_in_days = Carbon::parse($start_date, 'Europe/Copenhagen')->diffInDays(Carbon::parse($to_date, 'Europe/Copenhagen'));
-        $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days+1]];
+        $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days]];
 
         $sum = 0;
 
         $bill['meta']['Interval']['antal timer i intervallet'] = count($meterData);
-        //$bill['meta']['Interval']['time'] = array();
 
         foreach ($meterData as $hour => $consumption) {
             //array_push($bill['meta']['Interval']['time'], $hour);
