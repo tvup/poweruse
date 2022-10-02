@@ -38,7 +38,7 @@ class DbDrop extends Command
     public function handle()
     {
         $defaultDatabaseConnectionName = config('database.default');
-        $databaseName = config('database.connections.' . $defaultDatabaseConnectionName. ' . database');
+        $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
         if (config('env') =='production') {
             $this->warn('Warning! Application in production. Proceed?');
             $choice = $this->choice('Yes/No', array('Yes','No'), 0, 1);

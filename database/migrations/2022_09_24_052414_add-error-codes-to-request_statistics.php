@@ -24,7 +24,7 @@ class AddErrorCodesToRequestStatistics extends Migration
         });
 
         $defaultDatabaseConnectionName = config('database.default');
-        $databaseName = config('database.connections.' . $defaultDatabaseConnectionName. ' . database');
+        $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
 
         DB::unprepared('DROP PROCEDURE IF EXISTS insert_to_statistics; CREATE PROCEDURE insert_to_statistics (IN verb varchar(50),IN endpoint varchar(255),IN httpcode varchar(50))
 

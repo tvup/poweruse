@@ -42,7 +42,7 @@ class RequestMadeEventSubscriber
 
         if ($hasColumn){
             $defaultDatabaseConnectionName = config('database.default');
-            $databaseName = config('database.connections.' . $defaultDatabaseConnectionName. ' . database');
+            $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
             DB::select('call '.$databaseName.'.insert_to_statistics(?,?,?)',array($event->getVerb(),$event->getEndpoint(),$code));
             return;
         }
