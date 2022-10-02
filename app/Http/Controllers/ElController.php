@@ -37,8 +37,8 @@ class ElController extends Controller
      */
     public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService)
     {
-        //$this->meteringDataService = $meteringDataService;
-        //$this->preliminaryInvoiceService = $preliminaryInvoiceService;
+        $this->meteringDataService = $meteringDataService;
+        $this->preliminaryInvoiceService = $preliminaryInvoiceService;
         $this->spotPricesService = $spotPricesService;
     }
 
