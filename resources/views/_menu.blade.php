@@ -15,6 +15,9 @@
                         <li class="nav-item">
                             {{link_to_route('el', 'Forbrugsdata', [], ['class'=>'nav-link']) }}
                         </li>
+                        <li class="nav-item">
+                            {{link_to_route('el-spotprices', 'Spotpriser', [], ['class'=>'nav-link']) }}
+                        </li>
                     </ul>
 
                 </nav>

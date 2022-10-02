@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Elspotprices;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
+use App\Services\GetSpotPrices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
@@ -23,14 +26,20 @@ class ElController extends Controller
     private $preliminaryInvoiceService;
 
     /**
+     * @var GetSpotPrices
+     */
+    private $spotPricesService;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService)
+    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService)
     {
-        $this->meteringDataService = $meteringDataService;
-        $this->preliminaryInvoiceService = $preliminaryInvoiceService;
+        //$this->meteringDataService = $meteringDataService;
+        //$this->preliminaryInvoiceService = $preliminaryInvoiceService;
+        $this->spotPricesService = $spotPricesService;
     }
 
     public function index()
@@ -52,6 +61,13 @@ class ElController extends Controller
         $data = session('data');
 
         return view('el-charges')->with('data', $data ? : null);
+    }
+
+    public function indexSpotprices()
+    {
+        $data = session('data');
+
+        return view('el-spotprices')->with('data', $data ? : null);
     }
 
     public function processData(Request $request)
@@ -270,6 +286,116 @@ class ElController extends Controller
             }
         }
         return redirect('el-charges')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+    }
+
+    public function getSpotprices(Request $request)
+    {
+
+        switch ($request->outputformat) {
+            case 'POWERUSE':
+                $format = GetSpotPrices::FORMAT_INTERNAL;
+                break;
+            case 'JSON':
+            case 'SQL':
+            default:
+                $format = GetSpotPrices::FORMAT_JSON;
+                break;
+        }
+        $requestInputs = $request->collect()->filter(function ($value, $key) {
+            if (strpos($key, 'Checkbox') !== false) {
+                return true;
+            }
+        })->map(function ($item, $value) {
+            return str_replace('Checkbox','', $value);
+        })->flatten()->toArray();
+        $data = $this->spotPricesService->getData($request->start_date, $request->end_date, $request->area, $requestInputs, $format);
+
+        if($request->outputformat == 'SQL') {
+            $data= $this->formatAsSql($data['records']);
+            redirect('el-spotprices')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+        }
+
+        return redirect('el-spotprices')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+    }
+
+    public function apiGetSpotprices(Request $request)
+    {
+        switch ($request->getAcceptableContentTypes()[0]) {
+            case 'application/json':
+            case 'text/sql':
+                $spotprice_format = GetSpotPrices::FORMAT_JSON;
+                break;
+            case 'text/plain':
+            case '*/*':
+            default:
+            $spotprice_format = GetSpotPrices::$spotprice_format;
+        }
+        $area = null;
+        if(isset($request->filter)) {
+            $json = json_decode($request->filter, true);
+            $area = $json['PriceArea'];
+
+            if($area == 'ALL')
+            {
+                $area = null;
+            }
+
+        }
+        $requestInputs= array();
+        if(isset($request->columns)) {
+            $requestInputs = explode(',', $request->columns);
+        }
+
+
+        $data = $this->spotPricesService->getData($request->start, $request->end, $area, $requestInputs, $spotprice_format);
+
+        if($request->getAcceptableContentTypes()[0] == 'text/sql') {
+            return response($this->formatAsSql($data['records']))->header('Content-Type', 'text/sql');;
+        }
+
+        return response($data);
+    }
+
+    /**
+     * @param $records
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    private function formatAsSql($records)
+    {
+        $response = '';
+        $something = DB::pretend(function () use ($records) {
+            foreach ($records as $record) {
+                $elspotprices = new Elspotprices();
+                $elspotprices->HourUTC = array_key_exists('HourUTC', $record) ? $record['HourUTC'] : null;
+                $elspotprices->HourDK = array_key_exists('HourDK', $record) ? $record['HourDK'] : null;
+                $elspotprices->PriceArea = array_key_exists('PriceArea', $record) ? $record['PriceArea'] : null;
+                $elspotprices->SpotPriceDKK = array_key_exists('SpotPriceDKK', $record) ? $record['SpotPriceDKK'] : null;
+                $elspotprices->SpotPriceEUR = array_key_exists('SpotPriceEUR', $record) ? $record['SpotPriceEUR'] : null;
+                $elspotprices->save();
+            }
+        });
+        foreach ($something as $anything) {
+            $query = str_replace('?', '%s', $anything['query']);
+
+            $bindings = collect($anything['bindings'])->map(function ($item) {
+                switch (gettype($item)) {
+                    case 'integer':
+                        return $item;
+                        break;
+                    case 'string':
+                    case 'boolean':
+                    case 'array':
+                    case 'object':
+                    case 'NULL':
+                    case 'unknown type':
+                    case 'double': //for historical reasons "double" is returned in case of a float, and not simply "float"
+                    default:
+                        return $item!='' ? '\'' . $item . '\'' : 'null';
+                }
+            })->toArray();
+            $response = $response . vsprintf($query, $bindings) . ';' . PHP_EOL;
+        }
+        return $response;
     }
 
 }
