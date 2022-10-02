@@ -37,17 +37,15 @@ class GetPreliminaryInvoice
     {
 
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
+            $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMe) {
                 $end_date = Carbon::now()->startOfHour()->format('Y-m-d\TH:i:s');
-            } else {
-                $end_date = Carbon::now()->startOfDay()->toDateString();
             }
         }
         if(Carbon::parse($start_date)->startOfDay()->eq(Carbon::parse($end_date)->startOfDay())) {
+            $end_date = Carbon::now()->addDay()->startOfDay()->toDateString();
             if ($smartMe) {
                 $end_date = Carbon::now()->addDay()->startOfHour()->format('Y-m-d\TH:i:s');
-            } else {
-                $end_date = Carbon::now()->addDay()->startOfDay()->toDateString();
             }
         }
 
@@ -93,10 +91,9 @@ class GetPreliminaryInvoice
 
             if ($smartMe) {
                 $source = ($source? : '') . ', Smart-Me';
+                $start_from = Carbon::now('UTC')->startOfDay()->subHour();
                 if(count($meterData)>0) {
                     $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour();
-                } else {
-                    $start_from = Carbon::now('UTC')->startOfDay()->subHour();
                 }
                 $start_from = $start_from->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
 
@@ -105,19 +102,17 @@ class GetPreliminaryInvoice
                 $meterData = array_merge($meterData, $smartMeIntervalFromDate);
             }
 
+            $key = $start_date . ' ' . Carbon::parse($end_date)->addDay()->toDateString() . ' ' . $price_area;
             if ($smartMe) {
                 $key = $start_date . ' ' . Carbon::now('Europe/Copenhagen')->addDay()->toDateString() . ' ' . $price_area;
-            } else {
-                $key = $start_date . ' ' . Carbon::parse($end_date)->addDay()->toDateString() . ' ' . $price_area;
             }
 
 
             $prices = cache($key);
             if (!$prices) {
+                $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
                 if ($smartMe) {
                     $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
-                } else {
-                    $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
                 }
                 $spotPrices = new GetSpotPrices();
                 $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
@@ -141,10 +136,9 @@ class GetPreliminaryInvoice
 
         $bill = array();
 
+        $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
         if ($smartMe) {
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
-        } else {
-            $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
         }
         $diff_in_days = Carbon::parse($start_date, 'Europe/Copenhagen')->diffInDays(Carbon::parse($to_date, 'Europe/Copenhagen'));
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days+1]];
