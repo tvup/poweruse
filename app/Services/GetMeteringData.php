@@ -62,7 +62,7 @@ class GetMeteringData
 
         logger('Accessing EwiiApi.');
 
-        $ewiiApi = $this->getEwiiApi();
+        $ewiiApi = $this->getEwiiApi($email, $password);
 
         try {
             if (!$start_date) {
@@ -167,7 +167,7 @@ class GetMeteringData
         }
 
         try {
-            $ewiiApi = $this->getEwiiApi();
+            $ewiiApi = $this->getEwiiApi($email, $password);
 
             $ewiiApi->login($email, $password);
             $response1 = $ewiiApi->getAddressPickerViewModel();
@@ -236,10 +236,13 @@ class GetMeteringData
         return $this->energiOverblikApi;
     }
 
-    private function getEwiiApi()
+    private function getEwiiApi($email=null, $password=null)
     {
         if (!$this->ewiiApi) {
-            $this->ewiiApi = app()->make('Tvup\EwiiApi\EwiiApiInterface');
+            $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [
+                'email' => $email,
+                'password' => $password,
+            ]);
         }
         return $this->ewiiApi;
     }
