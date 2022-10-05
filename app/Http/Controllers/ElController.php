@@ -143,6 +143,8 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        } catch (DataUnavailableException $e) {
+            return redirect('el-meteringpoint')->with('error', $e->getMessage())->withInput($request->all());
         }
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
@@ -184,8 +186,6 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
-        } catch (DataUnavailableException $e) {
-            return redirect('el-meteringpoint')->with('error', $e->getMessage())->withInput($request->all());
         }
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
