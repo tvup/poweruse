@@ -25,16 +25,24 @@ class GetSmartMeMeterData
         return $response['CounterReading'];
     }
 
+    /**
+     * @param false $smartMe
+     * @param $start_date Date and time in local time to get consumption data from (inclusive)
+     * @param null $to_date Date and time in local time to get consumption data untill (exclusive)
+     * @return array
+     */
     public function getInterval($smartMe = false, $start_date, $to_date=null): array
     {
         $newResponse = null;
+        $start_date = Carbon::parse($start_date, 'Europe/Copenhagen')->timezone('UTC')->format('Y-m-d\TH:i:s\Z');
+        $to_date = Carbon::parse($to_date, 'Europe/Copenhagen')->timezone('UTC')->format('Y-m-d\TH:i:s\Z');
         $oldResponse = $this->getFromDate($smartMe, $start_date);
         $array = array();
-        while ($to_date ? ($oldResponse != $newResponse && !Carbon::parse($start_date)->eq(Carbon::parse($to_date))) : ($oldResponse != $newResponse)) {
+        while ($to_date ? ($oldResponse != $newResponse && !Carbon::parse($start_date, 'UTC')->eq(Carbon::parse($to_date, 'UTC'))) : ($oldResponse != $newResponse)) {
             if ($newResponse) {
                 $oldResponse = $newResponse;
             }
-            $start_date = Carbon::parse($start_date);
+            $start_date = Carbon::parse($start_date, 'UTC');
             $rtnStart_date = clone $start_date;
             $start_date->addHour();
             $start_date_formatted = $start_date->format('Y-m-d\TH:i:s\Z');

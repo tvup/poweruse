@@ -13,7 +13,10 @@
                             {{link_to_route('el-charges', 'Priselementer', [], ['class'=>'nav-link']) }}
                         </li>
                         <li class="nav-item">
-                            {{link_to_route('el', 'Forbrugsdata', [], ['class'=>'nav-link']) }}
+                            {{link_to_route('consumption', 'Forbrugsdata', [], ['class'=>'nav-link']) }}
+                        </li>
+                        <li class="nav-item">
+                            {{link_to_route('el', 'Beregn din elregning', [], ['class'=>'nav-link']) }}
                         </li>
                         <li class="nav-item">
                             {{link_to_route('el-spotprices', 'Spotpriser', [], ['class'=>'nav-link']) }}

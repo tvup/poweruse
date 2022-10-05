@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Elspotprices;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
+use App\Services\GetSmartMeMeterData;
 use App\Services\GetSpotPrices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,15 +32,21 @@ class ElController extends Controller
     private $spotPricesService;
 
     /**
+     * @var GetSmartMeMeterData
+     */
+    private $smartMeMeterDataService;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService)
+    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService, GetSmartMeMeterData $smartMeMeterDataService)
     {
         $this->meteringDataService = $meteringDataService;
         $this->preliminaryInvoiceService = $preliminaryInvoiceService;
         $this->spotPricesService = $spotPricesService;
+        $this->smartMeMeterDataService = $smartMeMeterDataService;
     }
 
     public function index()
@@ -68,6 +75,13 @@ class ElController extends Controller
         $data = session('data');
 
         return view('el-spotprices')->with('data', $data ? : null);
+    }
+
+    public function indexConsumption()
+    {
+        $data = session('data');
+
+        return view('consumption')->with('data', $data ? : null);
     }
 
     public function processData(Request $request)
@@ -396,6 +410,41 @@ class ElController extends Controller
             $response = $response . vsprintf($query, $bindings) . ';' . PHP_EOL;
         }
         return $response;
+    }
+
+    public function getConsumption(Request $request)
+    {
+        $data = null;
+        $dataSource = $request->source;
+        $end_date = $request->end_date;
+        switch ($dataSource) {
+            case 'EWII':
+                $data = $this->meteringDataService->getDataFromEwii(null, null, $request->start_date, $end_date);
+                break;
+            case 'DATAHUB':
+                $data = $this->meteringDataService->getData(null, $request->start_date, $end_date);
+                break;
+            case 'SMART-ME':
+                $data = $this->smartMeMeterDataService->getInterval(false, $request->start_date, $end_date);
+                break;
+            default:
+                throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
+        }
+
+        if ($request->smart_me) {
+            $dataSource = ($dataSource ?: '') . ', Smart-Me';
+            $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
+            $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
+
+            $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval(false, $start_from, $smart_me_end_date);
+            $data = array_merge($data, $smartMeIntervalFromDate);
+        }
+
+        $data = array_merge($data, ['Antal i serien' => count($data)]);
+        $data = array_merge($data, ['Sum' => collect(array_values($data))->sum()]);
+        $data = array_merge($data, ['Source' => $dataSource]);
+
+        return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
 }

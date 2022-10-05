@@ -19,8 +19,10 @@ Route::get('el/', 'ElController@index')->name('el');
 Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-meteringpoint');
 Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
 Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
+Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
 Route::post('processdata', 'ElController@processData');
 Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
 Route::post('getChargesForWeb', 'ElController@getChargesForWeb');
 Route::post('getSpotprices', 'ElController@getSpotprices');
+Route::post('getConsumption', 'ElController@getConsumption');
 

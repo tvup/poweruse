@@ -50,7 +50,7 @@ class SmartMeGetMeterDataFromDateTime extends Command
     {
         $start_date = $this->option('start-date');
         if (!$start_date) {
-            $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
+            $start_date = Carbon::now('Europe/Copenhagen')->startOfHour();
         }
         $this->option('show-count');
         $optionShowCount = $this->option('show-count');

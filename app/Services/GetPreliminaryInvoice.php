@@ -91,12 +91,11 @@ class GetPreliminaryInvoice
 
             if ($smartMe) {
                 $source = ($source? : '') . ', Smart-Me';
-                $start_from = Carbon::now('UTC')->startOfMonth()->startOfDay()->subHour();
-                $smart_me_end_date = Carbon::parse($end_date,'Europe/Copenhagen')->timezone('UTC')->addDay()->startOfDay()->subHour();
+                $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
+                $smart_me_end_date = Carbon::parse($end_date,'Europe/Copenhagen')->addDay()->startOfDay();
                 if(count($meterData)>0) {
-                    $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour();
+                    $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 }
-                $start_from = $start_from->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
 
                 $getSmartMeMeterData = new GetSmartMeMeterData();
                 $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($smartMe, $start_from, $smart_me_end_date);
@@ -142,6 +141,9 @@ class GetPreliminaryInvoice
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
         }
         $diff_in_days = Carbon::parse($start_date, 'Europe/Copenhagen')->diffInDays(Carbon::parse($to_date, 'Europe/Copenhagen'));
+        if(Carbon::parse($to_date, 'Europe/Copenhagen')->gt(Carbon::parse($to_date, 'Europe/Copenhagen')->startOfDay())) {
+            $diff_in_days + 1;
+        }
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days]];
 
         $sum = 0;
