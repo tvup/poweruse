@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Tvup\ElOverblikApi\ElOverblikApiException;
+use Tvup\EwiiApi\EwiiApiException;
 
 class ElController extends Controller
 {
@@ -125,6 +127,24 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        } catch (EwiiApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el')->with('error', $message)->withInput($request->all());
+                case 2:
+                    return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
+        } catch (DataUnavailableException $e) {
+            return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
@@ -162,6 +182,22 @@ class ElController extends Controller
                     return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
                 case 401:
                     return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with token')->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
+        }  catch (EwiiApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for metering-point data at ewii failed</strong>' . '<br/>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
+                case 2:
+                    return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
@@ -419,40 +455,57 @@ class ElController extends Controller
         $addSmartMe = $request->smart_me == 'on';
         $end_date = $request->end_date;
 
-        $smartMe  = false;
+        $smartMe = false;
         if ($dataSource == 'SMART_ME' || $addSmartMe) {
             $smartMe = array();
             $smartMe['username'] = $request->smartmeuser;
-            $smartMe['password'] = $request->smartmepassword  ;
+            $smartMe['password'] = $request->smartmepassword;
             $smartMe['id'] = $request->smartmeid;
         }
+        try {
+            switch ($dataSource) {
+                case 'EWII':
+                    $data = $this->meteringDataService->getDataFromEwii($request->ewiiEmail, $request->ewiiPassword, $request->start_date, $end_date);
+                    break;
+                case 'DATAHUB':
+                    $data = $this->meteringDataService->getData($request->token, $request->start_date, $end_date);
+                    break;
+                case 'SMART-ME':
+                    $data = $this->smartMeMeterDataService->getInterval($smartMe, $request->start_date, $end_date);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
+            }
 
-        switch ($dataSource) {
-            case 'EWII':
-                $data = $this->meteringDataService->getDataFromEwii($request->ewiiEmail, $request->ewiiPassword, $request->start_date, $end_date);
-                break;
-            case 'DATAHUB':
-                $data = $this->meteringDataService->getData($request->token, $request->start_date, $end_date);
-                break;
-            case 'SMART-ME':
-                $data = $this->smartMeMeterDataService->getInterval($smartMe, $request->start_date, $end_date);
-                break;
-            default:
-                throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
+            if ($request->smart_me) {
+                $dataSource = ($dataSource ?: '') . ', Smart-Me';
+                $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
+                $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
+
+                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval(false, $start_from, $smart_me_end_date);
+                $data = array_merge($data, $smartMeIntervalFromDate);
+            }
+
+            $data = array_merge($data, ['Antal i serien' => count($data)]);
+            $data = array_merge($data, ['Sum' => collect(array_values($data))->sum()]);
+            $data = array_merge($data, ['Source' => $dataSource]);
+        } catch (EwiiApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for consumption-point data at ewii failed</strong>' . '<br/>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('consumption')->with('error', $message)->withInput($request->all());
+                case 2:
+                    return redirect('consumption')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
         }
-
-        if ($request->smart_me) {
-            $dataSource = ($dataSource ?: '') . ', Smart-Me';
-            $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
-            $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
-
-            $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval(false, $start_from, $smart_me_end_date);
-            $data = array_merge($data, $smartMeIntervalFromDate);
-        }
-
-        $data = array_merge($data, ['Antal i serien' => count($data)]);
-        $data = array_merge($data, ['Sum' => collect(array_values($data))->sum()]);
-        $data = array_merge($data, ['Source' => $dataSource]);
 
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }

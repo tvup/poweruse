@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DataUnavailableException;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -123,6 +124,9 @@ class GetPreliminaryInvoice
             $key = 'charges ' . $refreshToken;
             $charges = cache($key);
             if (!$charges) {
+                if($dataSource=='EWII') {
+                    throw new DataUnavailableException('When querying Ewii, charges from datahub needs to be present at server. Unfortunately we don\'t have them yet',1);
+                }
                 $charges = $this->meteringDataService->getCharges($refreshToken);
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);

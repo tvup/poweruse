@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd45c58d5156a2fe90f6b39c608b710b",
+    "content-hash": "61e58bef19b37f1e5954975dc7d4eac8",
     "packages": [
         {
             "name": "brick/math",
@@ -1787,16 +1787,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.1.9",
+            "version": "1.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "094defdb4a7001845300334e7c1ee2335925ef99"
+                "reference": "3239285c825c152bcc315fe0e87d6b55f5972ed1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/094defdb4a7001845300334e7c1ee2335925ef99",
-                "reference": "094defdb4a7001845300334e7c1ee2335925ef99",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/3239285c825c152bcc315fe0e87d6b55f5972ed1",
+                "reference": "3239285c825c152bcc315fe0e87d6b55f5972ed1",
                 "shasum": ""
             },
             "require": {
@@ -1869,7 +1869,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/1.1.9"
+                "source": "https://github.com/thephpleague/flysystem/tree/1.1.10"
             },
             "funding": [
                 {
@@ -1877,7 +1877,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2021-12-09T09:40:50+00:00"
+            "time": "2022-10-04T09:16:37+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -5513,16 +5513,16 @@
         },
         {
             "name": "tvup/ewiiapi",
-            "version": "v1.0.17",
+            "version": "v1.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tvup/ewiiapi.git",
-                "reference": "015aa00fc3eba7ebfe0eb6838a5bbd0024edb8bc"
+                "reference": "ea5ce72cc7d9919be9f9c3c7b45047ad5027d956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tvup/ewiiapi/zipball/015aa00fc3eba7ebfe0eb6838a5bbd0024edb8bc",
-                "reference": "015aa00fc3eba7ebfe0eb6838a5bbd0024edb8bc",
+                "url": "https://api.github.com/repos/Tvup/ewiiapi/zipball/ea5ce72cc7d9919be9f9c3c7b45047ad5027d956",
+                "reference": "ea5ce72cc7d9919be9f9c3c7b45047ad5027d956",
                 "shasum": ""
             },
             "require": {
@@ -5548,9 +5548,9 @@
             "description": "API for getting consumption data as an Ewii customer",
             "support": {
                 "issues": "https://github.com/Tvup/ewiiapi/issues",
-                "source": "https://github.com/Tvup/ewiiapi/tree/v1.0.17"
+                "source": "https://github.com/Tvup/ewiiapi/tree/v1.0.31"
             },
-            "time": "2022-09-24T05:25:25+00:00"
+            "time": "2022-10-05T05:07:31+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
