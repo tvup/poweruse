@@ -19,3 +19,4 @@ jobs:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
           args: --coverage-text
+          php_version: "7.3"
