@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+        run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
 
       - uses: php-actions/composer@v5
         with:
