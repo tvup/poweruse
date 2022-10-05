@@ -26,9 +26,6 @@ jobs:
           php artisan migrate
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v2
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
         with:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
