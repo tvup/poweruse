@@ -39,11 +39,11 @@
                 </div>
                 <div class="form-group ewii">
                     <label for="exampleInputEmail1">Email</label>
-                    <input type="text" name="ewiiemail" id="ewiiEmail" class="form-control" value="{{ old('ewiiemail') }}">
+                    <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiemail') }}">
                 </div>
                 <div class="form-group ewii">
                     <label for="exampleInputEmail1">Password</label>
-                    <input type="password" name="ewiipassword" id="ewiiPassword" class="form-control" value="{{ old('ewiipassword') }}">
+                    <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiipassword') }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me id:</label>
