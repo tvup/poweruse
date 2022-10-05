@@ -416,16 +416,26 @@ class ElController extends Controller
     {
         $data = null;
         $dataSource = $request->source;
+        $addSmartMe = $request->smart_me == 'on';
         $end_date = $request->end_date;
+
+        $smartMe  = false;
+        if ($dataSource == 'SMART_ME' || $addSmartMe) {
+            $smartMe = array();
+            $smartMe['username'] = $request->smartmeuser;
+            $smartMe['password'] = $request->smartmepassword  ;
+            $smartMe['id'] = $request->smartmeid;
+        }
+
         switch ($dataSource) {
             case 'EWII':
-                $data = $this->meteringDataService->getDataFromEwii(null, null, $request->start_date, $end_date);
+                $data = $this->meteringDataService->getDataFromEwii($request->ewiiEmail, $request->ewiiPassword, $request->start_date, $end_date);
                 break;
             case 'DATAHUB':
-                $data = $this->meteringDataService->getData(null, $request->start_date, $end_date);
+                $data = $this->meteringDataService->getData($request->token, $request->start_date, $end_date);
                 break;
             case 'SMART-ME':
-                $data = $this->smartMeMeterDataService->getInterval(false, $request->start_date, $end_date);
+                $data = $this->smartMeMeterDataService->getInterval($smartMe, $request->start_date, $end_date);
                 break;
             default:
                 throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
