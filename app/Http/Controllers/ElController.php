@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
@@ -183,6 +184,8 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        } catch (DataUnavailableException $e) {
+            return redirect('el-meteringpoint')->with('error', $e->getMessage())->withInput($request->all());
         }
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
