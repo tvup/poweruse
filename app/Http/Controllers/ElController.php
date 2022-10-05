@@ -133,11 +133,11 @@ class ElController extends Controller
                 case 503:
                     $error = $e->getErrors();
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
+                    $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
                     return redirect('el')->with('error', $message)->withInput($request->all());
-                case 401:
-                    return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($request->token))->withInput($request->all());
+                case 2:
+                    return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
