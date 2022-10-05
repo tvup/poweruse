@@ -186,6 +186,22 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        }  catch (EwiiApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for metering-point data at ewii failed</strong>' . '<br/>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el')->with('error', $message)->withInput($request->all());
+                case 2:
+                    return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
         }
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
