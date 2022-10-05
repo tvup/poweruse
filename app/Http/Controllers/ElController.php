@@ -144,7 +144,7 @@ class ElController extends Controller
                         ->header('Content-Type', 'text/plain');
             }
         } catch (DataUnavailableException $e) {
-            return redirect('el-meteringpoint')->with('error', $e->getMessage())->withInput($request->all());
+            return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
