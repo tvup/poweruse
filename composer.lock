@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bec759fd32e34b5463457c60916f4407",
+    "content-hash": "99c7424eaf5332796240b646ea4c305c",
     "packages": [
         {
             "name": "brick/math",
@@ -5513,16 +5513,16 @@
         },
         {
             "name": "tvup/ewiiapi",
-            "version": "v1.0.23",
+            "version": "v1.0.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tvup/ewiiapi.git",
-                "reference": "1100ecf76390bc4d1e2aeee63ef885bfd51db867"
+                "reference": "45dc05fcd5d2a3e9edf38ac9bd6b54401cd62153"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tvup/ewiiapi/zipball/1100ecf76390bc4d1e2aeee63ef885bfd51db867",
-                "reference": "1100ecf76390bc4d1e2aeee63ef885bfd51db867",
+                "url": "https://api.github.com/repos/Tvup/ewiiapi/zipball/45dc05fcd5d2a3e9edf38ac9bd6b54401cd62153",
+                "reference": "45dc05fcd5d2a3e9edf38ac9bd6b54401cd62153",
                 "shasum": ""
             },
             "require": {
@@ -5548,9 +5548,9 @@
             "description": "API for getting consumption data as an Ewii customer",
             "support": {
                 "issues": "https://github.com/Tvup/ewiiapi/issues",
-                "source": "https://github.com/Tvup/ewiiapi/tree/v1.0.23"
+                "source": "https://github.com/Tvup/ewiiapi/tree/v1.0.24"
             },
-            "time": "2022-10-05T03:42:23+00:00"
+            "time": "2022-10-05T03:46:00+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
