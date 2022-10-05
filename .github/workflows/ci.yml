@@ -16,10 +16,9 @@ jobs:
         with:
           php_version: "7.4"
       - name: Directory Permissions
-        run: chmod -R 777 storage bootstrap/cache
+        run: sudo chmod -R 777 storage bootstrap/cache
       - name: Generate key
         run: php artisan key:generate
-
       - name: Create Database
         run: |
           mkdir -p database
