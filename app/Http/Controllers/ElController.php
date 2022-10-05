@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Tvup\ElOverblikApi\ElOverblikApiException;
+use Tvup\EwiiApi\EwiiApiException;
 
 class ElController extends Controller
 {
@@ -110,6 +111,22 @@ class ElController extends Controller
             
             $data = $this->getPreliminaryInvoice($request->token, $ewiiCredentials, $dataSource, $smartMe, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
         } catch (ElOverblikApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el')->with('error', $message)->withInput($request->all());
+                case 401:
+                    return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($request->token))->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
+        } catch (EwiiApiException $e) {
             switch ($e->getCode()) {
                 case 400:
                 case 500:
