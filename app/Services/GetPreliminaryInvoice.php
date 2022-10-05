@@ -107,27 +107,30 @@ class GetPreliminaryInvoice
                 $key = $start_date . ' ' . Carbon::now('Europe/Copenhagen')->addDay()->toDateString() . ' ' . $price_area;
             }
 
-
-            $prices = cache($key);
-            if (!$prices) {
-                $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
-                if ($smartMe) {
-                    $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
+            $subscriptions = [];
+            $tariffs = [];
+            if($dataSource == 'DATAHUB') {
+                $prices = cache($key);
+                if (!$prices) {
+                    $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
+                    if ($smartMe) {
+                        $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
+                    }
+                    $spotPrices = new GetSpotPrices();
+                    $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
+                    $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
+                    cache([$key => $prices], $expiresAt);
                 }
-                $spotPrices = new GetSpotPrices();
-                $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
-                $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
-                cache([$key => $prices], $expiresAt);
-            }
 
-            $key = 'charges ' . $refreshToken;
-            $charges = cache($key);
-            if (!$charges) {
-                $charges = $this->meteringDataService->getCharges($refreshToken);
-                $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
-                cache([$key => $charges], $expiresAt);
+                $key = 'charges ' . $refreshToken;
+                $charges = cache($key);
+                if (!$charges) {
+                    $charges = $this->meteringDataService->getCharges($refreshToken);
+                    $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
+                    cache([$key => $charges], $expiresAt);
+                }
+                list($subscriptions, $tariffs) = $charges;
             }
-            list($subscriptions, $tariffs) = $charges;
 
         } catch (ElOverblikApiException $e) {
             logger()->warning('Call to elOverblikApi failed with code ' . $e->getCode());
