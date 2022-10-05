@@ -15,7 +15,8 @@ jobs:
       - uses: php-actions/composer@v5
         with:
           php_version: "7.4"
-
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
       - name: Generate key
         run: php artisan key:generate
 
