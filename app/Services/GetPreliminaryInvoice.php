@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DataUnavailableException;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -107,30 +108,30 @@ class GetPreliminaryInvoice
                 $key = $start_date . ' ' . Carbon::now('Europe/Copenhagen')->addDay()->toDateString() . ' ' . $price_area;
             }
 
-            $subscriptions = [];
-            $tariffs = [];
-            if($dataSource == 'DATAHUB') {
-                $prices = cache($key);
-                if (!$prices) {
-                    $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
-                    if ($smartMe) {
-                        $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
-                    }
-                    $spotPrices = new GetSpotPrices();
-                    $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
-                    $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
-                    cache([$key => $prices], $expiresAt);
-                }
 
-                $key = 'charges ' . $refreshToken;
-                $charges = cache($key);
-                if (!$charges) {
-                    $charges = $this->meteringDataService->getCharges($refreshToken);
-                    $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
-                    cache([$key => $charges], $expiresAt);
+            $prices = cache($key);
+            if (!$prices) {
+                $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
+                if ($smartMe) {
+                    $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
                 }
-                list($subscriptions, $tariffs) = $charges;
+                $spotPrices = new GetSpotPrices();
+                $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
+                $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
+                cache([$key => $prices], $expiresAt);
             }
+
+            $key = 'charges ' . $refreshToken;
+            $charges = cache($key);
+            if (!$charges) {
+                if($dataSource=='EWII') {
+                    throw new DataUnavailableException('When querying Ewii, charges from datahub needs to be present at server. Unfortunately we don\'t have them yet',1);
+                }
+                $charges = $this->meteringDataService->getCharges($refreshToken);
+                $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
+                cache([$key => $charges], $expiresAt);
+            }
+            list($subscriptions, $tariffs) = $charges;
 
         } catch (ElOverblikApiException $e) {
             logger()->warning('Call to elOverblikApi failed with code ' . $e->getCode());
