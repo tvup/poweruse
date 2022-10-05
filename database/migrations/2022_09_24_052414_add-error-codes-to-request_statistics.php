@@ -23,20 +23,6 @@ class AddErrorCodesToRequestStatistics extends Migration
             $table->integer('504')->after('503')->default(0);
         });
 
-        $defaultDatabaseConnectionName = config('database.default');
-        $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
-
-        DB::unprepared('DROP PROCEDURE IF EXISTS insert_to_statistics; CREATE PROCEDURE insert_to_statistics (IN verb varchar(50),IN endpoint varchar(255),IN httpcode varchar(50))
-
-
-BEGIN
-  SET @sql = CONCAT(\'Update  ' . $databaseName . '.request_statistics set `\', httpcode, \'`=\', \'`\',httpcode,\'`\', \' +1 \', \' where `verb`=\\\'\',verb,\'\\\' and `endpoint`=\\\'\',endpoint,\'\\\'\');
-  PREPARE stmt FROM @sql;
-  EXECUTE stmt;
-  DEALLOCATE PREPARE stmt;
-
-
-END');
     }
 
     /**
@@ -46,8 +32,6 @@ END');
      */
     public function down()
     {
-        DB::unprepared('DROP PROCEDURE IF EXISTS insert_to_statistics; ');
-
         Schema::table('request_statistics', function (Blueprint $table) {
             $table->dropColumn('400');
             $table->dropColumn('401');

@@ -1,0 +1,41 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
+
+      - uses: php-actions/composer@v5
+        with:
+          php_version: "7.4"
+      - name: Directory Permissions
+        run: sudo chmod -R 777 storage bootstrap/cache
+      - name: Generate key
+        run: php artisan key:generate
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          php artisan migrate
+      - name: PHPUnit Tests
+        uses: php-actions/phpunit@v3
+        with:
+          bootstrap: vendor/autoload.php
+          configuration: phpunit.xml
+          args: --coverage-clover coverage_report.xml
+          php_version: "7.4"
+          php_extensions: xdebug
+        env:
+          XDEBUG_MODE: coverage
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage_report.xml

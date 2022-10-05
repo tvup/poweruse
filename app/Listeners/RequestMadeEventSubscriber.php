@@ -43,7 +43,8 @@ class RequestMadeEventSubscriber
         if ($hasColumn){
             $defaultDatabaseConnectionName = config('database.default');
             $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
-            DB::select('call '.$databaseName.'.insert_to_statistics(?,?,?)',array($event->getVerb(),$event->getEndpoint(),$code));
+            $query = 'Update '.$databaseName.'.request_statistics set `' . $code . '`=' . '`' . $code . '`' . ' +1 where `verb`=\''.$event->getVerb().'\' and `endpoint`=\''.$event->getEndpoint().'\'';
+            DB::statement($query);
             return;
         }
 
