@@ -24,7 +24,7 @@
                 {{ csrf_field() }}
 
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Source:</label>
+                    <label for="exampleInputEmail1">Kilde:</label>
                     DATAHUB {{ Form::radio('source', 'DATAHUB' , (old('source') && old('source')=='DATAHUB') ? old('source') : true) }}
                     EWII {{ Form::radio('source', 'EWII' , (old('source') && old('source')=='EWII') ? old('source') : false) }}
                     SMART-ME {{ Form::radio('source', 'SMART-ME' , (old('source') && old('source')=='SMART-ME') ? old('source') : false) }}
