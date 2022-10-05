@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p database
           touch database/database.sqlite
-
+          php artisan migrate
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v2
         env:
