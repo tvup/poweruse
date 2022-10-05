@@ -61,7 +61,7 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Slut dato (eks.)</label>
-                    <input name="end_date" class="date form-control" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
+                    <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Prisområde:</label>
@@ -98,7 +98,9 @@
 <script>
     $(function() {
         $( "#smart_me" ).change(function() {
-            updateSmartMeDetailFieldsShow($( "#smart_me").is(':checked'));
+            let isSmartMeSelected = $( "#smart_me").is(':checked');
+            updateSmartMeDetailFieldsShow(isSmartMeSelected);
+            updateDatePicker(isSmartMeSelected);
         });
 
         function updateSmartMeDetailFieldsShow($boolean) {
@@ -129,6 +131,20 @@
             }
         }
         updateCredentialsFieldsShow({{ old('de') == 'on' }});
+
+        function updateDatePicker($boolean) {
+            const today = new Date()
+            let tomorrow = new Date()
+            tomorrow.setDate(today.getDate() + 1)
+            if($boolean) {
+                $('.end_date').datepicker("setDate", tomorrow);
+            } else {
+                $('.end_date').datepicker("setDate", today);
+            }
+
+        }
+
+        updateDatePicker({{ old('smart_me') == 'on' }});
 
 
         $(document).ready(function(){
