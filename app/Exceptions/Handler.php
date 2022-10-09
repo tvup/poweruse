@@ -28,6 +28,20 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * Register the exception handling callbacks for the application.
+     *
+     * @return void
+     */
+    public function register($request)
+    {
+        $this->renderable(function (Throwable $e) use ($request) {
+            if ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {
+                return redirect('el')->with('warning', 'Session udløbet - prøv igen')->withInput($request->all());;
+            };
+        });
+    }
+
+    /**
      * Report or log an exception.
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
