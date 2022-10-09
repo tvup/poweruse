@@ -32,13 +32,15 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register($request)
+    public function register($request = null)
     {
-        $this->renderable(function (Throwable $e) use ($request) {
-            if ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {
-                return redirect('el')->with('warning', 'Session udløbet - prøv igen')->withInput($request->all());;
-            };
-        });
+        if($request) {
+            $this->renderable(function (Throwable $e) use ($request) {
+                if ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {
+                    return redirect('el')->with('warning', 'Session udløbet - prøv igen')->withInput($request->all());;
+                };
+            });
+        }
     }
 
     /**
