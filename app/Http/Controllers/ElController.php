@@ -86,6 +86,15 @@ class ElController extends Controller
         return view('consumption')->with('data', $data ? : null);
     }
 
+    public function indexTotalPrices()
+    {
+        $data = session('data');
+
+
+
+        return view('el-totalprices')->with('data', $data ? : null)->with('companies', array());
+    }
+
     public function processData(Request $request)
     {
         try {
@@ -508,6 +517,10 @@ class ElController extends Controller
         }
 
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+    }
+
+    public function getTotalPrices() {
+
     }
 
 }
