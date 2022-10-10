@@ -90,9 +90,7 @@ class ElController extends Controller
     {
         $data = session('data');
 
-
-
-        return view('el-totalprices')->with('data', $data ? : null)->with('companies', array());
+        return view('el-totalprices')->with('data', $data ? : null)->with('companies', ['5790000705689' => 'Radius','2'=> 'Goel']);
     }
 
     public function processData(Request $request)
