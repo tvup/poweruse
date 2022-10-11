@@ -21,7 +21,6 @@ class GetDatahubPriceLists
             . 'filter={'
             . '"ChargeType":"' . $chargeType . '",'
             . '"ChargeTypeCode":"' . $chargeTypeCode . '",'
-            . '"TaxIndicator":"0",'
             . '"GLN_Number":"' . $GLN_number . '",'
             . '"Note":"' . $note . '"'
             . '}';

@@ -555,24 +555,24 @@ class ElController extends Controller
     private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
     {
         $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
-        if(count($data)==0) {
-            $array = [
-                "ChargeOwner" => "Energinet Systemansvar A/S (SYO)",
-                "GLN_Number" => "5790000432752",
-                "ChargeType" => "D03",
-                "ChargeTypeCode" => "EA-001",
-                "Note" => "Elafgift",
-                "Description" => "Elafgiften",
-                "ValidFrom" =>  "2022-10-01T00:00:00",
-                "ValidTo" => "2023-01-01T00:00:00",
-                "VATClass" => "D02",
-                "Price1" => 0.72,
-                "TransparentInvoicing" => 1,
-                "TaxIndicator" => 1,
-                "ResolutionDuration" => "P1D"
-            ];
-            $data[0] = $array;
-        }
+//        if(count($data)==0) {
+//            $array = [
+//                "ChargeOwner" => "Energinet Systemansvar A/S (SYO)",
+//                "GLN_Number" => "5790000432752",
+//                "ChargeType" => "D03",
+//                "ChargeTypeCode" => "EA-001",
+//                "Note" => "Elafgift",
+//                "Description" => "Elafgiften",
+//                "ValidFrom" =>  "2022-10-01T00:00:00",
+//                "ValidTo" => "2023-01-01T00:00:00",
+//                "VATClass" => "D02",
+//                "Price1" => 0.72,
+//                "TransparentInvoicing" => 1,
+//                "TaxIndicator" => 1,
+//                "ResolutionDuration" => "P1D"
+//            ];
+//            $data[0] = $array;
+//        }
         $collection = collect($data[0]);
         $gridprices = array();
         $collection->each(function ($item, $key) use (&$gridprices) {
