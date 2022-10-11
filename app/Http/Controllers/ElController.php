@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
+use App\Models\Operator;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
 use App\Services\GetSmartMeMeterData;
@@ -89,8 +90,9 @@ class ElController extends Controller
     public function indexTotalPrices()
     {
         $data = session('data');
+        $companies = Operator::$operatorName;
 
-        return view('el-totalprices')->with('data', $data ? : null)->with('companies', ['5790000705689' => 'Radius','2'=> 'Goel']);
+        return view('el-totalprices')->with('data', $data ? : null)->with('companies', $companies);
     }
 
     public function processData(Request $request)

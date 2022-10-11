@@ -86,9 +86,10 @@ class EnergiDataGetDatahubPriceLists extends Command
         $this->table(array_keys($records[0]), array_values($records));
         if ($this->option('save-to-db')) {
             foreach ($records as $record) {
+                /** @var DatahubPriceList $datahubPriceList */
                 $datahubPriceList = new DatahubPriceList();
                 $datahubPriceList->fill($record);
-                if (!$datahubPriceList->exists()) {
+                if (!$datahubPriceList->getMatchingInDb()) {
                     $datahubPriceList->save();
                 } else {
                     $this->warn('Price existed already in database - record wasn\'t saved: ');
