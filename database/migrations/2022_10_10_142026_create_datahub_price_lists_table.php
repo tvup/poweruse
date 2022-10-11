@@ -14,16 +14,15 @@ class CreateDatahubPriceListsTable extends Migration
     public function up()
     {
         Schema::create('datahub_price_lists', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('ChargeOwner');
-            $table->string('GLN_Number');
-            $table->string('ChargeType',3);
-            $table->string('ChargeTypeCode');
-            $table->string('Note');
-            $table->string('Description');
-            $table->string('ValidFrom');
-            $table->string('ValidTo');
-            $table->string('VATClass',3);
+            $table->string('ChargeOwner', 60);
+            $table->string('GLN_Number', 16);
+            $table->string('ChargeType', 3);
+            $table->string('ChargeTypeCode', 20);
+            $table->string('Note', 99);
+            $table->string('Description', 200);
+            $table->string('ValidFrom', 19);
+            $table->string('ValidTo', 19);
+            $table->string('VATClass', 3);
             $table->float('Price1');
             $table->float('Price2');
             $table->float('Price3');
@@ -50,8 +49,10 @@ class CreateDatahubPriceListsTable extends Migration
             $table->float('Price24');
             $table->integer('TransparentInvoicing');
             $table->integer('TaxIndicator');
-            $table->string('ResolutionDuration', 4);
-            $table->timestamps();
+            $table->string('ResolutionDuration', 10);
+            $table->timestamp('created_at')->nullable();
+            $table->softDeletes();
+            $table->primary(array('GLN_Number', 'ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom', 'ValidTo'), 'primary_price');
         });
     }
 
