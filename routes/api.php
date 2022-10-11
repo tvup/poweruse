@@ -17,10 +17,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('el/totalprice', 'ElController@apiGetTotalPriceToday');
 Route::get('el/Elspotprices', 'ElController@apiGetSpotprices');
 Route::get('el/{refreshToken}', 'ElController@get');
 Route::get('el/{refreshToken}/smartme', 'ElController@getWithSmartMe');
 Route::get('el/charges/{refreshToken}', 'ElController@getCharges');
 Route::get('el/{start_date}/{end_date}/{price_area}/{refreshToken}', 'ElController@getFromDate');
 Route::get('el/{refreshToken}/delete', 'ElController@delete');
-Route::get('el/totalprice', 'ElController@apiGetTotalPriceToday');
