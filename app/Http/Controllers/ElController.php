@@ -671,7 +671,7 @@ class ElController extends Controller
             $dateTime->addHour();
         }
 
-        return ['records'=>$totalPrice];
+        return $totalPrice;
     }
 
 }
