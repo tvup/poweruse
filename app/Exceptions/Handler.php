@@ -32,12 +32,12 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param \Throwable $throwable
+     * @param Throwable $throwable
      * @return void
      */
     public function report(Throwable $throwable)
     {
-        if (in_array(config('env'), ['production', 'staging'])) {
+        if (in_array(app()->environment(), ['production', 'staging'])) {
             try {
                 $this->fejlvarp_exception_handler($throwable);
             } catch (\Exception $exception) {
