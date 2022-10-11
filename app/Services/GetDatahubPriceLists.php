@@ -23,8 +23,7 @@ class GetDatahubPriceLists
             . '"ChargeTypeCode":"' . $chargeTypeCode . '",'
             . '"TaxIndicator":"0",'
             . '"GLN_Number":"' . $GLN_number . '",'
-            . '"Note":"' . $note . '",'
-            . '"ResolutionDuration":"PT1H"'
+            . '"Note":"' . $note . '"'
             . '}';
         $response = Http::acceptJson()
             ->get($url);

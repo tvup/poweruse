@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
 use App\Models\Operator;
+use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
 use App\Services\GetSmartMeMeterData;
@@ -38,18 +39,20 @@ class ElController extends Controller
      * @var GetSmartMeMeterData
      */
     private $smartMeMeterDataService;
+    private GetDatahubPriceLists $datahubPriceListsService;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService, GetSmartMeMeterData $smartMeMeterDataService)
+    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService, GetSmartMeMeterData $smartMeMeterDataService, GetDatahubPriceLists $datahubPriceListsService)
     {
         $this->meteringDataService = $meteringDataService;
         $this->preliminaryInvoiceService = $preliminaryInvoiceService;
         $this->spotPricesService = $spotPricesService;
         $this->smartMeMeterDataService = $smartMeMeterDataService;
+        $this->datahubPriceListsService = $datahubPriceListsService;
     }
 
     public function index()
@@ -519,8 +522,133 @@ class ElController extends Controller
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getTotalPrices() {
+    public function getTotalPrices(Request $request) {
+        $operator=$request->netcompany;
 
+        $gridprices = $this->getGridOperatorNettariff(Operator::$operatorName[$operator]);
+        $spotPrices = $this->doGetSpotPrices($request->area);
+        $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
+        $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
+        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
+        $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
+
+
+
+        $totalPrice = array();
+        for ($i = 0; $i <= 23; $i++) {
+            $totalPrice[$i] = round(($gridprices[$i] + ($spotPrices[$i]/1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0])*1.23,2);
+        }
+        $companies = Operator::$operatorName;
+        return redirect('el-totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with('companies', $companies)->withInput($request->all());
+
+    }
+
+    /**
+     * @param string $operator
+     * @param string $chargeType
+     * @param string $chargeTypeCode
+     * @param string $note
+     * @param string $startDate
+     * @param string $endDate
+     * @return array
+     */
+    private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
+    {
+        $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        if(count($data)==0) {
+            $array = [
+                "ChargeOwner" => "Energinet Systemansvar A/S (SYO)",
+                "GLN_Number" => "5790000432752",
+                "ChargeType" => "D03",
+                "ChargeTypeCode" => "EA-001",
+                "Note" => "Elafgift",
+                "Description" => "Elafgiften",
+                "ValidFrom" =>  "2022-10-01T00:00:00",
+                "ValidTo" => "2023-01-01T00:00:00",
+                "VATClass" => "D02",
+                "Price1" => 0.72,
+                "TransparentInvoicing" => 1,
+                "TaxIndicator" => 1,
+                "ResolutionDuration" => "P1D"
+            ];
+            $data[0] = $array;
+        }
+        $collection = collect($data[0]);
+        $gridprices = array();
+        $collection->each(function ($item, $key) use (&$gridprices) {
+            if (strpos($key, 'Price') === 0) {
+                $gridprices[str_replace('Price', '', $key) - 1] = $item;
+            }
+        });
+        return $gridprices;
+    }
+
+    private function getGridOperatorNettariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = 'DT_C_01';
+        $note = 'Nettarif C time';
+        $startDate = '2022-10-01';
+        $endDate = '2022-10-02';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    private function getTSOOperatorNettariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = '40000';
+        $note = 'Transmissions nettarif';
+        $startDate = '2022-01-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    /**
+     * @param Request $request
+     * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response|mixed
+     */
+    private function doGetSpotPrices($area)
+    {
+        $currentDate = Carbon::now('Europe/Copenhagen')->startOfDay();
+        $startDate = $currentDate->toDateString();
+        $endDate = $currentDate->addDay()->toDateString();
+        $spotPrices = array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+        return $spotPrices;
+    }
+
+    private function getTSOOperatorSystemtariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = '41000';
+        $note = 'Systemtarif';
+        $startDate = '2022-01-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    private function getTSOOperatorBalancetariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = '45013';
+        $note = 'Balancetarif for forbrug';
+        $startDate = '2022-01-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    private function getTSOOperatorAfgifttariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = 'EA-001';
+        $note = 'Elafgift';
+        $startDate = '2022-10-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
 
 }
