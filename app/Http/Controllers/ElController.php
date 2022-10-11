@@ -666,7 +666,7 @@ class ElController extends Controller
 
         $totalPrice = array();
         for ($i = 0; $i <= 23; $i++) {
-            $totalPrice[$i] = round(($gridprices[$i] + ($spotPrices[$i]/1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0])*1.23,2);
+            $totalPrice[$i] = round(($gridprices[$i] + ($spotPrices[$i]/1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0])*1.25,2);
         }
 
         return $totalPrice;
