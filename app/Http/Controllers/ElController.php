@@ -651,4 +651,25 @@ class ElController extends Controller
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
 
+    public function apiGetTotalPriceToday()
+    {
+        $operator='5790000705689';
+
+        $gridprices = $this->getGridOperatorNettariff(Operator::$operatorName[$operator]);
+        $spotPrices = $this->doGetSpotPrices('DK2');
+        $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
+        $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
+        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
+        $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
+
+
+
+        $totalPrice = array();
+        for ($i = 0; $i <= 23; $i++) {
+            $totalPrice[$i] = round(($gridprices[$i] + ($spotPrices[$i]/1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0])*1.23,2);
+        }
+
+        return $totalPrice;
+    }
+
 }
