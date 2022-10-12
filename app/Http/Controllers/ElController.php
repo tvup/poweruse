@@ -93,9 +93,10 @@ class ElController extends Controller
     public function indexTotalPrices()
     {
         $data = session('data');
+        $chart = session('chart');
         $companies = Operator::$operatorName;
 
-        return view('el-totalprices')->with('data', $data ? : null)->with('companies', $companies);
+        return view('el-totalprices')->with('data', $data ? : null)->with('chart', $chart ? : null)->with('companies', $companies);
     }
 
     public function processData(Request $request)
@@ -390,7 +391,7 @@ class ElController extends Controller
             case 'text/plain':
             case '*/*':
             default:
-            $spotprice_format = GetSpotPrices::$spotprice_format;
+            $spotprice_format = GetSpotPrices::FORMAT_JSON;
         }
         $area = null;
         if(isset($request->filter)) {
@@ -522,11 +523,21 @@ class ElController extends Controller
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getTotalPrices(Request $request) {
-        $operator=$request->netcompany;
+    public function getTotalPrices(Request $request)
+    {
+        $includeTomorrow = false;
+        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+            $includeTomorrow = true;
+        }
+
+        $operator = $request->netcompany;
 
         $gridprices = $this->getGridOperatorNettariff(Operator::$operatorName[$operator]);
         $spotPrices = $this->doGetSpotPrices($request->area);
+        if ($includeTomorrow) {
+            $toMorrowSpotPrices = $this->doGetSpotPrices($request->area, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
+            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
+        }
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
         $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
@@ -535,12 +546,53 @@ class ElController extends Controller
 
 
         $totalPrice = array();
-        for ($i = 0; $i <= 23; $i++) {
-            $totalPrice[$i] = round(($gridprices[$i] + ($spotPrices[$i]/1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0])*1.23,2);
+        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
+        $limit = $includeTomorrow ? 47 : 23;
+        for ($i = 0; $i <= $limit; $i++) {
+            $j = ($i <= 23 ? $i : $i - 24);
+            $now2 = clone $now;
+            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
         }
         $companies = Operator::$operatorName;
-        return redirect('el-totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with('companies', $companies)->withInput($request->all());
 
+        $colours = $this->makeColors(array_values($totalPrice));
+
+        $chart = new \stdClass();
+        $chart->labels = (array_keys($totalPrice));
+        $chart->dataset = (array_values($totalPrice));
+        $chart->colours = $colours;
+
+        return redirect('el-totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all());
+
+    }
+
+    private function makeColors($array)
+    {
+        $min = (float)min($array);
+        $max = (float)max($array);
+        foreach ($array as $value) {
+            $value = (float)$value;
+            $percentage = ($value - $min) / ($max - $min);
+            $percentage = $percentage * 100.0;
+
+            $R = 0;
+            $G = 0;
+            $B = 0;
+
+            // 255 ÷ 50 = 5.1
+            if ($percentage > 50) {
+                $R = 5.1 * ($percentage - 50);
+            } elseif ($percentage < 50) {
+                $G = 255 - (5.1 * $percentage);
+            }
+
+            $dechex_r = dechex((int)$R) === '0' ? '00' : dechex((int)$R);
+            $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
+            $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
+
+            $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;;
+        }
+        return $colours;
     }
 
     /**
@@ -609,11 +661,13 @@ class ElController extends Controller
      * @param Request $request
      * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response|mixed
      */
-    private function doGetSpotPrices($area)
+    private function doGetSpotPrices($area, $from = null)
     {
-        $currentDate = Carbon::now('Europe/Copenhagen')->startOfDay();
-        $startDate = $currentDate->toDateString();
-        $endDate = $currentDate->addDay()->toDateString();
+        if(!$from) {
+            $from = Carbon::now('Europe/Copenhagen')->startOfDay();
+        }
+        $startDate = $from->toDateString();
+        $endDate = $from->addDay()->toDateString();
         $spotPrices = array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
         return $spotPrices;
     }
