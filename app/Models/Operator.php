@@ -20,4 +20,10 @@ class Operator extends Model
         'Cerius A/S' => 5790000705184,
         'Energinet Systemansvar A/S (SYO)' => 5790000432752,
     );
+
+    public static $gridOperatorArea = array(
+        'Radius Elnet A/S' => 'DK2',
+        'Cerius A/S' => 'DK2',
+    );
+
 }

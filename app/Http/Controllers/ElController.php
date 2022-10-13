@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
+use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
 use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
@@ -532,10 +533,12 @@ class ElController extends Controller
 
         $operator = $request->netcompany;
 
-        $gridprices = $this->getGridOperatorNettariff(Operator::$operatorName[$operator]);
-        $spotPrices = $this->doGetSpotPrices($request->area);
+        $gridOperatorGLNNumber = Operator::$operatorName[$operator];
+        $gridprices = $this->getGridOperatorNettariff($gridOperatorGLNNumber);
+        $priceArea = Operator::$gridOperatorArea[$gridOperatorGLNNumber];
+        $spotPrices = $this->doGetSpotPrices($priceArea);
         if ($includeTomorrow) {
-            $toMorrowSpotPrices = $this->doGetSpotPrices($request->area, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
+            $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
             $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
         }
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
@@ -607,24 +610,6 @@ class ElController extends Controller
     private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
     {
         $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
-//        if(count($data)==0) {
-//            $array = [
-//                "ChargeOwner" => "Energinet Systemansvar A/S (SYO)",
-//                "GLN_Number" => "5790000432752",
-//                "ChargeType" => "D03",
-//                "ChargeTypeCode" => "EA-001",
-//                "Note" => "Elafgift",
-//                "Description" => "Elafgiften",
-//                "ValidFrom" =>  "2022-10-01T00:00:00",
-//                "ValidTo" => "2023-01-01T00:00:00",
-//                "VATClass" => "D02",
-//                "Price1" => 0.72,
-//                "TransparentInvoicing" => 1,
-//                "TaxIndicator" => 1,
-//                "ResolutionDuration" => "P1D"
-//            ];
-//            $data[0] = $array;
-//        }
         $collection = collect($data[0]);
         $gridprices = array();
         $collection->each(function ($item, $key) use (&$gridprices) {
@@ -635,15 +620,12 @@ class ElController extends Controller
         return $gridprices;
     }
 
-    private function getGridOperatorNettariff(string $operator)
+    private function getGridOperatorNettariff(string $operatorName)
     {
-        $chargeType = 'D03';
-        $chargeTypeCode = 'DT_C_01';
-        $note = 'Nettarif C time';
-        $startDate = '2022-10-01';
-        $endDate = '2022-10-02';
+        $GLN_number = Operator::$operatorNumber[$operatorName];
+        $operator = GridOperatorNettariffProperty::getByGLNNumber($GLN_number);
 
-        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        return $this->getChargePrice($operatorName, $operator->charge_type, $operator->charge_type_code, $operator->note, $operator->valid_from, $operator->valid_to);
     }
 
     private function getTSOOperatorNettariff(string $operator)
@@ -705,12 +687,22 @@ class ElController extends Controller
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
 
-    public function apiGetTotalPriceToday()
+    public function apiGetTotalPriceToday($glnNumber)
     {
-        $operator='5790000705689';
+        $includeTomorrow = false;
+        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+            $includeTomorrow = true;
+        }
 
-        $gridprices = $this->getGridOperatorNettariff(Operator::$operatorName[$operator]);
-        $spotPrices = $this->doGetSpotPrices('DK2');
+        $operatorName = Operator::$operatorName[$glnNumber];
+
+        $gridprices = $this->getGridOperatorNettariff($operatorName);
+        $priceArea = Operator::$gridOperatorArea[$operatorName];
+        $spotPrices = $this->doGetSpotPrices($priceArea);
+        if ($includeTomorrow) {
+            $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
+            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
+        }
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
         $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
@@ -719,10 +711,12 @@ class ElController extends Controller
 
 
         $totalPrice = array();
-        $dateTime = Carbon::now('Europe/Copenhagen')->startOfDay();
-        for ($i = 0; $i <= 23; $i++) {
-            $totalPrice[$i] = ['start' => $dateTime->toDateTimeString(), 'value' => round(($gridprices[$i] + ($spotPrices[$i]/1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0])*1.25,2)];
-            $dateTime->addHour();
+        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
+        $limit = $includeTomorrow ? 47 : 23;
+        for ($i = 0; $i <= $limit; $i++) {
+            $j = ($i <= 23 ? $i : $i - 24);
+            $now2 = clone $now;
+            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
         }
 
         return $totalPrice;

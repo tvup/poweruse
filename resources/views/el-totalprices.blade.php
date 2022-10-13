@@ -45,11 +45,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Prisområde:</label>
-                        {!! Form::select('area', ['ALL'=>'--ingen valgt (alle)','DK1'=>'DK1','DK2'=>'DK2'], old('area') ? : null, ['class' => 'form-control']) !!}
-                    </div>
-
-                    <div class="form-group">
                         <label for="exampleInputEmail1">Netselskab</label><br/>
                         {!! Form::select('netcompany', $companies, old('area') ? : null, ['class' => 'form-control']) !!}
                     </div>
