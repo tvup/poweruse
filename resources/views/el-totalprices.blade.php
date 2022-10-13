@@ -14,7 +14,7 @@
         @endif
         <div class="card">
             <div class="card-header text-center font-weight-bold">
-                Hent totalpriser
+                Hent aktuelle totalpriser
             </div>
             @if(@isset($chart))
                 <div class="container graph-output">
@@ -39,7 +39,7 @@
                     {{ csrf_field() }}
 
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Outputformat:</label>
+                        <label for="exampleInputEmail1">Vis som:</label>
                         JSON {{ Form::radio('outputformat', 'JSON' , (old('outputformat') && old('outputformat')=='JSON') ? old('outputformat') : true) }}
                         GRAF {{ Form::radio('outputformat', 'GRAF' , (old('outputformat') && old('outputformat')=='GRAF') ? old('outputformat') : false) }}
                     </div>
@@ -50,7 +50,7 @@
                     </div>
 
 
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Hent</button>
                 </form>
             </div>
         </div>
@@ -81,7 +81,7 @@
             var chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: {!! json_encode($chart->labels) !!},
+                    labels: {!! json_encode(collect($chart->labels)->map(function($value) {return substr($value,11,12);})->toArray()) !!},
                     datasets: [
                         {
                             label: 'DK2',

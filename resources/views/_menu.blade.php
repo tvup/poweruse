@@ -22,7 +22,7 @@
                             {{link_to_route('el-spotprices', 'Spotpriser', [], ['class'=>'nav-link']) }}
                         </li>
                         <li class="nav-item">
-                            {{link_to_route('el-totalprices', 'Totalpriser', [], ['class'=>'nav-link']) }}
+                            {{link_to_route('el-totalprices', 'Aktuelle totalpriser', [], ['class'=>'nav-link']) }}
                         </li>
                     </ul>
 
