@@ -11,7 +11,7 @@ class test extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'test:test';
 
     /**
      * The console command description.
