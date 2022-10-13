@@ -716,7 +716,7 @@ class ElController extends Controller
         for ($i = 0; $i <= $limit; $i++) {
             $j = ($i <= 23 ? $i : $i - 24);
             $now2 = clone $now;
-            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
+            array_push($totalPrice, ['time' => $now2->addHours($i)->toDateTimeString(), 'price' => round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2)]);
         }
 
         return ['result'=>['data' =>$totalPrice]];
