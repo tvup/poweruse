@@ -97,6 +97,10 @@ class ElController extends Controller
                     $dataSource = 'DATAHUB';
             }
 
+            if($dataSource == 'DATAHUB' && !$request->token) {
+                return redirect('el')->with('error', 'Failed - token cannot be empty when datahub is selected.')->withInput($request->all());
+            }
+
             $smartMe = false;
             if ($request->smart_me == 'on') {
                 $smartMe = array();
