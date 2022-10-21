@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
+use App\Models\GridOperatorNettariffProperty;
+use App\Models\Operator;
+use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
 use App\Services\GetSmartMeMeterData;
@@ -37,18 +40,20 @@ class ElController extends Controller
      * @var GetSmartMeMeterData
      */
     private $smartMeMeterDataService;
+    private GetDatahubPriceLists $datahubPriceListsService;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService, GetSmartMeMeterData $smartMeMeterDataService)
+    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService, GetSmartMeMeterData $smartMeMeterDataService, GetDatahubPriceLists $datahubPriceListsService)
     {
         $this->meteringDataService = $meteringDataService;
         $this->preliminaryInvoiceService = $preliminaryInvoiceService;
         $this->spotPricesService = $spotPricesService;
         $this->smartMeMeterDataService = $smartMeMeterDataService;
+        $this->datahubPriceListsService = $datahubPriceListsService;
     }
 
     public function index()
@@ -84,6 +89,15 @@ class ElController extends Controller
         $data = session('data');
 
         return view('consumption')->with('data', $data ? : null);
+    }
+
+    public function indexTotalPrices()
+    {
+        $data = session('data');
+        $chart = session('chart');
+        $companies = Operator::$operatorName;
+
+        return view('el-totalprices')->with('data', $data ? : null)->with('chart', $chart ? : null)->with('companies', $companies);
     }
 
     public function processData(Request $request)
@@ -382,7 +396,7 @@ class ElController extends Controller
             case 'text/plain':
             case '*/*':
             default:
-            $spotprice_format = GetSpotPrices::$spotprice_format;
+            $spotprice_format = GetSpotPrices::FORMAT_JSON;
         }
         $area = null;
         if(isset($request->filter)) {
@@ -512,6 +526,204 @@ class ElController extends Controller
         }
 
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+    }
+
+    public function getTotalPrices(Request $request)
+    {
+        $includeTomorrow = false;
+        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+            $includeTomorrow = true;
+        }
+
+        $operator = $request->netcompany;
+
+        $gridOperatorGLNNumber = Operator::$operatorName[$operator];
+        $gridprices = $this->getGridOperatorNettariff($gridOperatorGLNNumber);
+        $priceArea = Operator::$gridOperatorArea[$gridOperatorGLNNumber];
+        $spotPrices = $this->doGetSpotPrices($priceArea);
+        if ($includeTomorrow) {
+            $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
+            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
+        }
+        $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
+        $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
+        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
+        $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
+
+
+
+        $totalPrice = array();
+        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
+        $limit = $includeTomorrow ? 47 : 23;
+        for ($i = 0; $i <= $limit; $i++) {
+            $j = ($i <= 23 ? $i : $i - 24);
+            $now2 = clone $now;
+            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
+        }
+        $companies = Operator::$operatorName;
+
+        $colours = $this->makeColors(array_values($totalPrice));
+
+        $chart = new \stdClass();
+        $chart->labels = (array_keys($totalPrice));
+        $chart->dataset = (array_values($totalPrice));
+        $chart->colours = $colours;
+
+        return redirect('el-totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all());
+
+    }
+
+    private function makeColors($array)
+    {
+        $min = (float)min($array);
+        $max = (float)max($array);
+        foreach ($array as $value) {
+            $value = (float)$value;
+            $percentage = ($value - $min) / ($max - $min);
+            $percentage = $percentage * 100.0;
+
+            $R = 0;
+            $G = 0;
+            $B = 0;
+
+            // 255 ÷ 50 = 5.1
+            if ($percentage > 50) {
+                $R = 5.1 * ($percentage - 50);
+            } elseif ($percentage < 50) {
+                $G = 255 - (5.1 * $percentage);
+            }
+
+            $dechex_r = dechex((int)$R) === '0' ? '00' : dechex((int)$R);
+            $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
+            $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
+
+            $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;;
+        }
+        return $colours;
+    }
+
+    /**
+     * @param string $operator
+     * @param string $chargeType
+     * @param string $chargeTypeCode
+     * @param string $note
+     * @param string $startDate
+     * @param string $endDate
+     * @return array
+     */
+    private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
+    {
+        $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        $collection = collect($data[0]);
+        $gridprices = array();
+        $collection->each(function ($item, $key) use (&$gridprices) {
+            if (strpos($key, 'Price') === 0) {
+                $gridprices[str_replace('Price', '', $key) - 1] = $item;
+            }
+        });
+        return $gridprices;
+    }
+
+    private function getGridOperatorNettariff(string $operatorName)
+    {
+        $GLN_number = Operator::$operatorNumber[$operatorName];
+        $operator = GridOperatorNettariffProperty::getByGLNNumber($GLN_number);
+
+        return $this->getChargePrice($operatorName, $operator->charge_type, $operator->charge_type_code, $operator->note, $operator->valid_from, $operator->valid_to);
+    }
+
+    private function getTSOOperatorNettariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = '40000';
+        $note = 'Transmissions nettarif';
+        $startDate = '2022-01-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    /**
+     * @param Request $request
+     * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response|mixed
+     */
+    private function doGetSpotPrices($area, $from = null)
+    {
+        if(!$from) {
+            $from = Carbon::now('Europe/Copenhagen')->startOfDay();
+        }
+        $startDate = $from->toDateString();
+        $endDate = $from->addDay()->toDateString();
+        $spotPrices = array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+        return $spotPrices;
+    }
+
+    private function getTSOOperatorSystemtariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = '41000';
+        $note = 'Systemtarif';
+        $startDate = '2022-01-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    private function getTSOOperatorBalancetariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = '45013';
+        $note = 'Balancetarif for forbrug';
+        $startDate = '2022-01-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    private function getTSOOperatorAfgifttariff(string $operator)
+    {
+        $chargeType = 'D03';
+        $chargeTypeCode = 'EA-001';
+        $note = 'Elafgift';
+        $startDate = '2022-10-01';
+        $endDate = '2022-12-31';
+
+        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+    }
+
+    public function apiGetTotalPriceToday($glnNumber)
+    {
+        $includeTomorrow = false;
+        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+            $includeTomorrow = true;
+        }
+
+        $operatorName = Operator::$operatorName[$glnNumber];
+
+        $gridprices = $this->getGridOperatorNettariff($operatorName);
+        $priceArea = Operator::$gridOperatorArea[$operatorName];
+        $spotPrices = $this->doGetSpotPrices($priceArea);
+        if ($includeTomorrow) {
+            $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
+            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
+        }
+        $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
+        $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
+        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
+        $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
+
+
+
+        $totalPrice = array();
+        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
+        $limit = $includeTomorrow ? 47 : 23;
+        for ($i = 0; $i <= $limit; $i++) {
+            $j = ($i <= 23 ? $i : $i - 24);
+            $now2 = clone $now;
+            array_push($totalPrice, ['time' => $now2->addHours($i)->toDateTimeString(), 'price' => round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2)]);
+        }
+
+        return ['result'=>['data' =>$totalPrice]];
     }
 
 }

@@ -17,6 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('el/totalprice/{GLNNumber}', 'ElController@apiGetTotalPriceToday');
 Route::get('el/Elspotprices', 'ElController@apiGetSpotprices');
 Route::get('el/{refreshToken}', 'ElController@get');
 Route::get('el/{refreshToken}/smartme', 'ElController@getWithSmartMe');
