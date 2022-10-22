@@ -259,6 +259,142 @@ class GetPreliminaryInvoice
     }
 
     /**
+     * @param $meterData
+     * @param $refreshToken
+     * @param $price_area
+     * @param float $overhead
+     * @return array
+     * @throws ElOverblikApiException
+     */
+    public function getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead=0.015): array
+    {
+        $overhead = str_replace(',','.',$overhead);
+
+        $start_date = Carbon::now()->startOfDay()->toDateString();
+
+        $end_date = Carbon::now()->addDay()->startOfDay()->toDateString();
+
+        try {
+            $key = $start_date . ' ' . $end_date . ' ' . $price_area;
+
+            $prices = cache($key);
+            if (!$prices) {
+                $price_end_date = $end_date;
+                $spotPrices = new GetSpotPrices();
+                $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
+                $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
+                cache([$key => $prices], $expiresAt);
+            }
+
+            $key = 'charges ' . $refreshToken;
+            $charges = cache($key);
+            if (!$charges) {
+                $charges = $this->meteringDataService->getCharges($refreshToken);
+                $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
+                cache([$key => $charges], $expiresAt);
+            }
+            list($subscriptions, $tariffs) = $charges;
+
+        } catch (ElOverblikApiException $e) {
+            logger()->warning('Call to elOverblikApi failed with code ' . $e->getCode());
+            throw $e;
+        }
+
+        $bill = array();
+
+        $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $end_date, 'antal dage' => 1]];
+
+        $sum = 0;
+
+        $bill['meta']['Interval']['antal timer i intervallet'] = count($meterData);
+
+        foreach ($meterData as $hour => $consumption) {
+            //array_push($bill['meta']['Interval']['time'], $hour);
+            //echo $hour . ': ' . $consumption . PHP_EOL;
+            foreach ($tariffs as $tariff) {
+                if (count($tariff['prices']) > 1) {
+                    if (array_key_exists($tariff['name'], $bill)) {
+                        $bill[$tariff['name']] = $bill[$tariff['name']] + $tariff['prices'][Carbon::parse($hour)->hour]['price'] * $consumption;
+                    } else {
+                        $bill[$tariff['name']] = $tariff['prices'][Carbon::parse($hour)->hour]['price'] * $consumption;
+                    }
+                } else {
+                    if (array_key_exists($tariff['name'], $bill)) {
+                        $bill[$tariff['name']] = $bill[$tariff['name']] + $tariff['prices'][0]['price'] * $consumption;
+                    } else {
+                        $bill[$tariff['name']] = $tariff['prices'][0]['price'] * $consumption;
+                    }
+                }
+                $bill[$tariff['name']] = round($bill[$tariff['name']], 2);
+            }
+            if (array_key_exists('Spotpris', $bill)) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                    $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
+                }
+            } else {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                    $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
+                }
+            }
+            $bill['Spotpris'] = round($bill['Spotpris'], 2);
+
+            if (array_key_exists('Overhead', $bill)) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                    $bill['Overhead'] = $bill['Overhead'] + $consumption * $overhead;
+                }
+            } else {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                    $bill['Overhead'] = $consumption * $overhead;
+                }
+            }
+            $bill['Overhead'] = round($bill['Overhead'], 2);
+            $sum = $sum + $consumption;
+        }
+
+        $bill['meta']['Forbrug'] = round($sum, 2) . ' kWh';
+
+        $bill[self::ALL_TARIFFS] = 0;
+        foreach (array_values($bill) as $value) {
+            if (is_numeric($value)) {
+                $bill[self::ALL_TARIFFS] = $bill[self::ALL_TARIFFS] + $value;
+            }
+        }
+
+
+        $bill['Moms'] = 0;
+        foreach ($bill as $key => $value) {
+            if($key== self::ALL_TARIFFS) {
+                continue;
+            }
+            if (is_numeric($value)) {
+                $bill['Moms'] = $bill['Moms'] + $value * 0.25;
+            }
+        }
+        $bill['Moms'] = round($bill['Moms'], 2);
+
+        $bill['Total'] = 0;
+        foreach ($bill as $key => $value) {
+            if($key== '' . self::ALL_TARIFFS . '') {
+                continue;
+            }
+            if (is_numeric($value)) {
+                $bill['Total'] = $bill['Total'] + $value;
+            }
+        }
+        $bill['Total'] = round($bill['Total'], 2);
+
+        if(array_key_exists('Spotpris',$bill) && $sum!=0) {
+            $bill['Statistik']['Gennemsnitspris, strøm inkl. moms'] = round(($bill['Spotpris'] + $bill['Overhead'])*1.25/$sum, 2) . ' kr./kWh';
+            $bill['Statistik']['Gennemsnitspris, alt tarifering inkl. moms'] = round(($bill[self::ALL_TARIFFS] * 1.25 )/$sum, 2) . ' kr./kWh';
+        } else {
+            $bill['Statistik']['Note'] = 'Der er endnu ikke forbrugsdata at indregne';
+        }
+        unset($bill[self::ALL_TARIFFS]);
+
+        return $bill;
+    }
+
+    /**
      * @param string $start_date
      * @param string $end_date
      * @return array
