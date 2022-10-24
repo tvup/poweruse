@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,3 +32,8 @@ Route::post('getConsumption', 'ElController@getConsumption');
 Route::post('getTotalPrices', 'ElController@getTotalPrices');
 Route::post('processcustom', 'ElController@processCustom');
 
+require __DIR__.'/auth.php';
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');

@@ -8,11 +8,12 @@
         "php": ">=7.4.0",
         "doctrine/dbal": "^2.7",
         "fideloper/proxy": "^4.0",
+        "laravel/breeze": "1.9.2",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
+        "laravelcollective/html": "~6.0",
         "tvup/eloverblikapi": "^0.0.26",
-        "tvup/ewiiapi": "v1.0.31",
-        "laravelcollective/html": "~6.0"
+        "tvup/ewiiapi": "v1.0.31"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
