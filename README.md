@@ -15,12 +15,6 @@ composer install --ignore-platform-reqs
 
 ## Set default environment variables
 
-### Docker
-```bash
-cp .env.docker.example .env
-```
-
-### Local development
 ```bash
 cp .env.example .env
 ```
@@ -37,11 +31,6 @@ sail artisan key:generate
 sail up -d
 ```
 
-### Local
-```bash
-php artisan serve
-```
-
 Navigate to http://localhost/
 
 ## Migrate
@@ -50,7 +39,7 @@ Navigate to http://localhost/
 sail artisan migrate
 ```
 
-# Testing
+## Testing
 
 ```bash
 sail test
