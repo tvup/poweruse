@@ -3,15 +3,17 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Tvup\ElOverblikApi\ElOverblikApi;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\EwiiApi\EwiiApiException;
+use Tvup\EwiiApi\EwiiApiInterface;
 
 class GetMeteringData
 {
 
 
     /**
-     * @var mixed
+     * @var EwiiApiInterface
      */
     private $energiOverblikApi;
 
@@ -226,7 +228,7 @@ class GetMeteringData
     /**
      * @param $refreshToken
      */
-    private function getEloverblikApi($refreshToken = null)
+    private function getEloverblikApi($refreshToken = null) : ElOverblikApi
     {
         if (!$this->energiOverblikApi) {
             $this->energiOverblikApi = app()->makeWith('Tvup\ElOverblikApi\ElOverblikApiInterface', [
