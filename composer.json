@@ -11,7 +11,7 @@
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
         "tvup/eloverblikapi": "^1.0.1",
-        "tvup/ewiiapi": "v1.0.31",
+        "tvup/ewiiapi": "v2.0.1",
         "laravelcollective/html": "~6.0"
     },
     "require-dev": {

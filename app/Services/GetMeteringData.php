@@ -238,7 +238,7 @@ class GetMeteringData
         return $this->energiOverblikApi;
     }
 
-    private function getEwiiApi($email=null, $password=null)
+    private function getEwiiApi($email=null, $password=null) : EwiiApiInterface
     {
         if (!$this->ewiiApi) {
             $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [
