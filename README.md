@@ -15,6 +15,11 @@ composer install --ignore-platform-reqs
 
 ## Set default environment variables
 
+### Docker
+```bash
+cp .env.docker.example .env
+```
+
 ### Local development
 ```bash
 cp .env.example .env
@@ -25,15 +30,16 @@ cp .env.example .env
 sail artisan key:generate
 ```
 
-### Docker
-```bash
-cp .env.docker.example .env
-```
-
 ## Start application
 
+### Docker
 ```bash
 sail up -d
+```
+
+### Local
+```bash
+php artisan serve
 ```
 
 Navigate to http://localhost/
