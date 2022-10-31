@@ -43,15 +43,15 @@ class GetSmartMeMeterData
         $start_date_utc = $start_date_utc->timezone('UTC');
         $start_date_utc_formatted = $start_date_utc->format('Y-m-d\TH:i:s\Z');
 
-        $tz = new DateTimeZone('Europe/Copenhagen');
+        $timeZone = new DateTimeZone('Europe/Copenhagen');
         $start = clone $start_date_copenhagen;
-        $start = new DateTime($start->startOfYear()->toDateString(), $tz);
+        $start = new DateTime($start->startOfYear()->toDateString(), $timeZone);
         $year_add_to_start_date_copenhagen = clone $start_date_copenhagen;
-        $end = new DateTime($year_add_to_start_date_copenhagen->startOfYear()->addYear()->toDateString(), $tz);
-        $year_late_transition = $tz->getTransitions($start->format('U'), $end->format('U'))[2];
+        $end = new DateTime($year_add_to_start_date_copenhagen->startOfYear()->addYear()->toDateString(), $timeZone);
+        $year_late_transition = $timeZone->getTransitions($start->format('U'), $end->format('U'))[2];
         $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen')->addHour();
-        $tz2 = CarbonTimeZone::create('+2');
-        $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $tz2); //TODO: Should be created from $late_transition_end_hour
+        $timeZone2 = CarbonTimeZone::create('+2');
+        $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
         $nice_one = $late_transition_end_hour2->format('c');
 
 
@@ -76,8 +76,8 @@ class GetSmartMeMeterData
 
             if (!$first && $start_date_copenhagen->eq($late_transition_end_hour)) {
                 $first = true;
-                $tz = CarbonTimeZone::create('+1');
-                $rtn_start_date_formatted = $rtn_start_date->timezone($tz)->format('c');
+                $timeZone = CarbonTimeZone::create('+1');
+                $rtn_start_date_formatted = $rtn_start_date->timezone($timeZone)->format('c');
                 $array[$nice_one] = str_replace(',', '.', round($newResponse - $oldResponse, 2));
             }
             $array[$rtn_start_date_formatted] = str_replace(',', '.', round($newResponse - $oldResponse, 2));
