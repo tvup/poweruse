@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use Carbon\CarbonTimeZone;
+use DateTime;
+use DateTimeZone;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class GetSpotPrices
@@ -32,11 +36,30 @@ class GetSpotPrices
         $response = Http::acceptJson()
             ->get($url, $parameters);
 
+        $tz = new DateTimeZone('Europe/Copenhagen');
+        $start = new DateTime(Carbon::parse($start_date)->startOfYear()->toDateString(), $tz);
+        $end = new DateTime(Carbon::parse($end_date)->startOfYear()->addYear()->toDateString(), $tz);
+
+        $transitions = $tz->getTransitions($start->format('U'), $end->format('U'));
+        $year_late_transition = $transitions[2];
+        $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen');
+
+        $first = false;
         if($format == self::FORMAT_INTERNAL) {
             $array = array_reverse($response['records']);
             $new_array = array();
             foreach ($array as $data) {
-                $new_array[$data['HourDK']] = $data['SpotPriceDKK'];
+                $carbon = Carbon::parse($data['HourDK'], 'Europe/Copenhagen');
+                if (!$first && $carbon->eq($late_transition_end_hour)) {
+                    $first = true;
+                    $tz2 = CarbonTimeZone::create('+2');
+                    $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $tz2); //TODO: Should be created from $late_transition_end_hour
+                    $nice_one = $late_transition_end_hour2->format('c');
+                    $new_array[$nice_one] = $data['SpotPriceDKK'];
+                } else {
+                    $hour = $carbon->format('c');
+                    $new_array[$hour] = $data['SpotPriceDKK'];
+                }
             }
             $response = $new_array;
         }
