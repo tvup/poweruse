@@ -86,9 +86,9 @@ class GetSmartMeMeterDataTest extends TestCase
         $smartMe = ['id' => self::SMART_ME_ID, 'username' => self::SMART_ME_USERNAME, 'password' => self::SMART_ME_PASSWORD];
         $reading = $service->getInterval($smartMe, '2022-09-01 03:00:00');
         $expectedResult = [
-            '2022-09-01T03:00:00' => (string)(self::COUNTER_READING_20220901_0200 - self::COUNTER_READING_20220901_0100),
-            '2022-09-01T04:00:00' => (string)(self::COUNTER_READING_20220901_0300 - self::COUNTER_READING_20220901_0200),
-            '2022-09-01T05:00:00' => (string)(self::COUNTER_READING_20220901_0400 - self::COUNTER_READING_20220901_0300)
+            '2022-09-01T03:00:00+02:00' => (string)(self::COUNTER_READING_20220901_0200 - self::COUNTER_READING_20220901_0100),
+            '2022-09-01T04:00:00+02:00' => (string)(self::COUNTER_READING_20220901_0300 - self::COUNTER_READING_20220901_0200),
+            '2022-09-01T05:00:00+02:00' => (string)(self::COUNTER_READING_20220901_0400 - self::COUNTER_READING_20220901_0300)
         ];
         $this->assertEquals($expectedResult, $reading);
         Http::assertSent(function (Request $request) {
