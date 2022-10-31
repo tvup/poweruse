@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61e58bef19b37f1e5954975dc7d4eac8",
+    "content-hash": "333c4ac284a430aa6a9a0363b1a4927b",
     "packages": [
         {
             "name": "brick/math",
@@ -5472,16 +5472,16 @@
         },
         {
             "name": "tvup/eloverblikapi",
-            "version": "v0.0.26",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tvup/eloverblikapi.git",
-                "reference": "4c3ce2868450dd49550e5384e003a7985bab39b5"
+                "reference": "25d91a490cc07fb435e5f25b07e4ed6e8c2a356f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tvup/eloverblikapi/zipball/4c3ce2868450dd49550e5384e003a7985bab39b5",
-                "reference": "4c3ce2868450dd49550e5384e003a7985bab39b5",
+                "url": "https://api.github.com/repos/Tvup/eloverblikapi/zipball/25d91a490cc07fb435e5f25b07e4ed6e8c2a356f",
+                "reference": "25d91a490cc07fb435e5f25b07e4ed6e8c2a356f",
                 "shasum": ""
             },
             "require": {
@@ -5507,9 +5507,9 @@
             "description": "API for getting consumption data from energioverblik",
             "support": {
                 "issues": "https://github.com/Tvup/eloverblikapi/issues",
-                "source": "https://github.com/Tvup/eloverblikapi/tree/v0.0.26"
+                "source": "https://github.com/Tvup/eloverblikapi/tree/v1.0.1"
             },
-            "time": "2022-10-01T09:30:16+00:00"
+            "time": "2022-10-31T04:40:24+00:00"
         },
         {
             "name": "tvup/ewiiapi",
@@ -7820,7 +7820,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.3.0"
+        "php": ">=7.4.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
