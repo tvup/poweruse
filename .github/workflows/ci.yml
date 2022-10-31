@@ -14,7 +14,7 @@ jobs:
 
       - uses: php-actions/composer@v5
         with:
-          php_version: "7.4"
+          php_version: "8.1"
       - name: Directory Permissions
         run: sudo chmod -R 777 storage bootstrap/cache
       - name: Generate key
@@ -30,7 +30,7 @@ jobs:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
           args: --coverage-clover coverage_report.xml
-          php_version: "7.4"
+          php_version: "8.1"
           php_extensions: xdebug
         env:
           XDEBUG_MODE: coverage
