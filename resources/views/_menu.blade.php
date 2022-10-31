@@ -27,12 +27,16 @@
                         <li class="nav-item">
                             {{link_to_route('el-custom', 'Beregn prisen for et bestemt forbrug i dag', [], ['class'=>'nav-link']) }}
                         </li>
-                        <li>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit">Logud</button>
-                        </form>
-                        </li>
+
+                        @auth
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit">Logud</button>
+                                </form>
+                            </li>
+                        @endauth
+
                     </ul>
 
                 </nav>

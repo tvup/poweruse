@@ -109,6 +109,17 @@ class ElController extends Controller
 
     public function processData(Request $request)
     {
+        if(auth()->check()) {
+            session(['user_refresh_token' => $request->token]);
+            session(['user_ewiiEmail' => $request->ewiiEmail]);
+            session(['user_ewiiPassword' => $request->ewiiPassword]);
+            session(['user_smartmeid' => $request->smartmeid]);
+            session(['user_smartmeuser' => $request->smartmeuser]);
+            session(['user_smartmepassword' => $request->smartmepassword]);
+            session(['user_subscription' => $request->subscription]);
+            session(['user_overhead' => $request->overhead]);
+        }
+
         try {
             switch ($request->de) {
                 case 'on':

@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
+
     @if(session('status'))
         <div class="alert alert-success">
             {{ session('status') }}
@@ -34,15 +35,15 @@
 
                 <div class="form-group datahub">
                     <label for="exampleInputEmail1">Refresh token</label>
-                    <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') }}">
+                    <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ? : session('user_refresh_token')}}">
                 </div>
                 <div class="form-group ewii">
                     <label for="exampleInputEmail1">Email</label>
-                    <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') }}">
+                    <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') ? : session('user_ewiiEmail') }}">
                 </div>
                 <div class="form-group ewii">
                     <label for="exampleInputEmail1">Password</label>
-                    <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiiPassword') }}">
+                    <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiiPassword') ? : session('user_ewiiPassword') }}">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Smart-me?</label>
@@ -50,15 +51,15 @@
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me id:</label>
-                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') }}">
+                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') ? : session('user_smartmeid') }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me username:</label>
-                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') }}">
+                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') ? : session('user_smartmeuser') }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me password:</label>
-                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') }}">
+                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') ? : session('user_smartmepassword') }}">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Start dato</label>
@@ -76,11 +77,11 @@
 
                 <div class="form-group">
                     <label for="exampleInputEmail1">Abonnementspris pr. måned hos elleverandør eks. moms i kr.</label>
-                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ? : 23.20}}">
+                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ (old('subscription') ? : session('user_subscription')) ? : 23.20}}">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Elleverandørens tillæg til spotprisen eks. moms i kr.</label>
-                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.015}}">
+                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ (old('overhead') ? : session('user_overhead')) ? : 0.015}}">
                 </div>
 
 
@@ -113,10 +114,6 @@
                 $('.smartmedetails').show();
             } else {
                 $('.smartmedetails').hide();
-                $('.smartmedetails').each (function(){
-                    $(this).find('input').val('');
-                });
-
             }
 
         }

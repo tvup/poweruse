@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApiException;
+use Tvup\ElOverblikApi\ElOverblikApiInterface;
 use Tvup\EwiiApi\EwiiApiException;
 
 class GetMeteringData
@@ -224,7 +225,9 @@ class GetMeteringData
     }
 
     /**
-     * @param $refreshToken
+     * @param null $refreshToken
+     * @return ElOverblikApiInterface
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function getEloverblikApi($refreshToken = null)
     {
