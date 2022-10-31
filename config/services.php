@@ -55,9 +55,9 @@ return [
     ],
 
     'smartme' => [
-        'id' => env('SMART_ME_ID'),
-        'username' => env('SMART_ME_USERNAME'),
-        'paasword' => env('SMART_ME_PASSWORD'),
+        'id' => env('SMART_ME_ID', 'test-id'),
+        'username' => env('SMART_ME_USERNAME', 'test-user-name'),
+        'paasword' => env('SMART_ME_PASSWORD', 'test-password'),
     ]
 
 
