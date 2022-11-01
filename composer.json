@@ -10,9 +10,9 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.7",
-        "laravelcollective/html": "^6.0",
-        "tvup/eloverblikapi": "^0.0.26",
-        "tvup/ewiiapi": "v1.0.31"
+        "tvup/eloverblikapi": "^1.0.1",
+        "tvup/ewiiapi": "v2.0.1",
+        "laravelcollective/html": "^6.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
