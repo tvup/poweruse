@@ -21,5 +21,8 @@
     },
     "dependencies": {
         "webpack": "^3.12.0"
-    }
+    },
+    "files": [
+        "webpack.mix.js"
+    ]
 }
