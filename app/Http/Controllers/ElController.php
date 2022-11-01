@@ -139,6 +139,7 @@ class ElController extends Controller
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
+                case 429:
                 case 500:
                 case 503:
                     $error = $e->getErrors();
