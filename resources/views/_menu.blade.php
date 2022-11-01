@@ -24,6 +24,9 @@
                         <li class="nav-item">
                             {{link_to_route('el-totalprices', 'Aktuelle totalpriser', [], ['class'=>'nav-link']) }}
                         </li>
+                        <li class="nav-item">
+                            {{link_to_route('el-custom', 'Beregn prisen for et bestemt forbrug i dag', [], ['class'=>'nav-link']) }}
+                        </li>
                     </ul>
 
                 </nav>

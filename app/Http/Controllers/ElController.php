@@ -100,6 +100,13 @@ class ElController extends Controller
         return view('el-totalprices')->with('data', $data ? : null)->with('chart', $chart ? : null)->with('companies', $companies);
     }
 
+    public function indexCustomUsage()
+    {
+        $data = session('data');
+
+        return view('el-custom')->with('data', $data ? : null);
+    }
+
     public function processData(Request $request)
     {
         try {
@@ -129,6 +136,65 @@ class ElController extends Controller
 
             
             $data = $this->getPreliminaryInvoice($request->token, $ewiiCredentials, $dataSource, $smartMe, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
+        } catch (ElOverblikApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 429:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el')->with('error', $message)->withInput($request->all());
+                case 401:
+                    return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($request->token))->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
+        } catch (EwiiApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 500:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el')->with('error', $message)->withInput($request->all());
+                case 2:
+                    return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
+        } catch (DataUnavailableException $e) {
+            return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
+        }
+        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+    }
+
+    public function processCustom(Request $request)
+    {
+        if(!$request->token) {
+            return redirect('el-custom')->with('error', 'Failed - token cannot be empty is selected.')->withInput($request->all());
+        }
+        try {
+            $fields = $request->all();
+            $meterData = [];
+            foreach ($fields as $key => $value) {
+                if(strpos($key, 'usage') !== false) {
+                    $timeslot = str_replace('usage', '', $key);
+                    if(strlen($timeslot)==1) {
+                        $timeslot = '0' . $timeslot . '';
+                    }
+                    $newKey = Carbon::now('Europe/Copenhagen')->toDateString() . 'T' . $timeslot . ':00:00';
+                    $newValue = $value ? str_replace(',','.', $value) : null;
+                    $meterData[$newKey] =($newValue ? : 0);
+                }
+            }
+            $data = $this->getUsageCost($meterData, $request->token, $request->area, $request->overhead);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -164,7 +230,7 @@ class ElController extends Controller
         } catch (DataUnavailableException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
-        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
+        return redirect('el-custom')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
     public function getMeteringPointData(Request $request)
@@ -308,6 +374,16 @@ class ElController extends Controller
                 ->header('Content-Type', 'text/plain');
         }
         $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $smartMe, $dataSource, $refreshToken, $ewiiCredentials, $price_area, $subscription, $overhead);
+
+        return response()->json($bill);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getUsageCost($meterData, $refreshToken = null, $price_area = 'DK2', $overhead=0.015)
+    {
+        $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead);
 
         return response()->json($bill);
     }

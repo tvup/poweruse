@@ -5,20 +5,22 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=7.4.0",
-        "doctrine/dbal": "^2.7",
+        "php": ">=8.1.0",
+        "doctrine/dbal": "^3.5",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^8.0",
-        "laravel/tinker": "^2.0",
+        "laravel/tinker": "^2.7",
         "tvup/eloverblikapi": "^1.0.1",
         "tvup/ewiiapi": "v2.0.1",
-        "laravelcollective/html": "~6.0"
+        "laravelcollective/html": "^6.0"
     },
     "require-dev": {
-        "filp/whoops": "~2.0",
-        "fzaninotto/faker": "~1.4",
-        "laravel/homestead": "^9.0",
-        "mockery/mockery": "~1.0",
+        "facade/ignition": "^2.5",
+        "fakerphp/faker": "^1.20",
+        "laravel/homestead": "^13.0",
+        "laravel/sail": "^1.16",
+        "mockery/mockery": "^1.5",
+        "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9.0"
     },
     "autoload": {
