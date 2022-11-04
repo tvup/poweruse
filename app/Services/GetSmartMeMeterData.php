@@ -35,7 +35,7 @@ class GetSmartMeMeterData
      * @param null $to_date_utc_formatted Date and time in local time to get consumption data untill (exclusive)
      * @return array
      */
-    public function getInterval($smartMe = false, $start_date_copenhagen, $to_date = null): array
+    public function getInterval($start_date_copenhagen, $to_date = null, $smartMe = false): array
     {
         $newResponse = null;
         $start_date_copenhagen = Carbon::parse($start_date_copenhagen, 'Europe/Copenhagen');

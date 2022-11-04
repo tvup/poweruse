@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Commands\Traits\OutputApiExceptionMessages;
 use App\Services\GetMeteringData;
 use Illuminate\Console\Command;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class ElOverblikGetMeteringData extends Command
 {
+    use OutputApiExceptionMessages;
     /**
      * The name and signature of the console command.
      *
@@ -65,7 +67,7 @@ class ElOverblikGetMeteringData extends Command
         }
 
         try {
-            $response = $this->meteringDataService->getData(null, $this->option('start-date'), $this->option('end-date'), $this->getOutput()->isVerbose());
+            $response = $this->meteringDataService->getData($this->option('start-date'), $this->option('end-date'), null, $this->getOutput()->isVerbose());
         } catch (ElOverblikApiException $e) {
             if ($e->getCode() == 400) {
                 $this->logExceptionApiMessages($e->getErrors(), 'Request for mertering data at eloverblik failed');

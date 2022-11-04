@@ -134,7 +134,7 @@ class ElController extends Controller
                 'ewiiPassword' => $request->ewiiPassword
             ];
 
-            
+
             $data = $this->getPreliminaryInvoice($request->token, $ewiiCredentials, $dataSource, $smartMe, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
@@ -315,7 +315,7 @@ class ElController extends Controller
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
                     return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', true);
-                } catch (EwiiApiEx½ception $exception) {
+                } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
             }
@@ -373,7 +373,7 @@ class ElController extends Controller
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
                 ->header('Content-Type', 'text/plain');
         }
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $smartMe, $dataSource, $refreshToken, $ewiiCredentials, $price_area, $subscription, $overhead);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $smartMe, $price_area, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead);
 
         return response()->json($bill);
     }
@@ -559,13 +559,13 @@ class ElController extends Controller
         try {
             switch ($dataSource) {
                 case 'EWII':
-                    $data = $this->meteringDataService->getDataFromEwii($request->ewiiEmail, $request->ewiiPassword, $request->start_date, $end_date);
+                    $data = $this->meteringDataService->getDataFromEwii($request->start_date, $end_date, $request->ewiiEmail, $request->ewiiPassword);
                     break;
                 case 'DATAHUB':
-                    $data = $this->meteringDataService->getData($request->token, $request->start_date, $end_date);
+                    $data = $this->meteringDataService->getData($request->start_date, $end_date, $request->token);
                     break;
                 case 'SMART-ME':
-                    $data = $this->smartMeMeterDataService->getInterval($smartMe, $request->start_date, $end_date);
+                    $data = $this->smartMeMeterDataService->getInterval($request->start_date,$end_date, $smartMe);
                     break;
                 default:
                     throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
@@ -576,7 +576,7 @@ class ElController extends Controller
                 $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
 
-                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval(false, $start_from, $smart_me_end_date);
+                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date, false);
                 $data = array_merge($data, $smartMeIntervalFromDate);
             }
 
@@ -653,6 +653,7 @@ class ElController extends Controller
     {
         $min = (float)min($array);
         $max = (float)max($array);
+        $colours = [];
         foreach ($array as $value) {
             $value = (float)$value;
             $percentage = ($value - $min) / ($max - $min);
