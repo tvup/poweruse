@@ -8,20 +8,20 @@
         "php": ">=8.1.0",
         "doctrine/dbal": "^3.5",
         "fideloper/proxy": "^4.0",
-        "laravel/framework": "^8.0",
+        "laravel/framework": "^9.0",
         "laravel/tinker": "^2.7",
+        "laravelcollective/html": "^6.0",
         "tvup/eloverblikapi": "^1.0.1",
-        "tvup/ewiiapi": "v2.0.1",
-        "laravelcollective/html": "^6.0"
+        "tvup/ewiiapi": "v2.0.1"
     },
     "require-dev": {
-        "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.20",
         "laravel/homestead": "^13.0",
         "laravel/sail": "^1.16",
         "mockery/mockery": "^1.5",
-        "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.0"
+        "nunomaduro/collision": "^6.3",
+        "phpunit/phpunit": "^9.0",
+        "spatie/laravel-ignition": "^1.6"
     },
     "autoload": {
         "classmap": [
