@@ -34,8 +34,3 @@ jobs:
           php_extensions: xdebug
         env:
           XDEBUG_MODE: coverage
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@v1
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage_report.xml
