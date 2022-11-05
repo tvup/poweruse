@@ -2,4 +2,4 @@
 
 ROOT_DIR="$(cd $(dirname "$(dirname "${BASH_SOURCE[0]}")") &> /dev/null && pwd )"
 
-exec $ROOT_DIR/vendor/bin/phpstan
+exec $ROOT_DIR/vendor/bin/phpstan --xdebug
