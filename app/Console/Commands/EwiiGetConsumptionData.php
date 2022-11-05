@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\OutputApiExceptionMessages;
 use Illuminate\Console\Command;
+use Tvup\EwiiApi\EwiiApi;
 use Tvup\EwiiApi\EwiiApiException;
 use Tvup\EwiiApi\EwiiApiInterface;
 
@@ -70,6 +71,7 @@ class EwiiGetConsumptionData extends Command
                 return 1;
         }
 
+        /** @var EwiiApi $ewiiApi */
         $ewiiApi = $this->ewiiApi;
         if($this->getOutput()->isVerbose()) {
             $ewiiApi->setDebug(true);

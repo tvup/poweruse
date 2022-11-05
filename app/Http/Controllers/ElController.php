@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\EwiiApi\EwiiApiException;
 
@@ -694,8 +695,9 @@ class ElController extends Controller
         $collection = collect($data[0]);
         $gridprices = array();
         $collection->each(function ($item, $key) use (&$gridprices) {
-            if (strpos($key, 'Price') === 0) {
-                $gridprices[str_replace('Price', '', $key) - 1] = $item;
+            if (Str::contains($key, 'Price')) {
+                $key = ((int) Str::replace('Price', '', $key)) - 1;
+                $gridprices[$key] = $item;
             }
         });
         return $gridprices;
@@ -721,7 +723,6 @@ class ElController extends Controller
     }
 
     /**
-     * @param Request $request
      * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response|mixed
      */
     private function doGetSpotPrices($area, $from = null)

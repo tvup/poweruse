@@ -31,8 +31,8 @@ class GetSmartMeMeterData
 
     /**
      * @param false $smartMe
-     * @param $start_date_utc_formatted Date and time in local time to get consumption data from (inclusive)
-     * @param null $to_date_utc_formatted Date and time in local time to get consumption data untill (exclusive)
+     * @param $start_date_copenhagen Date and time in local time to get consumption data from (inclusive)
+     * @param null $to_date Date and time in local time to get consumption data untill (exclusive)
      * @return array
      */
     public function getInterval($start_date_copenhagen, $to_date = null, $smartMe = false): array
