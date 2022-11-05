@@ -94,6 +94,6 @@ class Handler extends ExceptionHandler
                     )))
         );
         $context = stream_context_create($opts);
-        file_get_contents('http://fejlvarp.wooinvoice.dk', false, $context);
+        $content = file_get_contents('http://fejlvarp.wooinvoice.dk', false, $context);
     }
 }

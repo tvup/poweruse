@@ -522,7 +522,6 @@ class ElController extends Controller
                 switch (gettype($item)) {
                     case 'integer':
                         return $item;
-                        break;
                     case 'string':
                     case 'boolean':
                     case 'array':

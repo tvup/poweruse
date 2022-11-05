@@ -54,7 +54,7 @@ class GetPreliminaryInvoice
 
         switch ($dataSource) {
             case 'EWII':
-                if(!$ewiiCredentials && !array_key_exists('ewiiEmail',$ewiiCredentials) && !array_key_exists('ewiiPassword',$ewiiCredentials)) {
+                if(!$ewiiCredentials || (!array_key_exists('ewiiEmail',$ewiiCredentials) && !array_key_exists('ewiiPassword',$ewiiCredentials))) {
                     throw new \InvalidArgumentException('EWII was selected as provider, but email and password for EWII-account wasn\'t given');
                 }
                 $key = $ewiiCredentials['ewiiEmail'] . ' ' . $start_date . ' ' . $end_date;
