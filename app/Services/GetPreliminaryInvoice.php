@@ -212,7 +212,7 @@ class GetPreliminaryInvoice
 
         $countOfAllDaysInMonhtsInvolved = 0;
         foreach($months as $month) {
-            $countOfAllDaysInMonhtsInvolved = $countOfAllDaysInMonhtsInvolved + Carbon::createFromDate('2022',$month, 1)->daysInMonth;
+            $countOfAllDaysInMonhtsInvolved = $countOfAllDaysInMonhtsInvolved + Carbon::createFromDate(now()->year, $month, 1)->daysInMonth;
         }
 
         foreach ($subscriptions as $subscription) {
@@ -262,13 +262,15 @@ class GetPreliminaryInvoice
      * @param $meterData
      * @param $refreshToken
      * @param $price_area
-     * @param float $overhead
+     * @param float|string $overhead
      * @return array
      * @throws ElOverblikApiException
      */
-    public function getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead=0.015): array
+    public function getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead = 0.015): array
     {
-        $overhead = str_replace(',','.',$overhead);
+        if (is_string($overhead)) {
+            $overhead = str_replace(',','.',$overhead);
+        }
 
         $start_date = Carbon::now()->startOfDay()->toDateString();
 

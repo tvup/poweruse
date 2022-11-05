@@ -40,7 +40,7 @@ class GetSpotPrices
         $start = new DateTime(Carbon::parse($start_date)->startOfYear()->toDateString(), $timeZone);
         $end = new DateTime(Carbon::parse($end_date)->startOfYear()->addYear()->toDateString(), $timeZone);
 
-        $transitions = $timeZone->getTransitions($start->format('U'), $end->format('U'));
+        $transitions = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'));
         $year_late_transition = $transitions[2];
         $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen');
 
