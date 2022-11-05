@@ -57,7 +57,7 @@ class CalculateUpcommingInvoice extends Command
             'ewiiPassword' => ''
         ];
 
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $smartMe, $dataSource, $refreshToken, $ewiiCredentials, $price_area);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $smartMe, $price_area,  $dataSource, $refreshToken, $ewiiCredentials);
 
         $this->line(json_encode($bill, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT));
     }

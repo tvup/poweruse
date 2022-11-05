@@ -67,7 +67,7 @@ class SmartMeGetMeterDataFromDateTime extends Command
         }
 
         $getSmartMeMeterData = new GetSmartMeMeterData();
-        $array = $getSmartMeMeterData->getInterval(true, $start_date);
+        $array = $getSmartMeMeterData->getInterval($start_date, null,  true);
         $returnArray = array();
         if ($array) {
             foreach($array as $key => $value) {

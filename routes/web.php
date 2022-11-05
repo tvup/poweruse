@@ -21,10 +21,12 @@ Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
 Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
 Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
 Route::get('el-totalprices/', 'ElController@indexTotalPrices')->name('el-totalprices');
+Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
 Route::post('processdata', 'ElController@processData');
 Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
 Route::post('getChargesForWeb', 'ElController@getChargesForWeb');
 Route::post('getSpotprices', 'ElController@getSpotprices');
 Route::post('getConsumption', 'ElController@getConsumption');
 Route::post('getTotalPrices', 'ElController@getTotalPrices');
+Route::post('processcustom', 'ElController@processCustom');
 

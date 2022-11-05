@@ -21,7 +21,7 @@ class GetMeteringData
     private $ewiiApi;
 
 
-    public function getData($refreshToken = null, $start_date, $end_date, $debug = false)
+    public function getData($start_date, $end_date, $refreshToken = null, $debug = false)
     {
         if (!$refreshToken) {
             $refreshToken = config('services.energioverblik.refresh_token');
@@ -55,7 +55,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getDataFromEwii($email = null, $password = null, $start_date, $end_date)
+    public function getDataFromEwii($start_date, $end_date, $email = null, $password = null)
     {
         if (!$email || !$password) {
             $email = config('services.ewii.email');
@@ -209,13 +209,15 @@ class GetMeteringData
             $errors = $exception->getErrors();
             switch (gettype($errors)) {
                 case 'array':
-                    $this->table(array_keys($errors), [array_values($errors)]);
+                    logger()->error('Got array of errors', [
+                        'errors' => $errors
+                    ]);
                     break;
                 case 'string':
-                    $this->error($errors);
+                    logger()->error($errors);
                     break;
                 default:
-                    $this->error('Exception didn\'t return useful error messages either');
+                    logger()->error('Exception didn\'t return useful error messages either');
 
             }
             throw $exception;
