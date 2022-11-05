@@ -12,9 +12,6 @@ class GetMeteringData
 {
 
 
-    /**
-     * @var EwiiApiInterface
-     */
     private $energiOverblikApi;
 
     private $meteringPoint;

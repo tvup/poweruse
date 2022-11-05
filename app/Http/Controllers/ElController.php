@@ -501,11 +501,7 @@ class ElController extends Controller
         return response($data);
     }
 
-    /**
-     * @param $records
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    private function formatAsSql($records)
+    private function formatAsSql(array $records): string
     {
         $response = '';
         $something = DB::pretend(function () use ($records) {
