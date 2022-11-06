@@ -307,7 +307,7 @@ class ElController extends Controller
     public function getWithSmartMe(string $refreshToken = null) : Response
     {
         try {
-            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', true);
+            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', [true]); // TODO:: Smartme should be an array of credentials!
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if($code==503 || $code==500) {
@@ -319,7 +319,7 @@ class ElController extends Controller
                     }
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', true);
+                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', [true]);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
@@ -333,7 +333,7 @@ class ElController extends Controller
     public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response
     {
         try {
-            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', false, $start_date, $end_date, $price_area);
+            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', null, $start_date, $end_date, $price_area);
         } catch (ElOverblikApiException $e) {
             if ($e->getCode() == 400) {
                 $message = 'Request for mertering data at eloverblik failed' . PHP_EOL;
@@ -367,7 +367,6 @@ class ElController extends Controller
      * @param string|null $refreshToken
      * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
      * @param string|null $dataSource
-     * @param bool $smartMe
      * @param string|null $start_date
      * @param string|null $end_date
      * @param string $price_area
@@ -376,7 +375,7 @@ class ElController extends Controller
      * @return Response|JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken = null, array $ewiiCredentials=null, string $dataSource=null, bool $smartMe = false, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken = null, array $ewiiCredentials=null, string $dataSource=null, array $smartMe = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
     {
         if(!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -388,7 +387,7 @@ class ElController extends Controller
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
                 ->header('Content-Type', 'text/plain');
         }
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $smartMe, $price_area, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMe, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead);
 
         return response()->json($bill);
     }
@@ -564,14 +563,13 @@ class ElController extends Controller
 
     public function getConsumption(Request $request) : Response|RedirectResponse
     {
-        $data = null;
         $dataSource = $request->source;
-        $addSmartMe = $request->smart_me == 'on';
+        $addSmartMe = $request->smart_me === 'on';
         $end_date = $request->end_date;
 
-        $smartMe = false;
-        if ($dataSource == 'SMART_ME' || $addSmartMe) {
-            $smartMe = array();
+        $smartMe = null;
+        if ($dataSource === 'SMART_ME' || $addSmartMe) {
+            $smartMe = [];
             $smartMe['username'] = $request->smartmeuser;
             $smartMe['password'] = $request->smartmepassword;
             $smartMe['id'] = $request->smartmeid;
@@ -596,7 +594,7 @@ class ElController extends Controller
                 $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
 
-                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date, false);
+                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date);
                 $data = array_merge($data, $smartMeIntervalFromDate);
             }
 

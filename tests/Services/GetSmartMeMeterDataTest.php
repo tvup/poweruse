@@ -53,7 +53,7 @@ class GetSmartMeMeterDataTest extends TestCase
     public function test_get_from_date_where_smart_me_true()
     {
         $service = new GetSmartMeMeterData();
-        $reading = $service->getFromDate(true);
+        $reading = $service->getFromDate([]);
         $this->assertEquals(self::EXPECTED_COUNTER_READING, $reading);
         Http::assertSent(function (Request $request) {
             $date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');

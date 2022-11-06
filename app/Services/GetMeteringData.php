@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApi;
 use Tvup\ElOverblikApi\ElOverblikApiException;
+use Tvup\ElOverblikApi\ElOverblikApiInterface;
 use Tvup\EwiiApi\EwiiApiException;
 use Tvup\EwiiApi\EwiiApiInterface;
 
@@ -12,10 +13,10 @@ class GetMeteringData
 {
 
 
-    private $energiOverblikApi;
+    private ElOverblikApiInterface|null $energiOverblikApi;
 
-    private $meteringPoint;
-    private $ewiiApi;
+    private EwiiApiInterface|null $ewiiApi;
+    private string $meteringPoint;
 
     /**
      * @param string $start_date
@@ -59,7 +60,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getDataFromEwii($start_date, $end_date, $email = null, $password = null)
+    public function getDataFromEwii(string $start_date = null, string $end_date = null, string $email = null, string $password = null): array
     {
         if (!$email || !$password) {
             $email = config('services.ewii.email');
@@ -100,7 +101,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPoint(string $refresh_token = null, $debug = false)
+    public function getMeteringPoint(string $refresh_token = null, bool $debug = false): string
     {
         $key = 'meteringpoint ' . $refresh_token;
         $meteringPoint = cache($key);
@@ -131,7 +132,7 @@ class GetMeteringData
         return $this->meteringPoint;
     }
 
-    public function getMeteringPointData(string $refresh_token = null)
+    public function getMeteringPointData(string $refresh_token = null): array
     {
         $key = 'meteringPointData ' . $refresh_token;
 
@@ -158,7 +159,7 @@ class GetMeteringData
 
     }
 
-    public function getMeteringPointDataFromEwii(string $email = null, string $password = null)
+    public function getMeteringPointDataFromEwii(string $email = null, string $password = null): array
     {
         $key = 'meteringPointData ' . $email;
 
@@ -190,7 +191,7 @@ class GetMeteringData
 
     }
 
-    public function getCharges(string $refresh_token = null)
+    public function getCharges(string $refresh_token = null): array
     {
         $energiOverblikApi = $this->getEloverblikApi($refresh_token);
 
@@ -231,10 +232,7 @@ class GetMeteringData
         return array($subscriptions, $tariffs);
     }
 
-    /**
-     * @param $refreshToken
-     */
-    private function getEloverblikApi($refreshToken = null) : ElOverblikApi
+    private function getEloverblikApi(string $refreshToken = null) : ElOverblikApiInterface
     {
         if (!$this->energiOverblikApi) {
             $this->energiOverblikApi = app()->makeWith('Tvup\ElOverblikApi\ElOverblikApiInterface', [
@@ -244,7 +242,7 @@ class GetMeteringData
         return $this->energiOverblikApi;
     }
 
-    private function getEwiiApi($email=null, $password=null) : EwiiApiInterface
+    private function getEwiiApi(string $email = null, string $password = null) : EwiiApiInterface
     {
         if (!$this->ewiiApi) {
             $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [

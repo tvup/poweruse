@@ -6,11 +6,14 @@ parameters:
         - app/
 
     # Level 9 is the highest level
-    level: 5
+    level: 6
 
-    ignoreErrors:
+    ignoreErrors: # All these errors are weird to fix. We will do that lastly,
         - '#cache invoked with#'
         - '#does not accept default value of type#'
+        - '#Unable to resolve the template type TKey in call to function collect#'
+        - '#Unable to resolve the template type TValue in call to function collect#'
+        - '#no value type specified in iterable type array#'
 #
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php

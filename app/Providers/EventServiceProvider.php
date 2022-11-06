@@ -10,9 +10,9 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * The event listener mappings for the application.
+     * The event to listener mappings for the application.
      *
-     * @var array
+     * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
         Registered::class => [
@@ -32,7 +32,7 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         parent::boot();
 
@@ -42,7 +42,7 @@ class EventServiceProvider extends ServiceProvider
     /**
      * The subscriber classes to register.
      *
-     * @var array
+     * @var array<int, class-string>
      */
     protected $subscribe = [
         RequestMadeEventSubscriber::class,

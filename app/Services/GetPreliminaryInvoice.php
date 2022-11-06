@@ -25,16 +25,7 @@ class GetPreliminaryInvoice
         $this->meteringDataService = $meteringDataService;
     }
 
-    /**
-     * @param string $start_date
-     * @param string $end_date
-     * @param $smartMe
-     * @param $refreshToken
-     * @param $price_area
-     * @return array
-     * @throws ElOverblikApiException
-     */
-    public function getBill(string $start_date, string $end_date, $smartMe, $price_area, $dataSource=null, $refreshToken=null, $ewiiCredentials=null, $subscription_at_elsupplier=23.20, $overhead=0.015): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMe = null, string $dataSource=null, string $refreshToken=null, array $ewiiCredentials=null, float|string $subscription_at_elsupplier=23.20, float|string $overhead=0.015): array
     {
         $overhead = str_replace(',','.',$overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
@@ -219,9 +210,13 @@ class GetPreliminaryInvoice
             $bill[$subscription['name'].' (forholdsvis antal dage pr. måned, månedspris: '.round((count($months) * $subscription['price']) ,2).')'] = round((count($months) * $subscription['price']) * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved),2);
         }
 
+        if(is_string($subscription_at_elsupplier)) {
+            $subscription_at_elsupplier = (float) str_replace(',', '.', $subscription_at_elsupplier);
+        }
+
 
         $supplierSubscriptionDisplayText = 'Elabonnement (forholdsvis antal dage pr. måned, månedspris: ' . $subscription_at_elsupplier . ')';
-        $bill[$supplierSubscriptionDisplayText] = count($months) * str_replace(',','.',$subscription_at_elsupplier) * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
+        $bill[$supplierSubscriptionDisplayText] = count($months) * $subscription_at_elsupplier * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
         $bill[$supplierSubscriptionDisplayText] = round($bill[$supplierSubscriptionDisplayText], 2);
 
         $bill['Moms'] = 0;
@@ -258,15 +253,7 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-    /**
-     * @param $meterData
-     * @param $refreshToken
-     * @param $price_area
-     * @param float|string $overhead
-     * @return array
-     * @throws ElOverblikApiException
-     */
-    public function getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead = 0.015): array
+    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015): array
     {
         if (is_string($overhead)) {
             $overhead = str_replace(',','.',$overhead);

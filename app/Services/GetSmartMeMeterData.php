@@ -16,7 +16,7 @@ class GetSmartMeMeterData
      *
      * @return mixed
      */
-    public function getFromDate($smartMe = null, $start_date = null)
+    public function getFromDate(array $smartMe = [], string $start_date = null)
     {
         if (!$start_date) {
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
@@ -29,7 +29,7 @@ class GetSmartMeMeterData
         return $response['CounterReading'];
     }
 
-    public function getInterval(string $start_date_copenhagen, string $to_date = null, $smartMe = null): array
+    public function getInterval(string $start_date_copenhagen, string $to_date = null, array $smartMe = []): array
     {
         $newResponse = null;
         $start_date_copenhagen = Carbon::parse($start_date_copenhagen, 'Europe/Copenhagen');
@@ -84,11 +84,11 @@ class GetSmartMeMeterData
      * @param $smartMe
      * @return array
      */
-    private function smartMeCredentials($smartMe): array
+    private function smartMeCredentials(array $smartMe = null): array
     {
-        $id = ($smartMe && is_array($smartMe) && array_key_exists('id', $smartMe)) ? $smartMe['id'] : config('services.smartme.id');
-        $username = ($smartMe && is_array($smartMe) && array_key_exists('username', $smartMe)) ? $smartMe['username'] : config('services.smartme.username');
-        $password = ($smartMe && is_array($smartMe) && array_key_exists('password', $smartMe)) ? $smartMe['password'] : config('services.smartme.paasword');
+        $id = ($smartMe && array_key_exists('id', $smartMe)) ? $smartMe['id'] : config('services.smartme.id');
+        $username = ($smartMe && array_key_exists('username', $smartMe)) ? $smartMe['username'] : config('services.smartme.username');
+        $password = ($smartMe && array_key_exists('password', $smartMe)) ? $smartMe['password'] : config('services.smartme.paasword');
         return array($id, $username, $password);
     }
 }
