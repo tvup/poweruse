@@ -12,10 +12,14 @@ use App\Services\GetPreliminaryInvoice;
 use App\Services\GetSmartMeMeterData;
 use App\Services\GetSpotPrices;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\EwiiApi\EwiiApiException;
 
@@ -57,42 +61,42 @@ class ElController extends Controller
         $this->datahubPriceListsService = $datahubPriceListsService;
     }
 
-    public function index()
+    public function index() : View
     {
         $data = session('data');
 
         return view('el')->with('data', $data ? $data->original : null);
     }
 
-    public function indexMeteringPoint()
+    public function indexMeteringPoint() : View
     {
         $data = session('data');
 
         return view('el-meteringpoint')->with('data', $data ? : null);
     }
 
-    public function indexCharges()
+    public function indexCharges() : View
     {
         $data = session('data');
 
         return view('el-charges')->with('data', $data ? : null);
     }
 
-    public function indexSpotprices()
+    public function indexSpotprices() : View
     {
         $data = session('data');
 
         return view('el-spotprices')->with('data', $data ? : null);
     }
 
-    public function indexConsumption()
+    public function indexConsumption() : View
     {
         $data = session('data');
 
         return view('consumption')->with('data', $data ? : null);
     }
 
-    public function indexTotalPrices()
+    public function indexTotalPrices() : View
     {
         $data = session('data');
         $chart = session('chart');
@@ -101,14 +105,14 @@ class ElController extends Controller
         return view('el-totalprices')->with('data', $data ? : null)->with('chart', $chart ? : null)->with('companies', $companies);
     }
 
-    public function indexCustomUsage()
+    public function indexCustomUsage() : View
     {
         $data = session('data');
 
         return view('el-custom')->with('data', $data ? : null);
     }
 
-    public function processData(Request $request)
+    public function processData(Request $request) : RedirectResponse|Response
     {
         try {
             switch ($request->de) {
@@ -176,7 +180,7 @@ class ElController extends Controller
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function processCustom(Request $request)
+    public function processCustom(Request $request) : RedirectResponse|Response
     {
         if(!$request->token) {
             return redirect('el-custom')->with('error', 'Failed - token cannot be empty is selected.')->withInput($request->all());
@@ -234,7 +238,7 @@ class ElController extends Controller
         return redirect('el-custom')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getMeteringPointData(Request $request)
+    public function getMeteringPointData(Request $request) : RedirectResponse|Response
     {
         try {
             switch ($request->de) {
@@ -291,7 +295,7 @@ class ElController extends Controller
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function get($refreshToken)
+    public function get(string $refreshToken) : Response
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken);
@@ -300,7 +304,7 @@ class ElController extends Controller
         }
     }
 
-    public function getWithSmartMe($refreshToken = null)
+    public function getWithSmartMe(string $refreshToken = null) : Response
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', true);
@@ -326,7 +330,7 @@ class ElController extends Controller
 
     }
 
-    public function getFromDate($start_date, $end_date, $price_area, $refreshToken = null)
+    public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', false, $start_date, $end_date, $price_area);
@@ -342,7 +346,7 @@ class ElController extends Controller
         }
     }
 
-    public function delete($refreshToken)
+    public function delete(string $refreshToken) : Response
     {
         if ($refreshToken == 'MIT_LÆKRE_TOKEN_HER') {
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
@@ -360,9 +364,19 @@ class ElController extends Controller
     }
 
     /**
-     * @return mixed
+     * @param string|null $refreshToken
+     * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
+     * @param string|null $dataSource
+     * @param bool $smartMe
+     * @param string|null $start_date
+     * @param string|null $end_date
+     * @param string $price_area
+     * @param float $subscription
+     * @param float $overhead
+     * @return Response|JsonResponse
+     * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice($refreshToken = null, $ewiiCredentials=null, $dataSource=null, $smartMe = false, string $start_date = null, string $end_date = null, $price_area = 'DK2', $subscription=23.20, $overhead=0.015)
+    private function getPreliminaryInvoice(string $refreshToken = null, array $ewiiCredentials=null, string $dataSource=null, bool $smartMe = false, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
     {
         if(!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -380,16 +394,21 @@ class ElController extends Controller
     }
 
     /**
-     * @return mixed
+     * @param array<string, string> $meterData
+     * @param string|null $refreshToken
+     * @param string $price_area
+     * @param float $overhead
+     * @return JsonResponse
+     * @throws ElOverblikApiException
      */
-    private function getUsageCost($meterData, $refreshToken = null, $price_area = 'DK2', $overhead=0.015)
+    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead=0.015) : JsonResponse
     {
         $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead);
 
         return response()->json($bill);
     }
 
-    public function getCharges($refreshToken = null)
+    public function getCharges(string $refreshToken = null) : Response|JsonResponse
     {
         if ($refreshToken == 'MIT_LÆKRE_TOKEN_HER') {
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
@@ -410,7 +429,7 @@ class ElController extends Controller
         return response()->json($list);
     }
 
-    public function getChargesForWeb(Request $request)
+    public function getChargesForWeb(Request $request) : Response|RedirectResponse
     {
         try {
             $data = $this->meteringDataService->getCharges($request->token);
@@ -433,7 +452,7 @@ class ElController extends Controller
         return redirect('el-charges')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getSpotprices(Request $request)
+    public function getSpotprices(Request $request) : Response|RedirectResponse
     {
 
         switch ($request->outputformat) {
@@ -463,7 +482,7 @@ class ElController extends Controller
         return redirect('el-spotprices')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function apiGetSpotprices(Request $request)
+    public function apiGetSpotprices(Request $request) : Response
     {
         switch ($request->getAcceptableContentTypes()[0]) {
             case 'application/json':
@@ -501,11 +520,16 @@ class ElController extends Controller
         return response($data);
     }
 
+    /**
+     * @param array<array{HourUTC?: Carbon, HourDK?: Carbon, PriceArea?: string, SpotPriceDKK?: float, SpotPriceEUR?: float}> $records
+     * @return string
+     */
     private function formatAsSql(array $records): string
     {
         $response = '';
         $something = DB::pretend(function () use ($records) {
             foreach ($records as $record) {
+                /** @var Elspotprices $elspotprices */
                 $elspotprices = new Elspotprices();
                 $elspotprices->HourUTC = array_key_exists('HourUTC', $record) ? $record['HourUTC'] : null;
                 $elspotprices->HourDK = array_key_exists('HourDK', $record) ? $record['HourDK'] : null;
@@ -538,7 +562,7 @@ class ElController extends Controller
         return $response;
     }
 
-    public function getConsumption(Request $request)
+    public function getConsumption(Request $request) : Response|RedirectResponse
     {
         $data = null;
         $dataSource = $request->source;
@@ -600,7 +624,7 @@ class ElController extends Controller
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getTotalPrices(Request $request)
+    public function getTotalPrices(Request $request) : RedirectResponse
     {
         $includeTomorrow = false;
         if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
@@ -645,7 +669,11 @@ class ElController extends Controller
 
     }
 
-    private function makeColors($array)
+    /**
+     * @param array<float> $array
+     * @return array<string>
+     */
+    private function makeColors(array $array) : array
     {
         $min = (float)min($array);
         $max = (float)max($array);
@@ -670,7 +698,7 @@ class ElController extends Controller
             $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
             $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
 
-            $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;;
+            $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;
         }
         return $colours;
     }
@@ -682,7 +710,7 @@ class ElController extends Controller
      * @param string $note
      * @param string $startDate
      * @param string $endDate
-     * @return array
+     * @return array<int, float>
      */
     private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
     {
@@ -698,7 +726,11 @@ class ElController extends Controller
         return $gridprices;
     }
 
-    private function getGridOperatorNettariff(string $operatorName)
+    /**
+     * @param string $operatorName
+     * @return array<int, float>
+     */
+    private function getGridOperatorNettariff(string $operatorName) : array
     {
         $GLN_number = Operator::$operatorNumber[$operatorName];
         $operator = GridOperatorNettariffProperty::getByGLNNumber($GLN_number);
@@ -706,7 +738,11 @@ class ElController extends Controller
         return $this->getChargePrice($operatorName, $operator->charge_type, $operator->charge_type_code, $operator->note, $operator->valid_from, $operator->valid_to);
     }
 
-    private function getTSOOperatorNettariff(string $operator)
+    /**
+     * @param string $operator
+     * @return array<int, float>
+     */
+    private function getTSOOperatorNettariff(string $operator) : array
     {
         $chargeType = 'D03';
         $chargeTypeCode = '40000';
@@ -718,9 +754,11 @@ class ElController extends Controller
     }
 
     /**
-     * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response|mixed
+     * @param string $area
+     * @param Carbon|null $from
+     * @return array<float>
      */
-    private function doGetSpotPrices($area, $from = null)
+    private function doGetSpotPrices(string$area, Carbon $from = null) : array
     {
         if(!$from) {
             $from = Carbon::now('Europe/Copenhagen')->startOfDay();
@@ -731,7 +769,11 @@ class ElController extends Controller
         return $spotPrices;
     }
 
-    private function getTSOOperatorSystemtariff(string $operator)
+    /**
+     * @param string $operator
+     * @return array<int, float>
+     */
+    private function getTSOOperatorSystemtariff(string $operator) : array
     {
         $chargeType = 'D03';
         $chargeTypeCode = '41000';
@@ -742,7 +784,11 @@ class ElController extends Controller
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
 
-    private function getTSOOperatorBalancetariff(string $operator)
+    /**
+     * @param string $operator
+     * @return array<int, float>
+     */
+    private function getTSOOperatorBalancetariff(string $operator) : array
     {
         $chargeType = 'D03';
         $chargeTypeCode = '45013';
@@ -753,7 +799,11 @@ class ElController extends Controller
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
 
-    private function getTSOOperatorAfgifttariff(string $operator)
+    /**
+     * @param string $operator
+     * @return array<int, float>
+     */
+    private function getTSOOperatorAfgifttariff(string $operator) : array
     {
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
@@ -764,7 +814,11 @@ class ElController extends Controller
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
 
-    public function apiGetTotalPriceToday($glnNumber)
+    /**
+     * @param string $glnNumber
+     * @return array{result: array{data: array<int, array{time: string, price: float}>}}
+     */
+    public function apiGetTotalPriceToday(string $glnNumber) : array
     {
         $includeTomorrow = false;
         if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {

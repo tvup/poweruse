@@ -33,7 +33,7 @@ class ElOverblikGetMeteringData extends Command
      */
     private $showAll;
 
-    private $meteringDataService;
+    private GetMeteringData $meteringDataService;
 
     /**
      * Create a new command instance.
@@ -49,9 +49,10 @@ class ElOverblikGetMeteringData extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
+     * @throws ElOverblikApiException
      */
-    public function handle()
+    public function handle() : int
     {
         $optionShowCount = $this->option('show-count');
         switch ($optionShowCount) {
@@ -79,17 +80,18 @@ class ElOverblikGetMeteringData extends Command
         if ($response) {
             $this->output($response);
         }
+        return 0;
     }
 
     /**
-     * @param $response
-     * @return array
+     * @param array<string, string> $response
+     * @return array<int, array{string, string}>
      */
-    private function output($response): array
+    private function output(array $response): array
     {
-        $returnArray = array();
-        foreach ($response as $key => $value) {
-            array_push($returnArray, [$key, $value]);
+        $returnArray = [];
+        foreach ($response as $dateKey => $quantity) {
+            array_push($returnArray, [$dateKey, $quantity]);
         }
         $this->table(['Time', 'Value'], $this->showAll ? $returnArray : array_slice($returnArray, 0, $this->showCount));
         if (!$this->showAll) {

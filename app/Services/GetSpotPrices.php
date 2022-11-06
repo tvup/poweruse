@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\CarbonTimeZone;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
@@ -13,7 +14,16 @@ class GetSpotPrices
     const FORMAT_INTERNAL = 'INTERNAL';
     const FORMAT_JSON = 'JSON';
 
-    public function getData(string $start_date = null, string $end_date = null, string $price_area, $columns = ['HourDK','SpotPriceDKK'], $format = self::FORMAT_INTERNAL)
+    /**
+     * @param string|null $start_date
+     * @param string|null $end_date
+     * @param string $price_area
+     * @param string[] $columns
+     * @param string $format
+     * @return array|JsonResponse
+     * @throws \Exception
+     */
+    public function getData(string $start_date = null, string $end_date = null, string $price_area, $columns = ['HourDK','SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
     {
         $parameters = array();
         if(!$start_date){
@@ -47,7 +57,7 @@ class GetSpotPrices
         $first = false;
         if($format == self::FORMAT_INTERNAL) {
             $array = array_reverse($response['records']);
-            $new_array = array();
+            $new_array = [];
             foreach ($array as $data) {
                 $carbon = Carbon::parse($data['HourDK'], 'Europe/Copenhagen');
                 if (!$first && $carbon->eq($late_transition_end_hour)) {

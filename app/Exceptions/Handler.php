@@ -60,7 +60,11 @@ class Handler extends ExceptionHandler
         return parent::render($request, $exception);
     }
 
-    private function fejlvarp_exception_handler($exception)
+    /**
+     * @param \Throwable $exception
+     * @throws \JsonException
+     */
+    private function fejlvarp_exception_handler(\Throwable $exception) : void
     {
         // Generate unique hash from message + file + line number
         // We strip out revision-part of the file name.

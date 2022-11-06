@@ -6,7 +6,12 @@ use Exception;
 
 class DataUnavailableException extends Exception
 {
-    public function __construct($message, $code, \Throwable $previous = null) {
+    /**
+     * @param string $message
+     * @param int $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message, int $code, \Throwable $previous = null) {
         parent::__construct($message, $code, $previous);
     }
 
