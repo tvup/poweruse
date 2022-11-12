@@ -400,7 +400,7 @@ class ElController extends Controller
     }
 
     /**
-     * @param array<string, string> $meterData
+     * @param array<string, array<int, string>|int|string> $meterData
      * @param string|null $refreshToken
      * @param string $price_area
      * @param float $overhead
@@ -480,8 +480,9 @@ class ElController extends Controller
         })->flatten()->toArray();
         $data = $this->spotPricesService->getData($request->start_date, $request->end_date, $request->area, $requestInputs, $format);
 
-        if($request->outputformat == 'SQL') {
-            $data= $this->formatAsSql($data['records']);
+        if ($request->outputformat == 'SQL') {
+            $data = (array)$data;
+            $data = $this->formatAsSql($data['records']);
             redirect('el-spotprices')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
         }
 
@@ -519,7 +520,8 @@ class ElController extends Controller
 
         $data = $this->spotPricesService->getData($request->start, $request->end, $area, $requestInputs, $spotprice_format);
 
-        if($request->getAcceptableContentTypes()[0] == 'text/sql') {
+        if ($request->getAcceptableContentTypes()[0] == 'text/sql') {
+            $data = (array)$data;
             return response($this->formatAsSql($data['records']))->header('Content-Type', 'text/sql');;
         }
 
