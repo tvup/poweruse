@@ -15,10 +15,10 @@ class RequestMadeEventSubscriber
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  EwiiRequestMade|EloverblikRequestMade  $event
      * @return void
      */
-    public function handleRequestMade($event)
+    public function handleRequestMade(EwiiRequestMade|EloverblikRequestMade $event)
     {
         $query = ['count' => \DB::raw('count + 1')];
         RequestStatistic::updateOrCreate(['verb'=>$event->getVerb(),'endpoint'=>$event->getEndpoint()],$query);
@@ -27,10 +27,10 @@ class RequestMadeEventSubscriber
     /**
      * Handle the event.
      *
-     * @param object $event
+     * @param EwiiRequestFailed|EloverblikRequestFailed $event
      * @return void
      */
-    public function handleRequestFailed($event)
+    public function handleRequestFailed(EwiiRequestFailed|EloverblikRequestFailed $event)
     {
         $code = $event->getCode();
         $key = 'hasColumn ' . $code;
