@@ -34,7 +34,7 @@ class ChargesManualLoad extends Command
             'owner' => '5790000705689',
             'validFromDate' => '2015-05-31T22:00:00.000Z',
             'validToDate' => null,
-            'price' => 21,
+            'price' => 58.25,
             'quantity' => 1]],
             [[
                 'name' => 'Transmissions nettarif',
@@ -90,76 +90,76 @@ class ChargesManualLoad extends Command
                 'prices' => [
                     [
                         'position' => '1',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '2',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '3',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '4',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '5',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '6',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '7',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '8',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '9',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '10',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '11',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '12',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '13',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '14',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '15',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '16',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '17',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '18',
-                        'price' => 0.7651
+                        'price' => 0.7885
                     ], [
                         'position' => '19',
-                        'price' => 0.7651
+                        'price' => 0.7885
                     ], [
                         'position' => '20',
-                        'price' => 0.7651
+                        'price' => 0.7885
                     ], [
                         'position' => '21',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '22',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '23',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ], [
                         'position' => '24',
-                        'price' => 0.3003
+                        'price' => 0.3028
                     ]
 
                 ],
