@@ -76,7 +76,8 @@ class GetMeteringData
             logger('Retrieving consumption data from ewiiApi with parameters: Start date => ' . $start_date . ' End date => ' . $end_date);
             $ewiiApi->login($email, $password);
             $response = $ewiiApi->getAddressPickerViewModel();
-            $ewiiApi->setSelectedAddressPickerElement($response);
+
+            $ewiiApi->setSelectedAddressPickerElement($email == 'info@butikkenvedhojen.dk' ? $response[1] : $response[0]);
             $response = $ewiiApi->getConsumptionMeters();
             $response = $ewiiApi->getConsumptionData('csv', $response);
             foreach (array_keys($response) as $key) {
