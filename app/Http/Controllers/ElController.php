@@ -295,7 +295,7 @@ class ElController extends Controller
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function get(string $refreshToken) : Response
+    public function get(string $refreshToken) : Response|JsonResponse
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken);
@@ -334,7 +334,7 @@ class ElController extends Controller
 
     }
 
-    public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response
+    public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', null, $start_date, $end_date, $price_area);
