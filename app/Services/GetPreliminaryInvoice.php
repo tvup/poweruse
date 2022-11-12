@@ -34,7 +34,7 @@ class GetPreliminaryInvoice
      * @return array
      * @throws ElOverblikApiException
      */
-    public function getBill(string $start_date, string $end_date, $smartMe, $dataSource=null, $refreshToken=null, $ewiiCredentials=null, $price_area, $subscription_at_elsupplier=23.20, $overhead=0.015): array
+    public function getBill(string $start_date, string $end_date, $smartMe, $price_area, $dataSource=null, $refreshToken=null, $ewiiCredentials=null, $subscription_at_elsupplier=23.20, $overhead=0.015): array
     {
         $overhead = str_replace(',','.',$overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
@@ -76,11 +76,11 @@ class GetPreliminaryInvoice
             if (!$meterData) {
                 switch ($dataSource) {
                     case 'EWII':
-                        $meterData = $this->meteringDataService->getDataFromEwii($ewiiCredentials['ewiiEmail'], $ewiiCredentials['ewiiPassword'], $start_date, $end_date);
+                        $meterData = $this->meteringDataService->getDataFromEwii($start_date, $end_date, $ewiiCredentials['ewiiEmail'], $ewiiCredentials['ewiiPassword']);
                         break;
                     case 'DATAHUB':
                     case null:
-                        $meterData = $this->meteringDataService->getData($refreshToken, $start_date, $end_date);
+                        $meterData = $this->meteringDataService->getData($start_date, $end_date, $refreshToken);
                         break;
                     default:
                         throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
@@ -99,7 +99,7 @@ class GetPreliminaryInvoice
                 }
 
                 $getSmartMeMeterData = new GetSmartMeMeterData();
-                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($smartMe, $start_from, $smart_me_end_date);
+                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($start_from, $smart_me_end_date, $smartMe);
                 $meterData = array_merge($meterData, $smartMeIntervalFromDate);
             }
 

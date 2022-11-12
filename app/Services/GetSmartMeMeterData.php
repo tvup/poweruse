@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Support\Facades\Http;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class GetSmartMeMeterData
 {
@@ -27,27 +31,57 @@ class GetSmartMeMeterData
 
     /**
      * @param false $smartMe
-     * @param $start_date Date and time in local time to get consumption data from (inclusive)
-     * @param null $to_date Date and time in local time to get consumption data untill (exclusive)
+     * @param $start_date_utc_formatted Date and time in local time to get consumption data from (inclusive)
+     * @param null $to_date_utc_formatted Date and time in local time to get consumption data untill (exclusive)
      * @return array
      */
-    public function getInterval($smartMe = false, $start_date, $to_date=null): array
+    public function getInterval($start_date_copenhagen, $to_date = null, $smartMe = false): array
     {
         $newResponse = null;
-        $start_date = Carbon::parse($start_date, 'Europe/Copenhagen')->timezone('UTC')->format('Y-m-d\TH:i:s\Z');
-        $to_date = Carbon::parse($to_date, 'Europe/Copenhagen')->timezone('UTC')->format('Y-m-d\TH:i:s\Z');
-        $oldResponse = $this->getFromDate($smartMe, $start_date);
-        $array = array();
-        while ($to_date ? ($oldResponse != $newResponse && !Carbon::parse($start_date, 'UTC')->eq(Carbon::parse($to_date, 'UTC'))) : ($oldResponse != $newResponse)) {
+        $start_date_copenhagen = Carbon::parse($start_date_copenhagen, 'Europe/Copenhagen');
+        $start_date_utc = clone $start_date_copenhagen;
+        $start_date_utc = $start_date_utc->timezone('UTC');
+        $start_date_utc_formatted = $start_date_utc->format('Y-m-d\TH:i:s\Z');
+
+        $timeZone = new DateTimeZone('Europe/Copenhagen');
+        $start = clone $start_date_copenhagen;
+        $start = new DateTime($start->startOfYear()->toDateString(), $timeZone);
+        $year_add_to_start_date_copenhagen = clone $start_date_copenhagen;
+        $end = new DateTime($year_add_to_start_date_copenhagen->startOfYear()->addYear()->toDateString(), $timeZone);
+        $year_late_transition = $timeZone->getTransitions($start->format('U'), $end->format('U'))[2];
+        $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen')->addHour();
+        $timeZone2 = CarbonTimeZone::create('+2');
+        $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
+        $nice_one = $late_transition_end_hour2->format('c');
+
+
+        $to_date = Carbon::parse($to_date, 'Europe/Copenhagen');
+
+        $oldResponse = $this->getFromDate($smartMe, $start_date_utc_formatted);
+        $array = [];
+        $first = false;
+        while ($oldResponse != $newResponse && !$start_date_copenhagen->eq($to_date)) {
             if ($newResponse) {
                 $oldResponse = $newResponse;
             }
-            $start_date = Carbon::parse($start_date, 'UTC');
-            $rtnStart_date = clone $start_date;
-            $start_date->addHour();
-            $start_date_formatted = $start_date->format('Y-m-d\TH:i:s\Z');
-            $newResponse = $this->getFromDate($smartMe, $start_date_formatted);
-            $array[$rtnStart_date->setTimezone('Europe/Copenhagen')->format('Y-m-d\TH:i:s')] = str_replace(',', '.', round($newResponse - $oldResponse, 2));
+
+            $rtn_start_date = clone $start_date_copenhagen;
+            $rtn_start_date_formatted = $rtn_start_date->format('c');
+            $start_date_copenhagen->addHour();
+            $another = clone $start_date_copenhagen;
+            $new_start_date_utc = $another->timezone('UTC');
+            $new_start_date_formatted = $new_start_date_utc->format('Y-m-d\TH:i:s\Z');
+
+            $newResponse = $this->getFromDate($smartMe, $new_start_date_formatted);
+
+            if (!$first && $start_date_copenhagen->eq($late_transition_end_hour)) {
+                $first = true;
+                $timeZone = CarbonTimeZone::create('+1');
+                $rtn_start_date_formatted = $rtn_start_date->timezone($timeZone)->format('c');
+                $array[$nice_one] = str_replace(',', '.', round($newResponse - $oldResponse, 2));
+            }
+            $array[$rtn_start_date_formatted] = str_replace(',', '.', round($newResponse - $oldResponse, 2));
+
         }
         return $array;
     }

@@ -2093,6 +2093,19 @@ window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 /***/ }),
 
+/***/ "./resources/css/app.css":
+/*!*******************************!*\
+  !*** ./resources/css/app.css ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "./node_modules/lodash/lodash.js":
 /*!***************************************!*\
   !*** ./node_modules/lodash/lodash.js ***!
@@ -19301,19 +19314,6 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
   // Check for `exports` after `define` in case a build optimizer adds it.
   else {}
 }.call(this));
-
-
-/***/ }),
-
-/***/ "./resources/css/app.css":
-/*!*******************************!*\
-  !*** ./resources/css/app.css ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
 
 
 /***/ }),

@@ -3,16 +3,18 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Tvup\ElOverblikApi\ElOverblikApi;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
 use Tvup\EwiiApi\EwiiApiException;
+use Tvup\EwiiApi\EwiiApiInterface;
 
 class GetMeteringData
 {
 
 
     /**
-     * @var mixed
+     * @var EwiiApiInterface
      */
     private $energiOverblikApi;
 
@@ -20,7 +22,7 @@ class GetMeteringData
     private $ewiiApi;
 
 
-    public function getData($refreshToken = null, $start_date, $end_date, $debug = false)
+    public function getData($start_date, $end_date, $refreshToken = null, $debug = false)
     {
         if (!$refreshToken) {
             $refreshToken = config('services.energioverblik.refresh_token');
@@ -54,7 +56,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getDataFromEwii($email = null, $password = null, $start_date, $end_date)
+    public function getDataFromEwii($start_date, $end_date, $email = null, $password = null)
     {
         if (!$email || !$password) {
             $email = config('services.ewii.email');
@@ -208,13 +210,15 @@ class GetMeteringData
             $errors = $exception->getErrors();
             switch (gettype($errors)) {
                 case 'array':
-                    $this->table(array_keys($errors), [array_values($errors)]);
+                    logger()->error('Got array of errors', [
+                        'errors' => $errors
+                    ]);
                     break;
                 case 'string':
-                    $this->error($errors);
+                    logger()->error($errors);
                     break;
                 default:
-                    $this->error('Exception didn\'t return useful error messages either');
+                    logger()->error('Exception didn\'t return useful error messages either');
 
             }
             throw $exception;
@@ -229,7 +233,7 @@ class GetMeteringData
      * @return ElOverblikApiInterface
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    private function getEloverblikApi($refreshToken = null)
+    private function getEloverblikApi($refreshToken = null) : ElOverblikApi
     {
         if (!$this->energiOverblikApi) {
             $this->energiOverblikApi = app()->makeWith('Tvup\ElOverblikApi\ElOverblikApiInterface', [
@@ -239,7 +243,7 @@ class GetMeteringData
         return $this->energiOverblikApi;
     }
 
-    private function getEwiiApi($email=null, $password=null)
+    private function getEwiiApi($email=null, $password=null) : EwiiApiInterface
     {
         if (!$this->ewiiApi) {
             $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [

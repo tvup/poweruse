@@ -73,22 +73,24 @@ class Handler extends ExceptionHandler
                     array(
                         'hash' => md5($hash),
                         'subject' => $exception->getMessage(),
-                        'data' => json_encode(
-                            array(
-                                'application' => 'WooInvoice-Test',
-                                'error' => array(
-                                    'type' => get_class($exception),
-                                    'message' => $exception->getMessage(),
-                                    'code' => $exception->getCode(),
-                                    'file' => $exception->getFile(),
-                                    'line' => $exception->getLine(),
-                                    'trace' => $exception->getTraceAsString()
-                                ),
-                                'environment' => array(
-                                    'GET' => $_GET ?? null,
-                                    'POST' => $_POST ?? null,
-                                    'SERVER' => $_SERVER ?? null,
-                                    'SESSION' => $_SESSION ?? null))))))
+                        'data' => json_encode(array(
+                            'application' => 'WooInvoice-Test',
+                            'error' => array(
+                                'type' => get_class($exception),
+                                'message' => $exception->getMessage(),
+                                'code' => $exception->getCode(),
+                                'file' => $exception->getFile(),
+                                'line' => $exception->getLine(),
+                                'trace' => $exception->getTraceAsString()
+                            ),
+                            'environment' => array(
+                                'GET' => $_GET ?: null,
+                                'POST' => $_POST ?: null,
+                                'SERVER' => $_SERVER ?: null,
+                                'SESSION' => $_SESSION ?? null
+                            )
+                        ), JSON_THROW_ON_ERROR)
+                    )))
         );
         $context = stream_context_create($opts);
         file_get_contents('http://fejlvarp.wooinvoice.dk', false, $context);
