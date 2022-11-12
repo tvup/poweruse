@@ -16,7 +16,7 @@ class GetSmartMeMeterData
      *
      * @return mixed
      */
-    public function getFromDate(array $smartMe = [], string $start_date = null)
+    public function getFromDate(array $smartMe = null, string $start_date = null)
     {
         if (!$start_date) {
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');

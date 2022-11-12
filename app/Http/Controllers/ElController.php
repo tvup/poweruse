@@ -127,12 +127,12 @@ class ElController extends Controller
                 return redirect('el')->with('error', 'Failed - token cannot be empty when datahub is selected.')->withInput($request->all());
             }
 
-            $smartMe = false;
+            $smartMeCredentials = null;
             if ($request->smart_me == 'on') {
-                $smartMe = array();
-                $smartMe['username'] = $request->smartmeuser;
-                $smartMe['password'] = $request->smartmepassword  ;
-                $smartMe['id'] = $request->smartmeid;
+                $smartMeCredentials = array();
+                $smartMeCredentials['username'] = $request->smartmeuser;
+                $smartMeCredentials['password'] = $request->smartmepassword  ;
+                $smartMeCredentials['id'] = $request->smartmeid;
             }
             $ewiiCredentials = [
                 'ewiiEmail' => $request->ewiiEmail,
@@ -140,7 +140,7 @@ class ElController extends Controller
             ];
 
 
-            $data = $this->getPreliminaryInvoice($request->token, $ewiiCredentials, $dataSource, $smartMe, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
+            $data = $this->getPreliminaryInvoice($request->token, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -307,7 +307,7 @@ class ElController extends Controller
     public function getWithSmartMe(string $refreshToken = null) : Response
     {
         try {
-            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', [true]); // TODO:: Smartme should be an array of credentials!
+            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB');
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if($code==503 || $code==500) {
@@ -319,7 +319,7 @@ class ElController extends Controller
                     }
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', [true]);
+                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII');
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
@@ -367,15 +367,18 @@ class ElController extends Controller
      * @param string|null $refreshToken
      * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
      * @param string|null $dataSource
+     * @param array|null $smartMeCredentials
      * @param string|null $start_date
      * @param string|null $end_date
      * @param string $price_area
      * @param float $subscription
      * @param float $overhead
      * @return Response|JsonResponse
+     * @throws DataUnavailableException
      * @throws ElOverblikApiException
+     * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken = null, array $ewiiCredentials=null, string $dataSource=null, array $smartMe = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken = null, array $ewiiCredentials=null, string $dataSource=null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
     {
         if(!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -387,7 +390,7 @@ class ElController extends Controller
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
                 ->header('Content-Type', 'text/plain');
         }
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMe, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead);
 
         return response()->json($bill);
     }
