@@ -121,7 +121,18 @@ class GetPreliminaryInvoice
                 cache([$key => $prices], $expiresAt);
             }
 
-            $key = 'charges ' . $refreshToken;
+            switch ($dataSource) {
+                case 'EWII':
+                    $key = 'charges ' . $ewiiCredentials['ewiiEmail'];
+                    break;
+                case 'DATAHUB':
+                case null:
+                    $key = 'charges ' . $refreshToken;
+                    break;
+                default:
+                    throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
+            }
+
             $charges = cache($key);
             if (!$charges) {
                 if($dataSource=='EWII') {
