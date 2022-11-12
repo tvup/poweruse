@@ -304,10 +304,14 @@ class ElController extends Controller
         }
     }
 
-    public function getWithSmartMe(string $refreshToken = null) : Response
+    public function getWithSmartMe(string $refreshToken = null) : Response|JsonResponse
     {
         try {
-            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB');
+            $smartMeCredentials = [
+                config('services.smartme.id'),
+                config('services.smartme.username'),
+                config('services.smartme.paasword')];
+            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', $smartMeCredentials);
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if($code==503 || $code==500) {
@@ -319,7 +323,7 @@ class ElController extends Controller
                     }
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII');
+                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', $smartMeCredentials);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
