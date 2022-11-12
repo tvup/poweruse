@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Console\Commands\Traits\OutputApiExceptionMessages;
 use App\Services\GetPreliminaryInvoice;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Validator;
 
 class CalculateUpcommingInvoice extends Command
 {
@@ -46,19 +47,49 @@ class CalculateUpcommingInvoice extends Command
      */
     public function handle()
     {
-        $refreshToken = $this->argument('refresh_token') ? : config('services.energioverblik.refresh_token');
-        $start_date = $this->option('start-date');
-        $end_date = $this->option('end-date');
-        $smartMe = $this->option('smartme');
-        $price_area = $this->option('price-area');
         $dataSource = 'DATAHUB';
         $ewiiCredentials = [
             'ewiiEmail' => '',
             'ewiiPassword' => ''
         ];
 
+        $validator = Validator::make([
+            'refresh_token' => $this->argument('refresh_token') ?: config('services.energioverblik.refresh_token'),
+            'start_date' => $this->option('start-date'),
+            'end_date' => $this->option('end-date'),
+            'price-area' => $this->option('price-area'),
+            'smartMe' => $this->option('smartme'),
+        ], [
+            'refresh_token' => ['string'],
+            'start_date' => ['required'],
+            'end_date' => ['required'],
+            'price-area' => ['string', 'required'],
+            'smartMe' => ['boolean'],
+        ]);
+
+        if ($validator->fails()) {
+            logger()->info('calculate:invoice was not run. See errors below:');
+
+            foreach ($validator->errors()->all() as $error) {
+                logger()->error($error);
+            }
+            return 1;
+        }
+
+        $safeValues = $validator->validated();
+
+        $refreshToken = $safeValues['refresh_token'];;
+        $start_date = $safeValues['start_date'];
+        $end_date = $safeValues['end_date'];
+        $price_area = $safeValues['price-area'];
+        $smartMe = $safeValues['smartMe'];
+
+
         $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMe, $dataSource, $refreshToken, $ewiiCredentials);
 
-        $this->line(json_encode($bill, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT));
+        $outputLine = json_encode($bill, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE + JSON_PRETTY_PRINT);
+        if ($outputLine) {
+            $this->line($outputLine);
+        }
     }
 }
