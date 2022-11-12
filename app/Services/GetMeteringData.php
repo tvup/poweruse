@@ -108,7 +108,7 @@ class GetMeteringData
         if ($meteringPoint) {
             return $meteringPoint;
         }
-        if (!$this->meteringPoint) {
+        if (!property_exists('GetMeteringData', 'meteringPoint') || !$this->meteringPoint) {
             if (!$refresh_token) {
                 $refresh_token = config('services.energioverblik.refresh_token');
             }
@@ -234,7 +234,7 @@ class GetMeteringData
 
     private function getEloverblikApi(string $refreshToken = null) : ElOverblikApiInterface
     {
-        if (!$this->energiOverblikApi) {
+        if (!property_exists('GetMeteringData', 'energiOverblikApi') || !$this->energiOverblikApi) {
             $this->energiOverblikApi = app()->makeWith('Tvup\ElOverblikApi\ElOverblikApiInterface', [
                 'refreshToken' => $refreshToken
             ]);
@@ -244,7 +244,7 @@ class GetMeteringData
 
     private function getEwiiApi(string $email = null, string $password = null) : EwiiApiInterface
     {
-        if (!$this->ewiiApi) {
+        if (!property_exists('GetMeteringData', 'ewiiApi') || !$this->ewiiApi) {
             $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [
                 'email' => $email,
                 'password' => $password,
