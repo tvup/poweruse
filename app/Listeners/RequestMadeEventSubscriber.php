@@ -36,6 +36,7 @@ class RequestMadeEventSubscriber
         $key = 'hasColumn ' . $code;
         $hasColumn = cache($key);
         if(null === $hasColumn) {
+            // @phpstan-ignore-next-line The name of the columns on "request_statistics" IS integers (400, 500, 503 etc..)
             $hasColumn = Schema::hasColumn('request_statistics', $code);
             cache([$key => $hasColumn]);
         }
