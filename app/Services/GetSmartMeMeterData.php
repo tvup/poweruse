@@ -30,10 +30,11 @@ class GetSmartMeMeterData
     }
 
     /**
-     * @param false $smartMe
-     * @param $start_date_utc_formatted Date and time in local time to get consumption data from (inclusive)
-     * @param null $to_date_utc_formatted Date and time in local time to get consumption data untill (exclusive)
+     * @param string $start_date_copenhagen Date and time in local time to get consumption data from (inclusive)
+     * @param string|null $to_date Date and time in local time to get consumption data untill (exclusive)
+     * @param array $smartMe
      * @return array
+     * @throws \Exception
      */
     public function getInterval(string $start_date_copenhagen, string $to_date = null, array $smartMe = []): array
     {

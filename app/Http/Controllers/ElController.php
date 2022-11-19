@@ -180,7 +180,7 @@ class ElController extends Controller
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function processCustom(Request $request)
+    public function processCustom(Request $request) : RedirectResponse|Response
     {
         if(!$request->token) {
             return redirect('el-custom')->with('error', 'Failed - token cannot be empty is selected.')->withInput($request->all());
