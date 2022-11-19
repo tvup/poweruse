@@ -5,7 +5,11 @@ namespace App\Console\Commands;
 use App\Models\DatahubPriceList;
 use App\Services\GetDatahubPriceLists;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Validator;
 
+/**
+ * Example: energidata:get-datahub-prices --operator="Radius Elnet A/S" --charge-type=D01 --charge-type-code=DA_A_F_01 --note="Netabo A0 forbrug" --start-date=2023-01-01
+ */
 class EnergiDataGetDatahubPriceLists extends Command
 {
     /**
@@ -50,37 +54,41 @@ class EnergiDataGetDatahubPriceLists extends Command
     public function handle()
     {
         $returnCode = 0;
-        $operator = $this->option('operator');
-        if (!$operator) {
-            $this->error('Operator cannot be empty');
+
+        $validator = Validator::make([
+            'operator' => $this->option('operator'),
+            'charge-type' => $this->option('charge-type'),
+            'charge-type-code' => $this->option('charge-type-code'),
+            'note' => $this->option('note'),
+            'start_date' => $this->option('start-date'),
+            'end_date' => $this->option('end-date'),
+        ], [
+            'operator' => ['required','string'],
+            'charge-type' => ['required','in:D01,D02,D03'],
+            'charge-type-code' => ['required'],
+            'note' => ['string', 'required'],
+            'start_date' => ['required','date_format:Y-m-d'],
+            'end_date' => ['nullable','date_format:Y-m-d','after:start_date'],
+        ]);
+
+        if ($validator->fails()) {
+            $this->info('calculate:invoice was not run. See errors below:');
+
+            foreach ($validator->errors()->all() as $error) {
+                $this->error($error);
+            }
             return 1;
         }
 
-        $chargeType = $this->option('charge-type');
-        if (!$chargeType || !in_array($chargeType, ['D01', 'D02', 'D03'])) {
-            $this->error('Charge type cannot be empty and must be one of D01, D02, or D03');
-            return 1;
-        }
+        $safeValues = $validator->validated();
 
-        $chargeTypeCode = $this->option('charge-type-code');
-        if (!$chargeTypeCode) {
-            $this->error('Charge type code cannot be empty');
-            return 1;
-        }
+        $operator = $safeValues['operator'];;
+        $chargeType = $safeValues['charge-type'];
+        $chargeTypeCode = $safeValues['charge-type-code'];
+        $note = $safeValues['note'];
+        $startDate = $safeValues['start_date'];
+        $endDate = $safeValues['end_date'];
 
-        $note = $this->option('note');
-        if (!$note) {
-            $this->error('Note cannot be empty');
-            return 1;
-        }
-
-        $startDate = $this->option('start-date');
-        if (!$startDate) {
-            $this->error('Start-date cannot be empty');
-            return 1;
-        }
-
-        $endDate = $this->option('end-date');
 
         $records = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $this->table(array_keys($records[0]), array_values($records));

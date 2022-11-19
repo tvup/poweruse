@@ -28,24 +28,30 @@ class GetPreliminaryInvoice
     /**
      * @param string $start_date
      * @param string $end_date
-     * @param $smartMe
-     * @param $refreshToken
-     * @param $price_area
+     * @param string $price_area
+     * @param array|null $smartMeCredentials
+     * @param string|null $dataSource
+     * @param string|null $refreshToken
+     * @param array|null $ewiiCredentials
+     * @param float|string $subscription_at_elsupplier
+     * @param float|string $overhead
      * @return array
+     * @throws DataUnavailableException
      * @throws ElOverblikApiException
+     * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function getBill(string $start_date, string $end_date, $smartMe, $price_area, $dataSource=null, $refreshToken=null, $ewiiCredentials=null, $subscription_at_elsupplier=23.20, $overhead=0.015): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource=null, string $refreshToken=null, array $ewiiCredentials=null, float|string $subscription_at_elsupplier=23.20, float|string $overhead=0.015): array
     {
         $overhead = str_replace(',','.',$overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
-            if ($smartMe) {
+            if ($smartMeCredentials) {
                 $end_date = Carbon::now()->startOfHour()->format('Y-m-d\TH:i:s');
             }
         }
         if(Carbon::parse($start_date)->startOfDay()->eq(Carbon::parse($end_date)->startOfDay())) {
             $end_date = Carbon::now()->addDay()->startOfDay()->toDateString();
-            if ($smartMe) {
+            if ($smartMeCredentials) {
                 $end_date = Carbon::now()->addDay()->startOfHour()->format('Y-m-d\TH:i:s');
             }
         }
@@ -54,7 +60,7 @@ class GetPreliminaryInvoice
 
         switch ($dataSource) {
             case 'EWII':
-                if(!$ewiiCredentials && !array_key_exists('ewiiEmail',$ewiiCredentials) && !array_key_exists('ewiiPassword',$ewiiCredentials)) {
+                if(!$ewiiCredentials || (!array_key_exists('ewiiEmail',$ewiiCredentials) && !array_key_exists('ewiiPassword',$ewiiCredentials))) {
                     throw new \InvalidArgumentException('EWII was selected as provider, but email and password for EWII-account wasn\'t given');
                 }
                 $key = $ewiiCredentials['ewiiEmail'] . ' ' . $start_date . ' ' . $end_date;
@@ -90,7 +96,7 @@ class GetPreliminaryInvoice
                 cache([$key => $meterData], $expiresAt);
             }
 
-            if ($smartMe) {
+            if ($smartMeCredentials) {
                 $source = ($source? : '') . ', Smart-Me';
                 $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date,'Europe/Copenhagen')->addDay()->startOfDay();
@@ -99,12 +105,12 @@ class GetPreliminaryInvoice
                 }
 
                 $getSmartMeMeterData = new GetSmartMeMeterData();
-                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($start_from, $smart_me_end_date, $smartMe);
+                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($start_from, $smart_me_end_date, $smartMeCredentials);
                 $meterData = array_merge($meterData, $smartMeIntervalFromDate);
             }
 
             $key = $start_date . ' ' . Carbon::parse($end_date)->addDay()->toDateString() . ' ' . $price_area;
-            if ($smartMe) {
+            if ($smartMeCredentials) {
                 $key = $start_date . ' ' . Carbon::now('Europe/Copenhagen')->addDay()->toDateString() . ' ' . $price_area;
             }
 
@@ -112,7 +118,7 @@ class GetPreliminaryInvoice
             $prices = cache($key);
             if (!$prices) {
                 $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
-                if ($smartMe) {
+                if ($smartMeCredentials) {
                     $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
                 }
                 $spotPrices = new GetSpotPrices();
@@ -152,7 +158,7 @@ class GetPreliminaryInvoice
         $bill = array();
 
         $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
-        if ($smartMe) {
+        if ($smartMeCredentials) {
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
         }
         $diff_in_days = Carbon::parse($start_date, 'Europe/Copenhagen')->diffInDays(Carbon::parse($to_date, 'Europe/Copenhagen'));
@@ -223,16 +229,20 @@ class GetPreliminaryInvoice
 
         $countOfAllDaysInMonhtsInvolved = 0;
         foreach($months as $month) {
-            $countOfAllDaysInMonhtsInvolved = $countOfAllDaysInMonhtsInvolved + Carbon::createFromDate('2022',$month, 1)->daysInMonth;
+            $countOfAllDaysInMonhtsInvolved = $countOfAllDaysInMonhtsInvolved + Carbon::createFromDate(now()->year, $month, 1)->daysInMonth;
         }
 
         foreach ($subscriptions as $subscription) {
             $bill[$subscription['name'].' (forholdsvis antal dage pr. måned, månedspris: '.round((count($months) * $subscription['price']) ,2).')'] = round((count($months) * $subscription['price']) * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved),2);
         }
 
+        if(is_string($subscription_at_elsupplier)) {
+            $subscription_at_elsupplier = (float) str_replace(',', '.', $subscription_at_elsupplier);
+        }
+
 
         $supplierSubscriptionDisplayText = 'Elabonnement (forholdsvis antal dage pr. måned, månedspris: ' . $subscription_at_elsupplier . ')';
-        $bill[$supplierSubscriptionDisplayText] = count($months) * str_replace(',','.',$subscription_at_elsupplier) * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
+        $bill[$supplierSubscriptionDisplayText] = count($months) * $subscription_at_elsupplier * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
         $bill[$supplierSubscriptionDisplayText] = round($bill[$supplierSubscriptionDisplayText], 2);
 
         $bill['Moms'] = 0;
@@ -269,17 +279,11 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-    /**
-     * @param $meterData
-     * @param $refreshToken
-     * @param $price_area
-     * @param float $overhead
-     * @return array
-     * @throws ElOverblikApiException
-     */
-    public function getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead=0.015): array
+    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015): array
     {
-        $overhead = str_replace(',','.',$overhead);
+        if (is_string($overhead)) {
+            $overhead = str_replace(',','.',$overhead);
+        }
 
         $start_date = Carbon::now()->startOfDay()->toDateString();
 
@@ -404,6 +408,7 @@ class GetPreliminaryInvoice
 
         return $bill;
     }
+
 
     /**
      * @param string $start_date

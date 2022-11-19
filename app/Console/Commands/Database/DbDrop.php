@@ -54,16 +54,16 @@ class DbDrop extends Command
 
     /**
      * Drop and create database specified by connection name.
-     * @param $connection
+     * @param String $databaseName
      */
-    private function dropDatabase($connection)
+    private function dropDatabase(String $databaseName) : void
     {
         try {
-            info('Dropping all tables in ' . $connection);
+            info('Dropping all tables in ' . $databaseName);
 
             $conn = \DB::connection();
 
-            $colname = 'Tables_in_' . $connection;
+            $colname = 'Tables_in_' . $databaseName;
             $tables = $conn->select('SHOW TABLES');
             $droplist = [];
 
@@ -81,7 +81,7 @@ class DbDrop extends Command
 
         } catch (\Illuminate\Database\QueryException $e) {
             if (preg_match("/Unknown database/", $e->getMessage())) {
-                $this->error(sprintf('Missing database %s', $connection));
+                $this->error(sprintf('Missing database %s', $databaseName));
             }
         }
     }

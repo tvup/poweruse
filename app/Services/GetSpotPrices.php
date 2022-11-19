@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\CarbonTimeZone;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
@@ -13,7 +14,16 @@ class GetSpotPrices
     const FORMAT_INTERNAL = 'INTERNAL';
     const FORMAT_JSON = 'JSON';
 
-    public function getData(string $start_date = null, string $end_date = null, string $price_area, $columns = ['HourDK','SpotPriceDKK'], $format = self::FORMAT_INTERNAL)
+    /**
+     * @param string|null $start_date
+     * @param string|null $end_date
+     * @param string|null $price_area
+     * @param string[] $columns
+     * @param string $format
+     * @return array|JsonResponse
+     * @throws \Exception
+     */
+    public function getData(string $start_date = null, string $end_date = null, string $price_area = null, $columns = ['HourDK','SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
     {
         $parameters = array();
         if(!$start_date){
@@ -23,6 +33,10 @@ class GetSpotPrices
 
         if($end_date){
             $parameters = array_merge($parameters, ['end' => $end_date]);
+        }
+
+        if(!$price_area) {
+            $price_area = 'ALL';
         }
 
         if($price_area != 'ALL') {
@@ -37,17 +51,20 @@ class GetSpotPrices
             ->get($url, $parameters);
 
         $timeZone = new DateTimeZone('Europe/Copenhagen');
-        $start = new DateTime(Carbon::parse($start_date)->startOfYear()->toDateString(), $timeZone);
-        $end = new DateTime(Carbon::parse($end_date)->startOfYear()->addYear()->toDateString(), $timeZone);
+        if($start_date == 'Now-PT12H') {
+            $start_date = Carbon::now('Europe/Copenhagen')->hours(-12)->toDateTimeString();
+        }
+        $start = new DateTime(Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(), $timeZone);
+        $end = new DateTime(Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(), $timeZone);
 
-        $transitions = $timeZone->getTransitions($start->format('U'), $end->format('U'));
+        $transitions = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'));
         $year_late_transition = $transitions[2];
         $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen');
 
         $first = false;
         if($format == self::FORMAT_INTERNAL) {
             $array = array_reverse($response['records']);
-            $new_array = array();
+            $new_array = [];
             foreach ($array as $data) {
                 $carbon = Carbon::parse($data['HourDK'], 'Europe/Copenhagen');
                 if (!$first && $carbon->eq($late_transition_end_hour)) {

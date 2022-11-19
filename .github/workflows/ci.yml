@@ -34,3 +34,5 @@ jobs:
           php_extensions: xdebug
         env:
           XDEBUG_MODE: coverage
+      - name: Static analysis
+        run: ./bin/phpstan

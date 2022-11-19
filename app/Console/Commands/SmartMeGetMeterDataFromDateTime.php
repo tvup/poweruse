@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Services\GetSmartMeMeterData;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Validator;
 
 class SmartMeGetMeterDataFromDateTime extends Command
 {
@@ -22,10 +23,6 @@ class SmartMeGetMeterDataFromDateTime extends Command
      */
     protected $description = 'Get data from smart-me from given date and onwards';
 
-    /**
-     * @var int|string
-     */
-    private $showCount;
     /**
      * @var bool
      */
@@ -48,21 +45,49 @@ class SmartMeGetMeterDataFromDateTime extends Command
      */
     public function handle()
     {
-        $start_date = $this->option('start-date');
+        $showCount = $this->option('show-count');
+
+        $rulesForShowCount = [
+            'string' => 'in:ALL',
+            'numeric' => 'integer'
+        ];
+
+        $rules = [
+            'start-date' => ['nullable', 'date_format:Y-m-d'],
+            'show-count' => ['required', $rulesForShowCount[$this->getShowCountType($showCount)]],
+        ];
+
+        $validator = Validator::make([
+            'start-date' => $this->option('start-date'),
+            'show-count' => $showCount,
+        ], $rules);
+
+        if ($validator->fails()) {
+            $this->info('eloverblik:get-meter-data was not run. See errors below:');
+
+            foreach ($validator->errors()->all() as $error) {
+                $this->error($error);
+            }
+            return 1;
+        }
+
+        $safeValues = $validator->validated();
+        $optionShowCount = $safeValues['show-count'];
+        $start_date = $safeValues['start-date'];
+
         if (!$start_date) {
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour();
         }
-        $this->option('show-count');
-        $optionShowCount = $this->option('show-count');
+
+
         switch ($optionShowCount) {
             case is_numeric($optionShowCount):
-                $this->showCount = $optionShowCount;
                 break;
             case 'ALL':
                 $this->showAll = true;
                 break;
             default:
-                $this->error('Show-count should either be a number of \'ALL\'');
+                $this->error('Show-count should either be a number or \'ALL\'');
                 return 1;
         }
 
@@ -70,14 +95,23 @@ class SmartMeGetMeterDataFromDateTime extends Command
         $array = $getSmartMeMeterData->getInterval($start_date, null,  true);
         $returnArray = array();
         if ($array) {
-            foreach($array as $key => $value) {
+            foreach ($array as $key => $value) {
                 array_push($returnArray, [$key, $value]);
             }
-            $this->table(['Time' , 'Value'], $this->showAll ? $returnArray : array_slice($returnArray, 0, $this->showCount));
-            if(!$this->showAll) {
+            $this->table(['Time', 'Value'], $this->showAll ? $returnArray : array_slice($returnArray, 0, $optionShowCount));
+            if (!$this->showAll) {
                 $this->info('(..) table output truncated');
             }
         }
 
+    }
+
+    private function getShowCountType(mixed $showCount): string
+    {
+        if (filter_var($showCount, FILTER_VALIDATE_INT) !== false) {
+            return 'numeric';
+        } else {
+            return gettype($showCount);
+        }
     }
 }

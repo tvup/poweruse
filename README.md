@@ -45,6 +45,13 @@ sail artisan migrate
 sail test
 ```
 
+## Static analysis
+Run the static analysis locally inside the docker container through `sail`
+
+```bash
+sail shell ./bin/phpstan
+```
+
 ## Test with code-coverage
 You can generate a test coverage report using **XDebug**, which is already preinstalled,
 simply by adding `XDEBUG_MODE=coverage` as environment varible.
