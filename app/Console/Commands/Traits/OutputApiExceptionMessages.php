@@ -5,10 +5,10 @@ namespace App\Console\Commands\Traits;
 trait OutputApiExceptionMessages
 {
     /**
-     * @param $errors
-     * @param $meteringPointId
+     * @param array<string, string>|string $errors
+     * @param string $text
      */
-    function logExceptionApiMessages($errors, $text): void
+    function logExceptionApiMessages(array|string $errors, string $text): void
     {
         logger()->error($text);
         switch (gettype($errors)) {

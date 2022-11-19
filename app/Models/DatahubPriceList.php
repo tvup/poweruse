@@ -20,7 +20,7 @@ class DatahubPriceList extends Model
 
     protected $primaryKey = ['GLN_Number', 'ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom', 'ValidTo'];
 
-    public function getMatchingInDb()
+    public function getMatchingInDb(): DatahubPriceList|bool
     {
         $db_record = $this->where([
             'GLN_Number'=>$this->getAttribute('GLN_Number'),
@@ -30,7 +30,7 @@ class DatahubPriceList extends Model
             'ValidFrom'=>$this->getAttribute('ValidFrom'),
             'ValidTo'=>$this->getAttribute('ValidTo'),
         ])->first();
-        
+
         if($db_record) {
             return $this->getAttribute('GLN_Number') == $db_record->GLN_Number
                 && $this->getAttribute('ChargeType') == $db_record->ChargeType

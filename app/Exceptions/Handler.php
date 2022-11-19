@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -10,7 +11,7 @@ class Handler extends ExceptionHandler
     /**
      * A list of the exception types that are not reported.
      *
-     * @var array
+     * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
         \Illuminate\Auth\AuthenticationException::class,
@@ -20,7 +21,7 @@ class Handler extends ExceptionHandler
     /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $dontFlash = [
         'password',
@@ -52,14 +53,18 @@ class Handler extends ExceptionHandler
      *
      * @param \Illuminate\Http\Request $request
      * @param \Throwable $exception
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function render($request, Throwable $exception)
     {
         return parent::render($request, $exception);
     }
 
-    private function fejlvarp_exception_handler($exception)
+    /**
+     * @param \Throwable $exception
+     * @throws \JsonException
+     */
+    private function fejlvarp_exception_handler(\Throwable $exception) : void
     {
         // Generate unique hash from message + file + line number
         // We strip out revision-part of the file name.
@@ -93,6 +98,6 @@ class Handler extends ExceptionHandler
                     )))
         );
         $context = stream_context_create($opts);
-        file_get_contents('http://fejlvarp.wooinvoice.dk', false, $context);
+        $content = file_get_contents('http://fejlvarp.wooinvoice.dk', false, $context);
     }
 }

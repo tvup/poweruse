@@ -2,14 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\DatahubPriceList;
 use App\Models\Operator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class GetDatahubPriceLists
 {
-    public function getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate=null)
+    /**
+     * @return array
+     */
+    public function getDatahubTariffPriceLists(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate = null): array
     {
         if(!$endDate) {
             $endDate = Carbon::parse($startDate, 'Europe/Copenhagen')->addDay()->toDateString();
@@ -24,8 +26,7 @@ class GetDatahubPriceLists
             . '"GLN_Number":"' . $GLN_number . '",'
             . '"Note":"' . $note . '"'
             . '}';
-        $response = Http::acceptJson()
-            ->get($url);
-        return $response->json()['records'];
+        return Http::acceptJson()
+            ->get($url)->json('records');
     }
 }

@@ -9,7 +9,8 @@ class GridOperatorNettariffProperty extends Model
 {
     use HasFactory;
 
-    public static function getByGLNNumber($glnNumber) {
+    public static function getByGLNNumber(int $glnNumber): GridOperatorNettariffProperty
+    {
         return self::where('GLN_number', $glnNumber)->firstOrFail();
     }
 }
