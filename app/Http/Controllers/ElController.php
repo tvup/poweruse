@@ -644,6 +644,10 @@ class ElController extends Controller
         $gridprices = $this->getGridOperatorNettariff($gridOperatorGLNNumber);
         $priceArea = Operator::$gridOperatorArea[$gridOperatorGLNNumber];
         $spotPrices = $this->doGetSpotPrices($priceArea);
+        if(count($spotPrices)==0) {
+            $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
+            return redirect('el-totalprices')->with('error', $message)->withInput($request->all());
+        }
         if ($includeTomorrow) {
             $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
             $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
