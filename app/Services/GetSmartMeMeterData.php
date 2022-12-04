@@ -29,6 +29,13 @@ class GetSmartMeMeterData
         return $response['CounterReading'];
     }
 
+    /**
+     * @param string $start_date_copenhagen Date and time in local time to get consumption data from (inclusive)
+     * @param string|null $to_date Date and time in local time to get consumption data untill (exclusive)
+     * @param array $smartMe
+     * @return array
+     * @throws \Exception
+     */
     public function getInterval(string $start_date_copenhagen, string $to_date = null, array $smartMe = []): array
     {
         $newResponse = null;
