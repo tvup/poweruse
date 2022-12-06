@@ -121,7 +121,7 @@ class GetPreliminaryInvoice
                 if ($smartMeCredentials) {
                     $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
                 }
-                $spotPrices = new GetSpotPrices();
+                $spotPrices = app(GetSpotPrices::class);
                 $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
                 $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
                 cache([$key => $prices], $expiresAt);
