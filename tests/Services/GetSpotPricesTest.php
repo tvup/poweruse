@@ -41,7 +41,7 @@ class GetSpotPricesTest extends TestCase
     {
         parent::setUp();
         Http::fake([
-            'api.energidataservice.dk/dataset/Elspotprices?start=' . self::START_DATE . '&end=' . self::END_DATE . '&filter={"PriceArea":"' . self::PRICE_AREA . '"}&columns=HourDK,SpotPriceDKK'
+            'api.energidataservice.dk/dataset/Elspotprices*'
             => Http::response(['records' => [
                 ['HourDK' => '2022-09-02T23:00:00+02:00', 'SpotPriceDKK' => 1562.339966],
                 ['HourDK' => '2022-09-02T22:00:00+02:00', 'SpotPriceDKK' => 2552.959961],
