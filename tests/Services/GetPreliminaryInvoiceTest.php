@@ -244,6 +244,15 @@ class GetPreliminaryInvoiceTest extends TestCase
         "2022-10-01T23:00:00+02:00" => 575.909973,
     ];
 
+    /**
+     * Goal here is to check that the calculations can be performed on the expected datastructes.
+     * Won't test the actual data/data-structures from providers - this is should be done in
+     * other test (and is also important)
+     *
+     * @throws \App\Exceptions\DataUnavailableException
+     * @throws \Tvup\ElOverblikApi\ElOverblikApiException
+     * @throws \Tvup\EwiiApi\EwiiApiException
+     */
     public function testGetBill()
     {
         $this->mock(GetMeteringData::class, function (MockInterface $mock) {
@@ -308,7 +317,7 @@ class GetPreliminaryInvoiceTest extends TestCase
         $price_area = 'DK2';
         $smartMeCredentials = null;
         $dataSource = null; //At moment of writing this defaults to 'Datahub'
-        $refreshToken = 'someFakeRefreshToken';
+        $refreshToken = 'someFakeRefreshToken'; //Won't be used because we're mocking the service that contacts datahub
         //Only six parameters are needed here, the rest has defaults. We'll test the simple one for now
         $returnArray = $preLiminaryInvoice->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);
         $this->assertEquals($expectedResult,$returnArray);
