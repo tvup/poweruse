@@ -11,6 +11,8 @@ use Tests\TestCase;
 class GetPreliminaryInvoiceTest extends TestCase
 {
 
+    //Consumption is normally returned from the service as an array with {date_time=>usage}
+    //So a key with 00:00 means the usage between 00:00 and 01:00
     const TEST_DATA = [
         "2022-10-01T00:00:00+02:00" => "1.39",
         "2022-10-01T01:00:00+02:00" => "1.23",
@@ -38,7 +40,9 @@ class GetPreliminaryInvoiceTest extends TestCase
         "2022-10-01T23:00:00+02:00" => "0.37",
         ];
 
-    const CHARGES = [
+    //Got hold of some real charges and decided to use them here - not so important anyway what the values are
+    //but we need a reliable datastructure.
+    const TEST_CHARGES = [
         [
             [
                 "price" => 21,
@@ -263,7 +267,7 @@ class GetPreliminaryInvoiceTest extends TestCase
             $mock
                 ->shouldReceive('getCharges')
                 ->once()
-                ->andReturn(self::CHARGES);
+                ->andReturn(self::TEST_CHARGES);
         });
 
         $this->mock(GetSpotPrices::class, function (MockInterface $mock) {
