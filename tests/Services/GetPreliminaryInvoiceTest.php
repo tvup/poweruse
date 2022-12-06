@@ -307,7 +307,7 @@ class GetPreliminaryInvoiceTest extends TestCase
         $end_date = '2022-10-02';
         $price_area = 'DK2';
         $smartMeCredentials = null;
-        $dataSource = null; //At moment of writing this defaults to 'Dataub'
+        $dataSource = null; //At moment of writing this defaults to 'Datahub'
         $refreshToken = 'someFakeRefreshToken';
         //Only six parameters are needed here, the rest has defaults. We'll test the simple one for now
         $returnArray = $preLiminaryInvoice->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);
