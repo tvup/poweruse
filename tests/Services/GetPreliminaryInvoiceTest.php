@@ -40,213 +40,24 @@ class GetPreliminaryInvoiceTest extends TestCase
         "2022-10-01T23:00:00+02:00" => "0.37",
         ];
 
-    //Got hold of some real charges and decided to use them here - not so important anyway what the values are
-    //but we need a reliable datastructure.
-    const TEST_CHARGES = [
-        [
-            [
-                "price" => 21,
-                "quantity" => 1,
-                "name" => "Netabo C forbrug skabelon/flex",
-                "description" => "Abonnement, hvor aftagepunktet typisk er i 0,4 kV-nettet med en årsaflæst måler",
-                "owner" => "5790000705689",
-                "validFromDate" => "2015-05-31T22:00:00.000Z",
-                "validToDate" => null,
-                "periodType" => "P1M"
-            ]
-        ],
-        [
-            [
-                "prices" => [
-                    [
-                        "position" => "1",
-                        "price" => 0.049
-                    ]
-                ],
-                "name" => "Transmissions nettarif",
-                "description" => "Netafgiften, for både forbrugere og producenter, dækker omkostninger til drift og vedligehold af det overordnede elnet (132/150 og 400 kv nettet) og drift og vedligehold af udlandsforbindelserne.",
-                "owner" => "5790000432752",
-                "validFromDate" => "2014-12-31T23:00:00.000Z",
-                "validToDate" => null,
-                "periodType" => "P1D"
-            ],
-            [
-                "prices" => [
-                    [
-                        "position" => "1",
-                        "price" => 0.061
-                    ]
-                ],
-                "name" => "Systemtarif",
-                "description" => "Systemafgiften dækker omkostninger til forsyningssikkerhed og elforsyningens kvalitet.",
-                "owner" => "5790000432752",
-                "validFromDate" => "2014-12-31T23:00:00.000Z",
-                "validToDate" => null,
-                "periodType" => "P1D"
-            ],
-            [
-                "prices" => [
-                    [
-                        "position" => "1",
-                        "price" => 0.00229
-                    ]
-                ],
-                "name" => "Balancetarif for forbrug",
-                "description" => "Balancetarif for forbrug",
-                "owner" => "5790000432752",
-                "validFromDate" => "2014-12-31T23:00:00.000Z",
-                "validToDate" => "2022-12-31T23:00:00.000Z",
-                "periodType" => "P1D"
-            ],
-            [
-                "prices" => [
-                    [
-                        "position" => "1",
-                        "price" => 0.723
-                    ]
-                ],
-                "name" => "Elafgift",
-                "description" => "Elafgiften",
-                "owner" => "5790000432752",
-                "validFromDate" => "2015-05-31T22:00:00.000Z",
-                "validToDate" => null,
-                "periodType" => "P1D"
-            ],
-            [
-                "prices" => [
-                    [
-                        "position" => "1",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "2",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "3",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "4",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "5",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "6",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "7",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "8",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "9",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "10",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "11",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "12",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "13",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "14",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "15",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "16",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "17",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "18",
-                        "price" => 0.7651
-                    ],
-                    [
-                        "position" => "19",
-                        "price" => 0.7651
-                    ],
-                    [
-                        "position" => "20",
-                        "price" => 0.7651
-                    ],
-                    [
-                        "position" => "21",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "22",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "23",
-                        "price" => 0.3003
-                    ],
-                    [
-                        "position" => "24",
-                        "price" => 0.3003
-                    ]
-                ],
-                "name" => "Nettarif C time",
-                "description" => "Nettarif C time",
-                "owner" => "5790000705689",
-                "validFromDate" => "2019-04-30T22:00:00.000Z",
-                "validToDate" => null,
-                "periodType" => "PT1H"
-            ]
-        ]
-    ];
+    private $charges;
+    private mixed $spotPrices;
+    private mixed $testConsumptions;
 
-    const TEST_SPOTPRICES = [
-        "2022-10-01T00:00:00+02:00" => 478.950012,
-        "2022-10-01T01:00:00+02:00" => 472.850006,
-        "2022-10-01T02:00:00+02:00" => 371.799988,
-        "2022-10-01T03:00:00+02:00" => 159.720001,
-        "2022-10-01T04:00:00+02:00" => 125.739998,
-        "2022-10-01T05:00:00+02:00" => 111.760002,
-        "2022-10-01T06:00:00+02:00" => 111.690002,
-        "2022-10-01T07:00:00+02:00" => 177.270004,
-        "2022-10-01T08:00:00+02:00" => 334.769989,
-        "2022-10-01T09:00:00+02:00" => 543.200012,
-        "2022-10-01T10:00:00+02:00" => 816.840027,
-        "2022-10-01T11:00:00+02:00" => 793.940002,
-        "2022-10-01T12:00:00+02:00" => 669.23999,
-        "2022-10-01T13:00:00+02:00" => 550.559998,
-        "2022-10-01T14:00:00+02:00" => 491.959991,
-        "2022-10-01T15:00:00+02:00" => 497.470001,
-        "2022-10-01T16:00:00+02:00" => 519.179993,
-        "2022-10-01T17:00:00+02:00" => 1024.670044,
-        "2022-10-01T18:00:00+02:00" => 1259.060059,
-        "2022-10-01T19:00:00+02:00" => 1455.73999,
-        "2022-10-01T20:00:00+02:00" => 1340.47998,
-        "2022-10-01T21:00:00+02:00" => 1077.469971,
-        "2022-10-01T22:00:00+02:00" => 820.109985,
-        "2022-10-01T23:00:00+02:00" => 575.909973,
-    ];
+
+    protected function setUp(): void
+    {
+        require_once 'tests/helpers.php';
+
+        //Got hold of some real charges and decided to use them here - not so important anyway what the values are
+        //but we need a reliable datastructure.
+        $this->charges = loadTestData(fixture_path('typical_charges.json'));
+        $this->spotPrices = loadTestData(fixture_path('spot_prices.json'));
+        $this->testConsumptions = loadTestData(fixture_path('consumption_data.json'));
+
+
+        parent::setUp();
+    }
 
     /**
      * Goal here is to check that the calculations can be performed on the expected datastructes.
@@ -263,18 +74,18 @@ class GetPreliminaryInvoiceTest extends TestCase
             $mock
                 ->shouldReceive('getData')
                 ->once()
-                ->andReturn(self::TEST_DATA);
+                ->andReturn($this->testConsumptions);
             $mock
                 ->shouldReceive('getCharges')
                 ->once()
-                ->andReturn(self::TEST_CHARGES);
+                ->andReturn($this->charges);
         });
 
         $this->mock(GetSpotPrices::class, function (MockInterface $mock) {
             $mock
                 ->shouldReceive('getData')
                 ->once()
-                ->andReturn(self::TEST_SPOTPRICES);
+                ->andReturn($this->spotPrices);
         });
 
         $expectedResult = [
