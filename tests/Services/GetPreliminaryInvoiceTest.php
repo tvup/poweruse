@@ -18,7 +18,6 @@ class GetPreliminaryInvoiceTest extends TestCase
 
     protected function setUp(): void
     {
-        require_once 'tests/helpers.php';
 
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
