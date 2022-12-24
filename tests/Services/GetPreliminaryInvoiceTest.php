@@ -11,35 +11,6 @@ use Tests\TestCase;
 class GetPreliminaryInvoiceTest extends TestCase
 {
 
-    //Consumption is normally returned from the service as an array with {date_time=>usage}
-    //So a key with 00:00 means the usage between 00:00 and 01:00
-    const TEST_DATA = [
-        "2022-10-01T00:00:00+02:00" => "1.39",
-        "2022-10-01T01:00:00+02:00" => "1.23",
-        "2022-10-01T02:00:00+02:00" => "4.15",
-        "2022-10-01T03:00:00+02:00" => "4.22",
-        "2022-10-01T04:00:00+02:00" => "4.17",
-        "2022-10-01T05:00:00+02:00" => "4.2",
-        "2022-10-01T06:00:00+02:00" => "3.85",
-        "2022-10-01T07:00:00+02:00" => "1.58",
-        "2022-10-01T08:00:00+02:00" => "1.65",
-        "2022-10-01T09:00:00+02:00" => "0.88",
-        "2022-10-01T10:00:00+02:00" => "0.4",
-        "2022-10-01T11:00:00+02:00" => "0.48",
-        "2022-10-01T12:00:00+02:00" => "0.52",
-        "2022-10-01T13:00:00+02:00" => "0.66",
-        "2022-10-01T14:00:00+02:00" => "0.49",
-        "2022-10-01T15:00:00+02:00" => "0.6",
-        "2022-10-01T16:00:00+02:00" => "0.45",
-        "2022-10-01T17:00:00+02:00" => "0.39",
-        "2022-10-01T18:00:00+02:00" => "0.4",
-        "2022-10-01T19:00:00+02:00" => "0.41",
-        "2022-10-01T20:00:00+02:00" => "0.41",
-        "2022-10-01T21:00:00+02:00" => "0.39",
-        "2022-10-01T22:00:00+02:00" => "0.39",
-        "2022-10-01T23:00:00+02:00" => "0.37",
-        ];
-
     private $charges;
     private mixed $spotPrices;
     private mixed $testConsumptions;
@@ -52,7 +23,11 @@ class GetPreliminaryInvoiceTest extends TestCase
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
         $this->charges = loadTestData(fixture_path('typical_charges.json'));
+        
         $this->spotPrices = loadTestData(fixture_path('spot_prices.json'));
+
+        //Consumption is normally returned from the service as an array with {date_time=>usage}
+        //So a key with 00:00 means the usage between 00:00 and 01:00
         $this->testConsumptions = loadTestData(fixture_path('consumption_data.json'));
 
 
