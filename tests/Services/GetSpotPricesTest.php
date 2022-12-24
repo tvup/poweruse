@@ -21,7 +21,7 @@ class GetSpotPricesTest extends TestCase
         parent::setUp();
         Http::fake([
             'api.energidataservice.dk/dataset/Elspotprices*'
-            => Http::response(loadTestData(fixture_path('records.json')), 200)]);
+            => Http::response($this->loadTestData(fixture_path('records.json')), 200)]);
     }
 
     public function testGetData()
