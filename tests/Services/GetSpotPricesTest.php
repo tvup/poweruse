@@ -17,7 +17,7 @@ class GetSpotPricesTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->spotPricesDataSeres = loadTestData(fixture_path('spot_prices_data_series.json'));
+        $this->spotPricesDataSeres = $this->loadTestData(fixture_path('spot_prices_data_series.json'));
         parent::setUp();
         Http::fake([
             'api.energidataservice.dk/dataset/Elspotprices*'
