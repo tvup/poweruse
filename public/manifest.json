@@ -1,0 +1,16 @@
+{
+  "name": "Poweruse - Total-prices",
+  "short_name": "PU - totalprices",
+  "icons": [
+    {
+      "src": "/images/favicon/512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/el-totalprices",
+  "display": "standalone",
+  "theme_color": "#2196f3",
+  "background_color": "#2196f3",
+  "description": "My Awesome App that will make you fall in love with Laravel."
+}
