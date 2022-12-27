@@ -18,7 +18,7 @@ jobs:
       - name: Directory Permissions
         run: sudo chmod -R 777 storage bootstrap/cache
       - name: Install NPM
-        run: npm run build
+        run: npm install && npm run build
       - name: Generate key
         run: php artisan key:generate
       - name: Create Database
