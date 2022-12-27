@@ -13,7 +13,7 @@ class GetSpotPricesTest extends TestCase
     const END_DATE = '2022-09-03';
     const PRICE_AREA = 'DK2';
 
-    private mixed $spotPricesDataSeres;
+    private array $spotPricesDataSeres;
 
     protected function setUp(): void
     {
