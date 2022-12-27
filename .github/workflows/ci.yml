@@ -15,8 +15,11 @@ jobs:
       - uses: php-actions/composer@v5
         with:
           php_version: "8.1"
+
+      - name: Create Directories
+        run: mkdir -p storage/cache && mkdir storage/views
       - name: Directory Permissions
-        run: sudo chmod -R 777 storage bootstrap/cache
+        run: sudo chmod -R 777 storage/ bootstrap/cache
       - name: Install NPM
         run: npm install && npm run build
       - name: Generate key
