@@ -29,6 +29,11 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
           php artisan migrate
+      - name: Clear caches
+        run: |
+          php artisan cache:clear
+          php artisan config:clear
+          php artisan view:clear
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v3
         with:
