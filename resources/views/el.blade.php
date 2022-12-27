@@ -34,7 +34,7 @@
 
                 <div class="form-group datahub">
                     <label for="exampleInputEmail1">Refresh token</label>
-                    <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') }}">
+                    <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ?? (Cookie::get('refresh_token') ?? '') }}">
                 </div>
                 <div class="form-group ewii">
                     <label for="exampleInputEmail1">Email</label>
