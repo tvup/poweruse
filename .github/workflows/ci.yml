@@ -17,7 +17,7 @@ jobs:
           php_version: "8.1"
 
       - name: Create Directories
-        run: mkdir -p storage/framework/cache && mkdir storage/framework/views && mkdir storage/framework/sessions
+        run: mkdir -p storage/framework/cache  && mkdir -p storage/framework/views && mkdir -p storage/framework/sessions
       - name: Directory Permissions
         run: sudo chmod -R 777 storage/ bootstrap/cache
       - name: Install NPM
