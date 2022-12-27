@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +16,15 @@
 
 Route::get('/', function () {
     return redirect('el');
-})->name('home');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 Route::get('el/', 'ElController@index')->name('el');
 Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-meteringpoint');
@@ -30,3 +41,5 @@ Route::post('getConsumption', 'ElController@getConsumption');
 Route::post('getTotalPrices', 'ElController@getTotalPrices');
 Route::post('processcustom', 'ElController@processCustom');
 
+
+require __DIR__.'/auth.php';
