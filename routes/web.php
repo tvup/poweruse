@@ -16,11 +16,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('el');
-});
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get(
+    '/totalprices',
+    App\Http\Controllers\TotalPricesController::class
+)->middleware(['auth'])->name('totalprices');
+
+Route::post(
+    'totalprices',
+    App\Http\Controllers\TotalPrices\ProcessController::class,
+)->middleware(['auth'])->name('totalprices.process');
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
