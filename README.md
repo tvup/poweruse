@@ -39,6 +39,12 @@ Navigate to http://localhost/
 sail artisan migrate
 ```
 
+## Build NPM & Vite components
+
+```bash
+sail npm run build 
+```
+
 ## Testing
 
 ```bash
