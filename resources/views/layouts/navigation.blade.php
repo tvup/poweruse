@@ -12,9 +12,28 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('el-meteringpoint')" :active="request()->routeIs('el-meteringpoint')">
+                        {{__('Målepunkt') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('el-charges')" :active="request()->routeIs('el-charges')">
+                        {{__('Priselementer') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('consumption')" :active="request()->routeIs('consumption')">
+                        {{__('Forbrugsdata') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('el')" :active="request()->routeIs('el')">
+                        {{__('Beregn din elregning') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('el-spotprices')" :active="request()->routeIs('el-spotprices')">
+                        {{__('Spotpriser') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('totalprices')" :active="request()->routeIs('totalprices')">
                         {{ __('Total prices') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('el-custom')" :active="request()->routeIs('el-custom')">
+                        {{__('Beregn prisen for et bestemt forbrug i dag') }}
+                    </x-nav-link>
+
                 </div>
             </div>
 
@@ -67,8 +86,26 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('el-meteringpoint')" :active="request()->routeIs('el-meteringpoint')">
+                {{__('Målepunkt') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('el-charges')" :active="request()->routeIs('el-charges')">
+                {{__('Priselementer') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('consumption')" :active="request()->routeIs('consumption')">
+                {{__('Forbrugsdata') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('el')" :active="request()->routeIs('el')">
+                {{__('Beregn din elregning') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('el-spotprices')" :active="request()->routeIs('el-spotprices')">
+                {{__('Spotpriser') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('totalprices')" :active="request()->routeIs('totalprices')">
                 {{ __('Total prices') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('el-custom')" :active="request()->routeIs('el-custom')">
+                {{__('Beregn prisen for et bestemt forbrug i dag') }}
             </x-responsive-nav-link>
         </div>
 
@@ -82,7 +119,7 @@
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
-                </x-response-nav-link>
+                </x-responsive-nav-link>
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
