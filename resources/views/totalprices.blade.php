@@ -13,7 +13,7 @@
                         <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
                             <div class="ml-4 mt-2">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                    Pris pr. time - alle tariffer inkl. moms
+                                    {{ __('Price pr. hour - all tariff incl. VAT') }}
                                 </h3>
                             </div>
                         </div>
@@ -27,7 +27,7 @@
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <x-totalprices.form/>
+                <x-totalprices.form :companies="$companies"/>
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@
             <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
                 <div class="ml-4 mt-2">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        Total-prices
+                        {{ __('Grid area options') }}
                     </h3>
                 </div>
             </div>
@@ -19,16 +19,25 @@
                       action="{{route('totalprices.process')}}">
                     {{ csrf_field() }}
 
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Vis som:</label>
-                        JSON {{ Form::radio('outputformat', 'JSON' , (old('outputformat') && old('outputformat')=='JSON') ? old('outputformat') : true) }}
-                        GRAF {{ Form::radio('outputformat', 'GRAF' , (old('outputformat') && old('outputformat')=='GRAF') ? old('outputformat') : false) }}
+                    <div class="sm:col-span-3">
+                        <label for="show_as" class="block text-sm font-medium text-gray-700">
+                            {{__('Show as:') }}
+                        </label>
+                        JSON {{ Form::radio('outputformat', 'JSON' , (old('outputformat') && old('outputformat')=='JSON') ? old('outputformat') : (Cookie::get('outputformat') ?? true), ['class' => 'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md']) }}
+                        GRAF {{ Form::radio('outputformat', 'GRAF' , (old('outputformat') && old('outputformat')=='GRAF') ? old('outputformat') : (Cookie::get('outputformat') ?? false), ['class' => 'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md']) }}
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label for="grid_operator" class="block text-sm font-medium text-gray-700">
+                            {{ __('Grid operator') }}
+                        </label>
+                        {!! Form::select('netcompany', $companies, old('netcompany') ? : (Cookie::get('netcompany') ?? null), ['class' => 'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md']) !!}
                     </div>
 
 
 
                     <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Hent
+                        {{ __('Get')}}
                     </button>
                 </form>
             </div>

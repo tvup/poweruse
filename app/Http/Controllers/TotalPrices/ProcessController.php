@@ -37,12 +37,7 @@ class ProcessController extends Controller
             $includeTomorrow = true;
         }
 
-        if(empty($request->netcompany)) {
-            $company = '5790000705689';
-        } else {
-            $company = $request->netcompany;
-        }
-        $operator = $company;
+        $operator = $request->netcompany;
 
         $gridOperatorGLNNumber = Operator::$operatorName[$operator];
         $gridprices = $this->getGridOperatorNettariff($gridOperatorGLNNumber);
@@ -80,7 +75,7 @@ class ProcessController extends Controller
         $chart->dataset = (array_values($totalPrice));
         $chart->colours = $colours;
 
-        return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all());
+        return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany' , $request->netcompany, 525600);
     }
 
     /**
