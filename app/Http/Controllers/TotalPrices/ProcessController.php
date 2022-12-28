@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\TotalPrices;
 
+use App\Actions\ElectricityPrices\RetrieveTariffFromOperator;
+use App\Actions\ElectricityPrices\RetrieveSpotPrices;
 use App\Http\Controllers\Controller;
 use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
@@ -41,20 +43,33 @@ class ProcessController extends Controller
             $includeTomorrow = true;
         }
 
-        $operator = $request->netcompany;
+        $gridOperatorName = Operator::$operatorName[$request->netcompany];
+        $priceArea = Operator::$gridOperatorArea[$gridOperatorName];
 
-        $gridOperatorGLNNumber = Operator::$operatorName[$operator];
-        $gridprices = $this->getGridOperatorNettariff($gridOperatorGLNNumber);
-        $priceArea = Operator::$gridOperatorArea[$gridOperatorGLNNumber];
-        $spotPrices = $this->doGetSpotPrices($priceArea);
+        //Get tariff for grid operator
+        $gridOperatorTariffPrices = $this->getGridOperatorTariff($gridOperatorName);
+
+        //Get spot prices
+        $spotPrices = (new RetrieveSpotPrices())->handle(
+            area: $priceArea,
+        );
+
+        //Check if spot prices were received
         if(count($spotPrices)==0) {
             $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
-            return redirect('el-totalprices')->with('error', $message)->withInput($request->all());
+            return redirect('totalprices')->with('error', $message)->withInput($request->all());
         }
+
+        //Add tomorrows spotprices if requested
         if ($includeTomorrow) {
-            $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
+            $toMorrowSpotPrices = (new RetrieveSpotPrices())->handle(
+                area: $priceArea,
+                from: Carbon::now('Europe/Copenhagen')->startOfDay()->addDay()
+            );
             $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
         }
+
+        //Get other tariffs
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
         $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
@@ -68,7 +83,7 @@ class ProcessController extends Controller
         for ($i = 0; $i <= $limit; $i++) {
             $j = ($i <= 23 ? $i : $i - 24);
             $now2 = clone $now;
-            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
+            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridOperatorTariffPrices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
         }
         $companies = Operator::$operatorName;
 
@@ -82,55 +97,25 @@ class ProcessController extends Controller
         return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany' , $request->netcompany, 525600);
     }
 
-    /**
-     * @param string $operatorName
-     * @return array<int, float>
-     */
-    private function getGridOperatorNettariff(string $operatorName) : array
+    private function getGridOperatorTariff(string $string)
     {
-        $GLN_number = Operator::$operatorNumber[$operatorName];
-        $operator = GridOperatorNettariffProperty::getByGLNNumber($GLN_number);
+        $operator_number = Operator::$operatorNumber[$string];
+        $operator = GridOperatorNettariffProperty::getByGLNNumber($operator_number);
 
-        return $this->getChargePrice($operatorName, $operator->charge_type, $operator->charge_type_code, $operator->note, $operator->valid_from, $operator->valid_to);
-    }
+        $chargeType = $operator->charge_type;
+        $chargeTypeCode = $operator->charge_type_code;
+        $note = $operator->note;
+        $startDate = $operator->valid_from;
+        $endDate = $operator->valid_to;
 
-    /**
-     * @param string $operator
-     * @param string $chargeType
-     * @param string $chargeTypeCode
-     * @param string $note
-     * @param string $startDate
-     * @param string $endDate
-     * @return array<int, float>
-     */
-    private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
-    {
-        $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
-        $collection = collect($data[0]);
-        $gridprices = array();
-        $collection->each(function ($item, $key) use (&$gridprices) {
-            if (Str::contains($key, 'Price')) {
-                $key = ((int) Str::replace('Price', '', $key)) - 1;
-                $gridprices[$key] = $item;
-            }
-        });
-        return $gridprices;
-    }
-
-    /**
-     * @param string $area
-     * @param Carbon|null $from
-     * @return array<float>
-     */
-    private function doGetSpotPrices(string$area, Carbon $from = null) : array
-    {
-        if(!$from) {
-            $from = Carbon::now('Europe/Copenhagen')->startOfDay();
-        }
-        $startDate = $from->toDateString();
-        $endDate = $from->addDay()->toDateString();
-        $spotPrices = array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
-        return $spotPrices;
+        return (new RetrieveTariffFromOperator())->handle(
+            operator: $string,
+            chargeType: $chargeType,
+            chargeTypeCode: $chargeTypeCode,
+            note: $note,
+            startDate: $startDate,
+            endDate: $endDate,
+        );
     }
 
     /**
@@ -145,7 +130,14 @@ class ProcessController extends Controller
         $startDate = '2022-01-01';
         $endDate = '2022-12-31';
 
-        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        return (new RetrieveTariffFromOperator())->handle(
+            operator: $operator,
+            chargeType: $chargeType,
+            chargeTypeCode: $chargeTypeCode,
+            note: $note,
+            startDate: $startDate,
+            endDate: $endDate,
+        );
     }
 
     /**
@@ -160,7 +152,14 @@ class ProcessController extends Controller
         $startDate = '2022-01-01';
         $endDate = '2022-12-31';
 
-        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        return (new RetrieveTariffFromOperator())->handle(
+            operator: $operator,
+            chargeType: $chargeType,
+            chargeTypeCode: $chargeTypeCode,
+            note: $note,
+            startDate: $startDate,
+            endDate: $endDate,
+        );
     }
 
     /**
@@ -175,7 +174,14 @@ class ProcessController extends Controller
         $startDate = '2022-01-01';
         $endDate = '2022-12-31';
 
-        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        return (new RetrieveTariffFromOperator())->handle(
+            operator: $operator,
+            chargeType: $chargeType,
+            chargeTypeCode: $chargeTypeCode,
+            note: $note,
+            startDate: $startDate,
+            endDate: $endDate,
+        );
     }
 
     /**
@@ -190,7 +196,14 @@ class ProcessController extends Controller
         $startDate = '2022-10-01';
         $endDate = '2022-12-31';
 
-        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        return (new RetrieveTariffFromOperator())->handle(
+            operator: $operator,
+            chargeType: $chargeType,
+            chargeTypeCode: $chargeTypeCode,
+            note: $note,
+            startDate: $startDate,
+            endDate: $endDate,
+        );
     }
     /**
      * @param array<float> $array
