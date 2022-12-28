@@ -59,3 +59,9 @@ simply by adding `XDEBUG_MODE=coverage` as environment varible.
 ```bash
 XDEBUG_MODE=coverage sail test
 ```
+
+## Mails
+When developing locally we use Mailhog to trap all mails.
+
+The interface is available here:
+http://localhost:8025/
