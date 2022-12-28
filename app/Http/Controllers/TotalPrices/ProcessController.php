@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\TotalPrices;
 
-use App\Actions\ElectricityPrices\RetrieveTariffFromOperator;
 use App\Actions\ElectricityPrices\RetrieveSpotPrices;
+use App\Actions\ElectricityPrices\RetrieveTariffFromOperator;
 use App\Http\Controllers\Controller;
 use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
@@ -12,7 +12,6 @@ use App\Services\GetSpotPrices;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ProcessController extends Controller
 {
@@ -36,7 +35,7 @@ class ProcessController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return RedirectResponse
      */
-    public function __invoke(Request $request) : RedirectResponse
+    public function __invoke(Request $request): RedirectResponse
     {
         $includeTomorrow = false;
         if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
@@ -55,7 +54,7 @@ class ProcessController extends Controller
         );
 
         //Check if spot prices were received
-        if(count($spotPrices)==0) {
+        if (count($spotPrices) == 0) {
             $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
             return redirect('totalprices')->with('error', $message)->withInput($request->all());
         }
@@ -76,7 +75,6 @@ class ProcessController extends Controller
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
 
-
         $totalPrice = array();
         $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
         $limit = $includeTomorrow ? 47 : 23;
@@ -94,7 +92,7 @@ class ProcessController extends Controller
         $chart->dataset = (array_values($totalPrice));
         $chart->colours = $colours;
 
-        return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany' , $request->netcompany, 525600);
+        return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
 
     private function getGridOperatorTariff(string $string)
@@ -122,7 +120,7 @@ class ProcessController extends Controller
      * @param string $operator
      * @return array<int, float>
      */
-    private function getTSOOperatorNettariff(string $operator) : array
+    private function getTSOOperatorNettariff(string $operator): array
     {
         $chargeType = 'D03';
         $chargeTypeCode = '40000';
@@ -144,7 +142,7 @@ class ProcessController extends Controller
      * @param string $operator
      * @return array<int, float>
      */
-    private function getTSOOperatorSystemtariff(string $operator) : array
+    private function getTSOOperatorSystemtariff(string $operator): array
     {
         $chargeType = 'D03';
         $chargeTypeCode = '41000';
@@ -166,7 +164,7 @@ class ProcessController extends Controller
      * @param string $operator
      * @return array<int, float>
      */
-    private function getTSOOperatorBalancetariff(string $operator) : array
+    private function getTSOOperatorBalancetariff(string $operator): array
     {
         $chargeType = 'D03';
         $chargeTypeCode = '45013';
@@ -188,7 +186,7 @@ class ProcessController extends Controller
      * @param string $operator
      * @return array<int, float>
      */
-    private function getTSOOperatorAfgifttariff(string $operator) : array
+    private function getTSOOperatorAfgifttariff(string $operator): array
     {
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
@@ -205,11 +203,12 @@ class ProcessController extends Controller
             endDate: $endDate,
         );
     }
+
     /**
      * @param array<float> $array
      * @return array<string>
      */
-    private function makeColors(array $array) : array
+    private function makeColors(array $array): array
     {
         $min = (float)min($array);
         $max = (float)max($array);
