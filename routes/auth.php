@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -56,4 +57,35 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
+
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    Route::get('el/', [\App\Http\Controllers\ElController::class, 'index'])->name('el');
+    Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-meteringpoint');
+    Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
+    Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
+    Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
+    Route::get('el-totalprices/', 'ElController@indexTotalPrices')->name('el-totalprices');
+    Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
+    Route::post('processdata', 'ElController@processData');
+    Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
+    Route::post('getChargesForWeb', 'ElController@getChargesForWeb');
+    Route::post('getSpotprices', 'ElController@getSpotprices');
+    Route::post('getConsumption', 'ElController@getConsumption');
+    Route::post('getTotalPrices', 'ElController@getTotalPrices');
+    Route::post('processcustom', 'ElController@processCustom');
+
+    Route::get(
+        'totalprices',
+        App\Http\Controllers\TotalPricesController::class
+    )->middleware(['auth'])->name('totalprices');
+
+    Route::post(
+        'totalprices',
+        App\Http\Controllers\TotalPrices\ProcessController::class,
+    )->middleware(['auth'])->name('totalprices.process');
+
 });
