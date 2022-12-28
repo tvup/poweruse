@@ -4,30 +4,30 @@
             {{ __('Total prices') }}
         </h2>
     </x-slot>
+    <div class="py-12">
+        @if(@isset($chart))
 
-    @if(@isset($chart))
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="container graph-output">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading my-2">Pris pr. time - alle tariffer inkl. moms</div>
-                        <div class="col-lg-8">
-                            <canvas id="userChart" class="rounded shadow"></canvas>
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                <div class="bg-white  graph-output">
+                    <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+                        <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
+                            <div class="ml-4 mt-2">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                                    Pris pr. time - alle tariffer inkl. moms
+                                </h3>
+                            </div>
                         </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <canvas id="userChart" class="rounded shadow"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
-            </div>
-        </div>
-    @endif
+        @endif
 
-    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <x-totalprices.form />
+                <x-totalprices.form/>
             </div>
         </div>
     </div>
