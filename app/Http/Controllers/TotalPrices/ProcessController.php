@@ -8,11 +8,15 @@ use App\Models\Operator;
 use App\Services\GetDatahubPriceLists;
 use App\Services\GetSpotPrices;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ProcessController extends Controller
 {
+    private GetDatahubPriceLists $datahubPriceListsService;
+    private GetSpotPrices $spotPricesService;
+
     /**
      * Create a new controller instance.
      *
@@ -28,9 +32,9 @@ class ProcessController extends Controller
      * Handle the incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request) : RedirectResponse
     {
         $includeTomorrow = false;
         if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Operator;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class TotalPricesController extends Controller
@@ -13,9 +14,9 @@ class TotalPricesController extends Controller
      * Handle the incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request) : View
     {
         $data = session('data');
         $chart = session('chart');
