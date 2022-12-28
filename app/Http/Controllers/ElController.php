@@ -177,7 +177,7 @@ class ElController extends Controller
         } catch (DataUnavailableException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
-        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $request->token, 5);
+        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $request->token, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
     }
 
     public function processCustom(Request $request) : RedirectResponse|Response

@@ -46,19 +46,19 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Smart-me?</label>
-                    <input name="smart_me" id="smart_me" type="checkbox" {{ old('smart_me') == 'on' ? 'checked' : ''}}>
+                    <input name="smart_me" id="smart_me" type="checkbox" {{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : '')}}>
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me id:</label>
-                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') }}">
+                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') ?? (Cookie::get('smartmeid') ?? '') }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me username:</label>
-                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') }}">
+                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') ?? (Cookie::get('smartmeuser') ?? '')}}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="exampleInputEmail1">Smart-me password:</label>
-                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') }}">
+                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') ?? (Cookie::get('smartmepassword') ?? '')}}">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Start dato</label>
@@ -120,7 +120,7 @@
             }
 
         }
-        updateSmartMeDetailFieldsShow({{ old('smart_me') == 'on' }});
+        updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
         $( "#de" ).change(function() {
             updateCredentialsFieldsShow($( "#de").is(':checked'));
@@ -149,7 +149,7 @@
 
         }
 
-        updateDatePicker({{ old('smart_me') == 'on' }});
+        updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
 
         $(document).ready(function(){
