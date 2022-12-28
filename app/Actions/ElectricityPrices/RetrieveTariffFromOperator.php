@@ -8,7 +8,12 @@ use Illuminate\Support\Str;
 class RetrieveTariffFromOperator
 {
     /**
-     * @param string $operatorName
+     * @param string $operator
+     * @param string $chargeType
+     * @param string $chargeTypeCode
+     * @param string $note
+     * @param string $startDate
+     * @param string|null $endDate
      * @return array<int, float>
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */

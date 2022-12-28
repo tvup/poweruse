@@ -7,28 +7,12 @@ use App\Actions\ElectricityPrices\RetrieveTariffFromOperator;
 use App\Http\Controllers\Controller;
 use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
-use App\Services\GetDatahubPriceLists;
-use App\Services\GetSpotPrices;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ProcessController extends Controller
 {
-    private GetDatahubPriceLists $datahubPriceListsService;
-    private GetSpotPrices $spotPricesService;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct(GetDatahubPriceLists $datahubPriceListsService, GetSpotPrices $spotPricesService)
-    {
-        $this->datahubPriceListsService = $datahubPriceListsService;
-        $this->spotPricesService = $spotPricesService;
-    }
-
     /**
      * Handle the incoming request.
      *
@@ -95,7 +79,7 @@ class ProcessController extends Controller
         return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
 
-    private function getGridOperatorTariff(string $string)
+    private function getGridOperatorTariff(string $string) : array
     {
         $operator_number = Operator::$operatorNumber[$string];
         $operator = GridOperatorNettariffProperty::getByGLNNumber($operator_number);
