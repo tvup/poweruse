@@ -18,34 +18,9 @@ Route::get('/', function () {
     return redirect('el');
 })->name('home');
 
-Route::get(
-    '/totalprices',
-    App\Http\Controllers\TotalPricesController::class
-)->middleware(['auth'])->name('totalprices');
 
-Route::post(
-    'totalprices',
-    App\Http\Controllers\TotalPrices\ProcessController::class,
-)->middleware(['auth'])->name('totalprices.process');
 
-Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-Route::get('el/', 'ElController@index')->name('el');
-Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-meteringpoint');
-Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
-Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
-Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
-Route::get('el-totalprices/', 'ElController@indexTotalPrices')->name('el-totalprices');
-Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
-Route::post('processdata', 'ElController@processData');
-Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
-Route::post('getChargesForWeb', 'ElController@getChargesForWeb');
-Route::post('getSpotprices', 'ElController@getSpotprices');
-Route::post('getConsumption', 'ElController@getConsumption');
-Route::post('getTotalPrices', 'ElController@getTotalPrices');
-Route::post('processcustom', 'ElController@processCustom');
 
 
 require __DIR__.'/auth.php';
