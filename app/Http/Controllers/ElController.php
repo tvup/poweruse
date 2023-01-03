@@ -96,15 +96,6 @@ class ElController extends Controller
         return view('consumption')->with('data', $data ? : null);
     }
 
-    public function indexTotalPrices() : View
-    {
-        $data = session('data');
-        $chart = session('chart');
-        $companies = Operator::$operatorName;
-
-        return view('el-totalprices')->with('data', $data ? : null)->with('chart', $chart ? : null)->with('companies', $companies);
-    }
-
     public function indexCustomUsage() : View
     {
         $data = session('data');
