@@ -21,12 +21,12 @@ Route::get('/', function () {
 Route::get(
     '/totalprices',
     App\Http\Controllers\TotalPricesController::class
-)->middleware(['auth'])->name('totalprices');
+)->name('totalprices');
 
 Route::post(
     'totalprices',
     App\Http\Controllers\TotalPrices\ProcessController::class,
-)->middleware(['auth'])->name('totalprices.process');
+)->name('totalprices.process');
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
