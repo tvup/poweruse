@@ -11,6 +11,6 @@ class GridOperatorNettariffProperty extends Model
 
     public static function getByGLNNumber(int $glnNumber): GridOperatorNettariffProperty
     {
-        return self::where('GLN_number', $glnNumber)->firstOrFail();
+        return self::where('GLN_number', $glnNumber)->orderBy('id','desc')->firstOrFail();
     }
 }
