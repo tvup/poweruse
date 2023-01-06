@@ -76,7 +76,6 @@
 
 </head>
 <body>
-    @include('_menu')
     @yield('content')
 </body>
 </html>
