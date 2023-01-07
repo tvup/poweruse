@@ -16,11 +16,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('el');
-});
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get(
+    '/totalprices',
+    App\Http\Controllers\TotalPricesController::class
+)->name('totalprices');
+
+Route::post(
+    'totalprices',
+    App\Http\Controllers\TotalPrices\ProcessController::class,
+)->name('totalprices.process');
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -31,7 +37,6 @@ Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-met
 Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
 Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
 Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
-Route::get('el-totalprices/', 'ElController@indexTotalPrices')->name('el-totalprices');
 Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
 Route::post('processdata', 'ElController@processData');
 Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
@@ -40,6 +45,8 @@ Route::post('getSpotprices', 'ElController@getSpotprices');
 Route::post('getConsumption', 'ElController@getConsumption');
 Route::post('getTotalPrices', 'ElController@getTotalPrices');
 Route::post('processcustom', 'ElController@processCustom');
+
+
 
 
 require __DIR__.'/auth.php';
