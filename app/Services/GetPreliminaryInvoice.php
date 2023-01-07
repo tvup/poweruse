@@ -182,8 +182,7 @@ class GetPreliminaryInvoice
                 $datahubPriceLists = cache()->remember($key, 2592000, function () use ($datahubPriceListsQuery) {
                     return $datahubPriceListsQuery->get();;
                 });
-                $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour, &$boolOut) {
-
+                $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
                     $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
                     return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
                 });
@@ -442,7 +441,7 @@ class GetPreliminaryInvoice
         return $months;
     }
 
-    private function getGridOperatorTariffPrices($datahubPriceList): array
+    private function getGridOperatorTariffPrices(DatahubPriceList $datahubPriceList): array
     {
         $collection = collect($datahubPriceList);
         $gridOperatorTariffPrices = array();
