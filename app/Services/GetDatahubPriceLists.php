@@ -34,7 +34,7 @@ class GetDatahubPriceLists
     /**
      * @return array
      */
-    public function getAllDatahubTariffPriceLists($limit = 100, $offset= 0): array
+    public function getAllDatahubTariffPriceLists(int $limit = 100, int $offset= 0): array
     {
         $url = 'https://api.energidataservice.dk/dataset/DatahubPricelist?limit='.$limit . '&offset='.$offset;
         return Http::acceptJson()

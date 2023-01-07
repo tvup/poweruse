@@ -83,24 +83,6 @@ class ProcessController extends Controller
         return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
 
-    private function getGridOperatorTariff(DatahubPriceList $string) : array
-    {
-        $chargeType = $string->ChargeType;
-        $chargeTypeCode = $string->ChargeTypeCode;
-        $note = $string->Note;
-        $startDate = $string->ValidFrom;
-        $endDate = $string->ValidTo;
-
-
-        return (new RetrieveTariffFromOperator())->handle(
-            operator: $string->ChargeOwner,
-            chargeType: $chargeType,
-            chargeTypeCode: $chargeTypeCode,
-            note: $note,
-            startDate: $startDate,
-            endDate: $endDate,
-        );
-    }
 
     /**
      * @param string $operator

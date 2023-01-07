@@ -13,7 +13,7 @@ class GetDatahubChargeGroups
     /**
      * @return array
      */
-    public function getDatahubChargeGroups($limit = 100, $offset = 0): array
+    public function getDatahubChargeGroups(int $limit = 100, int $offset = 0): array
     {
         $url = 'https://api.energidataservice.dk/dataset/ChargeGroupYear?limit=' . $limit . '&offset=' . $offset;
         return Http::acceptJson()
