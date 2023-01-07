@@ -6,7 +6,6 @@ use App\Actions\ElectricityPrices\RetrieveSpotPrices;
 use App\Actions\ElectricityPrices\RetrieveTariffFromOperator;
 use App\Http\Controllers\Controller;
 use App\Models\DatahubPriceList;
-use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
