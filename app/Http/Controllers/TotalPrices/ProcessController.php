@@ -13,6 +13,10 @@ use Illuminate\Http\Request;
 
 class ProcessController extends Controller
 {
+    public function __construct(private readonly RetrieveSpotPrices $retrieveSpotPrices, private readonly RetrieveTariffFromOperator $retrieveTariffFromOperator)
+    {
+    }
+
     /**
      * Handle the incoming request.
      *
@@ -33,19 +37,19 @@ class ProcessController extends Controller
         $gridOperatorTariffPrices = $this->getGridOperatorTariff($gridOperatorName);
 
         //Get spot prices
-        $spotPrices = (new RetrieveSpotPrices())->handle(
+        $spotPrices = $this->retrieveSpotPrices->handle(
             area: $priceArea,
         );
 
         //Check if spot prices were received
-        if (count($spotPrices) == 0) {
+        if (count($spotPrices) === 0) {
             $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
             return redirect('totalprices')->with('error', $message)->withInput($request->all());
         }
 
         //Add tomorrows spotprices if requested
         if ($includeTomorrow) {
-            $toMorrowSpotPrices = (new RetrieveSpotPrices())->handle(
+            $toMorrowSpotPrices = $this->retrieveSpotPrices->handle(
                 area: $priceArea,
                 from: Carbon::now('Europe/Copenhagen')->startOfDay()->addDay()
             );
@@ -90,7 +94,7 @@ class ProcessController extends Controller
         $startDate = $operator->valid_from;
         $endDate = $operator->valid_to;
 
-        return (new RetrieveTariffFromOperator())->handle(
+        return $this->retrieveTariffFromOperator->handle(
             operator: $string,
             chargeType: $chargeType,
             chargeTypeCode: $chargeTypeCode,
@@ -112,7 +116,7 @@ class ProcessController extends Controller
         $startDate = '2023-01-01';
         $endDate = '2023-12-31';
 
-        return (new RetrieveTariffFromOperator())->handle(
+        return $this->retrieveTariffFromOperator->handle(
             operator: $operator,
             chargeType: $chargeType,
             chargeTypeCode: $chargeTypeCode,
@@ -134,7 +138,7 @@ class ProcessController extends Controller
         $startDate = '2023-01-01';
         $endDate = '2023-12-31';
 
-        return (new RetrieveTariffFromOperator())->handle(
+        return $this->retrieveTariffFromOperator->handle(
             operator: $operator,
             chargeType: $chargeType,
             chargeTypeCode: $chargeTypeCode,
@@ -156,7 +160,7 @@ class ProcessController extends Controller
         $startDate = '2022-01-01';
         $endDate = '2023-12-31';
 
-        return (new RetrieveTariffFromOperator())->handle(
+        return $this->retrieveTariffFromOperator->handle(
             operator: $operator,
             chargeType: $chargeType,
             chargeTypeCode: $chargeTypeCode,
@@ -178,7 +182,7 @@ class ProcessController extends Controller
         $startDate = '2023-01-01';
         $endDate = '2023-06-30';
 
-        return (new RetrieveTariffFromOperator())->handle(
+        return $this->retrieveTariffFromOperator->handle(
             operator: $operator,
             chargeType: $chargeType,
             chargeTypeCode: $chargeTypeCode,
