@@ -623,40 +623,6 @@ class ElController extends Controller
     }
 
     /**
-     * @param array<float> $array
-     * @return array<string>
-     */
-    private function makeColors(array $array) : array
-    {
-        $min = (float)min($array);
-        $max = (float)max($array);
-        $colours = [];
-        foreach ($array as $value) {
-            $value = (float)$value;
-            $percentage = ($value - $min) / ($max - $min);
-            $percentage = $percentage * 100.0;
-
-            $R = 0;
-            $G = 0;
-            $B = 0;
-
-            // 255 ÷ 50 = 5.1
-            if ($percentage > 50) {
-                $R = 5.1 * ($percentage - 50);
-            } elseif ($percentage < 50) {
-                $G = 255 - (5.1 * $percentage);
-            }
-
-            $dechex_r = dechex((int)$R) === '0' ? '00' : dechex((int)$R);
-            $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
-            $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
-
-            $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;
-        }
-        return $colours;
-    }
-
-    /**
      * @param string $operator
      * @param string $chargeType
      * @param string $chargeTypeCode
