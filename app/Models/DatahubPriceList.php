@@ -18,7 +18,45 @@ class DatahubPriceList extends Model
 
     protected $keyType = 'string';
 
-    protected $primaryKey = ['GLN_Number', 'ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom', 'ValidTo'];
+    protected $primaryKey = ['ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom'];
+
+    protected $fillable = [
+        'ChargeOwner'
+        ,'GLN_Number'
+        ,'ChargeType'
+        ,'ChargeTypeCode'
+        ,'Note'
+        ,'Description'
+        ,'ValidFrom'
+        ,'ValidTo'
+        ,'VATClass'
+        ,'Price1'
+        ,'Price2'
+        ,'Price3'
+        ,'Price4'
+        ,'Price5'
+        ,'Price6'
+        ,'Price7'
+        ,'Price8'
+        ,'Price9'
+        ,'Price10'
+        ,'Price11'
+        ,'Price12'
+        ,'Price13'
+        ,'Price14'
+        ,'Price15'
+        ,'Price16'
+        ,'Price17'
+        ,'Price18'
+        ,'Price19'
+        ,'Price20'
+        ,'Price21'
+        ,'Price22'
+        ,'Price23'
+        ,'Price24'
+        ,'TransparentInvoicing'
+        ,'TaxIndicator'
+        ,'ResolutionDuration'];
 
     public function getMatchingInDb(): DatahubPriceList|bool
     {

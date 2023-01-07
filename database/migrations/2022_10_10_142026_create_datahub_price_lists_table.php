@@ -15,13 +15,13 @@ class CreateDatahubPriceListsTable extends Migration
     {
         Schema::create('datahub_price_lists', function (Blueprint $table) {
             $table->string('ChargeOwner', 60);
-            $table->string('GLN_Number', 16);
+            $table->string('GLN_Number', 16)->nullable();
             $table->string('ChargeType', 3);
             $table->string('ChargeTypeCode', 20);
             $table->string('Note', 99);
-            $table->string('Description', 200);
+            $table->string('Description', 264); //Should only be 200 according to documentation, but can apparently be as large as 264
             $table->string('ValidFrom', 19);
-            $table->string('ValidTo', 19);
+            $table->string('ValidTo', 19)->nullable();
             $table->string('VATClass', 3);
             $table->float('Price1');
             $table->float('Price2')->nullable();
@@ -52,7 +52,7 @@ class CreateDatahubPriceListsTable extends Migration
             $table->string('ResolutionDuration', 10);
             $table->timestamp('created_at')->nullable();
             $table->softDeletes();
-            $table->primary(array('GLN_Number', 'ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom', 'ValidTo'), 'primary_price');
+            $table->primary(array('ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom'), 'primary_price');
         });
     }
 

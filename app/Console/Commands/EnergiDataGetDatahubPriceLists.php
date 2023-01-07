@@ -40,9 +40,9 @@ class EnergiDataGetDatahubPriceLists extends Command
      *
      * @return void
      */
-    public function __construct(GetDatahubPriceLists $datahubPriceListsService)
+    public function __construct(GetDatahubPriceLists $datahubPriceLists)
     {
-        $this->datahubPriceListsService = $datahubPriceListsService;
+        $this->datahubPriceListsService = $datahubPriceLists;
         parent::__construct();
     }
 
