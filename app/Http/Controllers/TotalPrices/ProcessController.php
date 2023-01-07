@@ -5,11 +5,13 @@ namespace App\Http\Controllers\TotalPrices;
 use App\Actions\ElectricityPrices\RetrieveSpotPrices;
 use App\Actions\ElectricityPrices\RetrieveTariffFromOperator;
 use App\Http\Controllers\Controller;
+use App\Models\DatahubPriceList;
 use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProcessController extends Controller
 {
@@ -26,11 +28,13 @@ class ProcessController extends Controller
             $includeTomorrow = true;
         }
 
-        $gridOperatorName = Operator::$operatorName[$request->netcompany];
-        $priceArea = Operator::$gridOperatorArea[$gridOperatorName];
+        $priceArea = $request->area;
+
+        //Input-request contains two keys: Note and Chargeowner seperated by "//"
+        $priceListKeys = explode('//', $request->netcompany);
 
         //Get tariff for grid operator
-        $gridOperatorTariffPrices = $this->getGridOperatorTariff($gridOperatorName);
+        $gridOperatorTariffPrices = $this->getGridOperatorTariffPrices($priceListKeys);
 
         //Get spot prices
         $spotPrices = (new RetrieveSpotPrices())->handle(
@@ -79,19 +83,17 @@ class ProcessController extends Controller
         return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
 
-    private function getGridOperatorTariff(string $string) : array
+    private function getGridOperatorTariff(DatahubPriceList $string) : array
     {
-        $operator_number = Operator::$operatorNumber[$string];
-        $operator = GridOperatorNettariffProperty::getByGLNNumber($operator_number);
+        $chargeType = $string->ChargeType;
+        $chargeTypeCode = $string->ChargeTypeCode;
+        $note = $string->Note;
+        $startDate = $string->ValidFrom;
+        $endDate = $string->ValidTo;
 
-        $chargeType = $operator->charge_type;
-        $chargeTypeCode = $operator->charge_type_code;
-        $note = $operator->note;
-        $startDate = $operator->valid_from;
-        $endDate = $operator->valid_to;
 
         return (new RetrieveTariffFromOperator())->handle(
-            operator: $string,
+            operator: $string->ChargeOwner,
             chargeType: $chargeType,
             chargeTypeCode: $chargeTypeCode,
             note: $note,
@@ -220,5 +222,23 @@ class ProcessController extends Controller
             $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;
         }
         return $colours;
+    }
+
+    /**
+     * @param array $array
+     * @return array
+     */
+    private function getGridOperatorTariffPrices(array $array): array
+    {
+        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'2023-01-07\' between ValidFrom and ValidTo')->firstOrFail();
+        $collection = collect($datahubPriceList);
+        $gridOperatorTariffPrices = array();
+        $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
+            if (Str::contains($key, 'Price')) {
+                $key = ((int)Str::replace('Price', '', $key)) - 1;
+                $gridOperatorTariffPrices[$key] = $item;
+            }
+        });
+        return $gridOperatorTariffPrices;
     }
 }

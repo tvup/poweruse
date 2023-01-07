@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\DatahubPriceList;
 use App\Models\Operator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -16,10 +17,10 @@ class GetDatahubPriceLists
         if(!$endDate) {
             $endDate = Carbon::parse($startDate, 'Europe/Copenhagen')->addDay()->toDateString();
         }
-        $GLN_number = Operator::$operatorNumber[$operator];
+        $GLN_number = DatahubPriceList::whereChargeowner($operator)->firstOrFail()->GLN_Number;
         $url = 'https://api.energidataservice.dk/dataset/DatahubPricelist?'
-            . 'start=' . $startDate . '&'
-            . 'end=' . $endDate . '&'
+            . 'start=' . substr($startDate,0,10) . '&'
+            . 'end=' . substr($endDate,0,10) . '&'
             . 'filter={'
             . '"ChargeType":"' . $chargeType . '",'
             . '"ChargeTypeCode":"' . $chargeTypeCode . '",'
