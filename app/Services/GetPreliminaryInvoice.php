@@ -192,11 +192,9 @@ class GetPreliminaryInvoice
                 $netPrices = array_filter($netPrices, 'strlen');
                 if (count($netPrices) > 1) {
                     if (array_key_exists($datahubPriceList->Note, $bill)) {
-                        $var = $netPrices[Carbon::parse($hour)->hour];
-                        $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $var * $consumption;
+                        $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $netPrices[Carbon::parse($hour)->hour] * $consumption;
                     } else {
-                        $var1 = $netPrices[Carbon::parse($hour)->hour];
-                        $bill[$datahubPriceList->Note] = $var1 * $consumption;
+                        $bill[$datahubPriceList->Note] = $netPrices[Carbon::parse($hour)->hour] * $consumption;
                     }
                 } else {
                     if (array_key_exists($datahubPriceList->Note, $bill)) {
