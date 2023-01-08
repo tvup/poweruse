@@ -206,12 +206,13 @@ class ProcessController extends Controller
     }
 
     /**
-     * @param array $array
-     * @return array
+     * @param array<string> $array
+     * @return array<int, float>
      */
     private function getGridOperatorTariffPrices(array $array): array
     {
-        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'2023-01-07\' between ValidFrom and ValidTo')->firstOrFail();
+        $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
+        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\''. $toDay .'\' between ValidFrom and ValidTo')->firstOrFail();
         $collection = collect($datahubPriceList);
         $gridOperatorTariffPrices = array();
         $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
