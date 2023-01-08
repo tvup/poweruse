@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\RecordsNotFoundException;
 
-class LoadDataDatahubPriceLists extends Command
+class EnergiDataServiceLoadDatahubPriceLists extends Command
 {
     /**
      * The name and signature of the console command.
