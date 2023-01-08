@@ -46,7 +46,7 @@ class EnergiDataServiceLoadChargeGroups extends Command
         $more = 1;
         $i = 0;
         while ($more) {
-            $records = $this->getDatahubChargeGroups->getChargeGroups(100, $i);
+            $records = $this->getDatahubChargeGroups->requestChargeGroups(100, $i);
             foreach ($records as $record) {
                 ChargeGroup::create([
                     'year' => substr($record['Year'], 0, 4),
