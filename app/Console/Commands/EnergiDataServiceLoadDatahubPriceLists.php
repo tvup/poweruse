@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\DatahubPriceList;
-use App\Services\GetDatahubChargeGroups;
+use App\Services\GetEnergiDataServiceChargeGroups;
 use App\Services\GetDatahubPriceLists;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -27,7 +27,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
     protected $description = 'Requests all prices from EnergiDataService. Subarea for prices is called "Datahub Price List" at EnergiDataService. All data is stored to local data storage';
 
     private GetDatahubPriceLists $datahubPriceListsService;
-    private GetDatahubChargeGroups $datahubChargeGroups;
+    private GetEnergiDataServiceChargeGroups $datahubChargeGroups;
 
 
     /**
@@ -35,7 +35,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
      *
      * @return void
      */
-    public function __construct(GetDatahubPriceLists $datahubPriceLists, GetDatahubChargeGroups $getDatahubChargeGroups)
+    public function __construct(GetDatahubPriceLists $datahubPriceLists, GetEnergiDataServiceChargeGroups $getDatahubChargeGroups)
     {
         $this->datahubPriceListsService = $datahubPriceLists;
         $this->datahubChargeGroups = $getDatahubChargeGroups;

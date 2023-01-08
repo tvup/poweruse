@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\ChargeGroup;
-use App\Services\GetDatahubChargeGroups;
+use App\Services\GetEnergiDataServiceChargeGroups;
 use Illuminate\Console\Command;
 
 class EnergiDataServiceLoadChargeGroups extends Command
@@ -22,14 +22,14 @@ class EnergiDataServiceLoadChargeGroups extends Command
      */
     protected $description = 'Requests data about grid areas from EnergiDataService. Subarea is called "Charge Groups" at EnergiDataService. All data is stored to local data storage';
 
-    private GetDatahubChargeGroups $getDatahubChargeGroups;
+    private GetEnergiDataServiceChargeGroups $getDatahubChargeGroups;
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(GetDatahubChargeGroups $datahubPriceLists)
+    public function __construct(GetEnergiDataServiceChargeGroups $datahubPriceLists)
     {
         $this->getDatahubChargeGroups = $datahubPriceLists;
         parent::__construct();
@@ -46,7 +46,7 @@ class EnergiDataServiceLoadChargeGroups extends Command
         $more = 1;
         $i = 0;
         while ($more) {
-            $records = $this->getDatahubChargeGroups->getDatahubChargeGroups(100, $i);
+            $records = $this->getDatahubChargeGroups->getChargeGroups(100, $i);
             foreach ($records as $record) {
                 ChargeGroup::create([
                     'year' => substr($record['Year'], 0, 4),

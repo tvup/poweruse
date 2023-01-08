@@ -3,17 +3,15 @@
 namespace App\Services;
 
 use App\Models\ChargeGroup;
-use App\Models\Operator;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
-class GetDatahubChargeGroups
+class GetEnergiDataServiceChargeGroups
 {
 
     /**
      * @return array
      */
-    public function getDatahubChargeGroups(int $limit = 100, int $offset = 0): array
+    public function getChargeGroups(int $limit = 100, int $offset = 0): array
     {
         $url = 'https://api.energidataservice.dk/dataset/ChargeGroupYear?limit=' . $limit . '&offset=' . $offset;
         return Http::acceptJson()
