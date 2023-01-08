@@ -90,7 +90,7 @@ class EnergiDataGetDatahubPriceLists extends Command
         $endDate = $safeValues['end_date'];
 
 
-        $records = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        $records = $this->datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $this->table(array_keys($records[0]), array_values($records));
         if ($this->option('save-to-db')) {
             foreach ($records as $record) {

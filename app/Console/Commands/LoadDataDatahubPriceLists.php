@@ -53,7 +53,7 @@ class LoadDataDatahubPriceLists extends Command
         $newone = 0;
         $i = 0;
         while ($more) {
-            $records = $this->datahubPriceListsService->getAllDatahubTariffPriceLists(100, $i);
+            $records = $this->datahubPriceListsService->requestAllDatahubPriceListsFromEnergiDataService(100, $i);
             foreach ($records as $record) {
                 //GLN-number hack because energinet doesn't return gln number as they should
                 $chargeOwner = $record['ChargeOwner'];

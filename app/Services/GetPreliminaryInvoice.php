@@ -180,7 +180,7 @@ class GetPreliminaryInvoice
                 $datahubPriceListsQuery = DatahubPriceList::whereNote($tariff['name'])->whereGlnNumber($tariff['owner'])->whereDescription($tariff['description'])->whereRaw('NOT (ValidFrom > \'' . $to_date . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . $start_date . '\' ))');
                 $key = $tariff['owner'] . $tariff['name']. $tariff['description'] . $to_date . $start_date;
                 $datahubPriceLists = cache()->remember($key, 2592000, function () use ($datahubPriceListsQuery) {
-                    return $datahubPriceListsQuery->get();;
+                    return $datahubPriceListsQuery->get();
                 });
                 $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
                     $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));

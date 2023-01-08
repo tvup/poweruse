@@ -633,7 +633,7 @@ class ElController extends Controller
      */
     private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
     {
-        $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        $data = $this->datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $collection = collect($data[0]);
         $gridprices = array();
         $collection->each(function ($item, $key) use (&$gridprices) {
