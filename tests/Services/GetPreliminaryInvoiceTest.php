@@ -2,6 +2,8 @@
 
 namespace Tests\Services;
 
+use App\Models\DatahubPriceList;
+use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
 use App\Services\GetSpotPrices;
@@ -14,6 +16,7 @@ class GetPreliminaryInvoiceTest extends TestCase
     private $charges;
     private mixed $spotPrices;
     private mixed $testConsumptions;
+    private mixed $testCharges;
 
 
     protected function setUp(): void
@@ -28,6 +31,15 @@ class GetPreliminaryInvoiceTest extends TestCase
         //Consumption is normally returned from the service as an array with {date_time=>usage}
         //So a key with 00:00 means the usage between 00:00 and 01:00
         $this->testConsumptions = $this->loadTestData(fixture_path('consumption_data.json'));
+
+        $array = [];
+        foreach($this->loadTestData(fixture_path('charges.json')) as $object) {
+            $datahubPriceList = new DatahubPriceList();
+            $datahubPriceList->fill($object);
+            array_push($array, $datahubPriceList);
+        }
+
+        $this->testCharges = collect($array);
 
 
         parent::setUp();
@@ -44,7 +56,6 @@ class GetPreliminaryInvoiceTest extends TestCase
      */
     public function testGetBill()
     {
-        $this->markTestSkipped();
         $this->mock(GetMeteringData::class, function (MockInterface $mock) {
             $mock
                 ->shouldReceive('getData')
@@ -61,6 +72,76 @@ class GetPreliminaryInvoiceTest extends TestCase
                 ->shouldReceive('getData')
                 ->once()
                 ->andReturn($this->spotPrices);
+        });
+
+        $this->mock(GetDatahubPriceLists::class, function (MockInterface $mock) {
+            $query = DatahubPriceList::whereNote('Transmissions nettarif')->whereGlnNumber('5790000432752')->whereDescription('Netafgiften, for både forbrugere og producenter, dækker omkostninger til drift og vedligehold af det overordnede elnet (132/150 og 400 kv nettet) og drift og vedligehold af udlandsforbindelserne.')->whereRaw('NOT (ValidFrom > \'' . '2022-10-01' . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . '2022-10-02' . '\' ))');
+            $mock
+                ->shouldReceive('getQueryForFetchingSpecificTariffFromDB')
+                ->withArgs(['Transmissions nettarif', '5790000432752', 'Netafgiften, for både forbrugere og producenter, dækker omkostninger til drift og vedligehold af det overordnede elnet (132/150 og 400 kv nettet) og drift og vedligehold af udlandsforbindelserne.', '2022-10-02', '2022-10-01'])
+                ->andReturn($query);
+
+            $mock
+                ->shouldReceive('getFromQuery')
+                ->with($query)
+                ->once()
+                ->andReturn($this->testCharges->filter(function ($item) {
+                    return $item->Note == 'Transmissions nettarif';
+                }));
+
+            $query = DatahubPriceList::whereNote('Systemtarif')->whereGlnNumber('5790000432752')->whereDescription('Systemafgiften dækker omkostninger til forsyningssikkerhed og elforsyningens kvalitet.')->whereRaw('NOT (ValidFrom > \'' . '2022-10-01' . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . '2022-10-02' . '\' ))');
+            $mock
+                ->shouldReceive('getQueryForFetchingSpecificTariffFromDB')
+                ->withArgs(['Systemtarif', '5790000432752', 'Systemafgiften dækker omkostninger til forsyningssikkerhed og elforsyningens kvalitet.', '2022-10-02', '2022-10-01'])
+                ->andReturn($query);
+            $mock
+                ->shouldReceive('getFromQuery')
+                ->with($query)
+                ->once()
+                ->andReturn($this->testCharges->filter(function ($item) {
+                    return $item->Note == 'Systemtarif';
+                }));
+
+            $query = DatahubPriceList::whereNote('Balancetarif for forbrug')->whereGlnNumber('5790000432752')->whereDescription('Balancetarif for forbrug')->whereRaw('NOT (ValidFrom > \'' . '2022-10-01' . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . '2022-10-02' . '\' ))');
+            $mock
+                ->shouldReceive('getQueryForFetchingSpecificTariffFromDB')
+                ->withArgs(['Balancetarif for forbrug', '5790000432752', 'Balancetarif for forbrug', '2022-10-02', '2022-10-01'])
+                ->andReturn($query);
+            $mock
+                ->shouldReceive('getFromQuery')
+                ->with($query)
+                ->once()
+                ->andReturn($this->testCharges->filter(function ($item) {
+                    return $item->Note == 'Balancetarif for forbrug';
+                }));
+
+            $query = DatahubPriceList::whereNote('Elafgift')->whereGlnNumber('5790000432752')->whereDescription('Elafgiften')->whereRaw('NOT (ValidFrom > \'' . '2022-10-01' . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . '2022-10-02' . '\' ))');
+            $mock
+                ->shouldReceive('getQueryForFetchingSpecificTariffFromDB')
+                ->withArgs(['Elafgift', '5790000432752', 'Elafgiften', '2022-10-02', '2022-10-01'])
+                ->andReturn($query);
+            $mock
+                ->shouldReceive('getFromQuery')
+                ->with($query)
+                ->once()
+                ->andReturn($this->testCharges->filter(function ($item) {
+                    return $item->Note == 'Elafgift';
+                }));
+
+            $query = DatahubPriceList::whereNote('Nettarif C time')->whereGlnNumber('5790000705689')->whereDescription('Nettarif C time')->whereRaw('NOT (ValidFrom > \'' . '2022-10-01' . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . '2022-10-02' . '\' ))');
+            $mock
+                ->shouldReceive('getQueryForFetchingSpecificTariffFromDB')
+                ->withArgs(['Nettarif C time', '5790000705689', 'Nettarif C time', '2022-10-02', '2022-10-01'])
+                ->andReturn($query);
+            $mock
+                ->shouldReceive('getFromQuery')
+                ->with($query)
+                ->once()
+                ->andReturn($this->testCharges->filter(function ($item) {
+                    return $item->Note == 'Nettarif C time';
+                }));
+
+
         });
 
         $expectedResult = [

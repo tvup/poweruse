@@ -9,22 +9,32 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
+/**
+ * @property GetDatahubPriceLists $datahubPriceListService
+ * @property GetMeteringData $meteringDataService
+ */
 class GetPreliminaryInvoice
 {
     const ALL_TARIFFS = 'Alle Tariffer';
     /**
      * @var GetMeteringData
      */
-    private $meteringDataService;
+    private GetMeteringData $meteringDataService;
+
+    /**
+     * @var GetDatahubPriceLists
+     */
+    private GetDatahubPriceLists $datahubPriceListService;
 
     /**
      * Create a new service instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService)
+    public function __construct(GetMeteringData $meteringDataService, GetDatahubPriceLists $datahubPriceListService)
     {
         $this->meteringDataService = $meteringDataService;
+        $this->datahubPriceListService = $datahubPriceListService;
     }
 
     /**
@@ -172,15 +182,12 @@ class GetPreliminaryInvoice
         $sum = 0;
 
         $bill['meta']['Interval']['antal timer i intervallet'] = count($meterData);
-
         foreach ($meterData as $hour => $consumption) {
-
             foreach ($tariffs as $tariff) {
-                //Nettarif
-                $datahubPriceListsQuery = DatahubPriceList::whereNote($tariff['name'])->whereGlnNumber($tariff['owner'])->whereDescription($tariff['description'])->whereRaw('NOT (ValidFrom > \'' . $to_date . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . $start_date . '\' ))');
+                $datahubPriceListsQuery = $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'], $to_date, $start_date);
                 $key = $tariff['owner'] . $tariff['name']. $tariff['description'] . $to_date . $start_date;
                 $datahubPriceLists = cache()->remember($key, 2592000, function () use ($datahubPriceListsQuery) {
-                    return $datahubPriceListsQuery->get();
+                    return $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
                 });
                 $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
                     $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\DatahubPriceList;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class GetDatahubPriceLists
@@ -46,5 +48,25 @@ class GetDatahubPriceLists
         $url = 'https://api.energidataservice.dk/dataset/DatahubPricelist?limit='.$limit . '&offset='.$offset;
         return Http::acceptJson()
             ->get($url)->json('records');
+    }
+
+    /**
+     * @param string $name
+     * @param string $gln_number
+     * @param string $description
+     * @param string $toDate
+     * @param string $fromDate
+     * @return Builder
+     */
+    public function getQueryForFetchingSpecificTariffFromDB(string $name, string $gln_number, string $description, string $toDate, string $fromDate) : Builder {
+        return DatahubPriceList::whereNote($name)->whereGlnNumber($gln_number)->whereDescription($description)->whereRaw('NOT (ValidFrom > \'' . $toDate . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . $fromDate . '\' ))');
+    }
+
+    /**
+     * @param Builder $query
+     * @return Collection<int, DatahubPriceList>
+     */
+    public function getFromQuery(Builder $query): Collection {
+        return $query->get();
     }
 }
