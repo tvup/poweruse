@@ -7,6 +7,7 @@ use App\Models\DatahubPriceList;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
 /**
@@ -194,6 +195,9 @@ class GetPreliminaryInvoice
                     return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
                 });
                 $datahubPriceList = $datahubPriceLists->first();
+                if(!$datahubPriceList) {
+                    throw new InvalidArgumentException('Price element for tariff' . $tariff['name'] . '/' . $tariff['description'] . ' by operator ' . $tariff['owner'] . 'with validity period from: ' . $start_date . ' to: ' . $to_date . ' mot found');
+                }
                 $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
                 $netPrices = array_filter($netPrices, 'strlen');
                 if (count($netPrices) > 1) {
