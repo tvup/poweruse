@@ -191,12 +191,12 @@ class GetPreliminaryInvoice
                     return $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
                 });
                 $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
-                    $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
+                    $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo ?? '2030-01-01', 'Europe/Copenhagen'));
                     return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
                 });
                 $datahubPriceList = $datahubPriceLists->first();
                 if(!$datahubPriceList) {
-                    throw new InvalidArgumentException('Price element for tariff' . $tariff['name'] . '/' . $tariff['description'] . ' by operator ' . $tariff['owner'] . 'with validity period from: ' . $start_date . ' to: ' . $to_date . ' mot found');
+                    throw new InvalidArgumentException('Price element for tariff ' . $tariff['name'] . ' by operator ' . $tariff['owner'] . ' with validity period from: ' . $start_date . ' to: ' . $to_date . ' not found');
                 }
                 $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
                 $netPrices = array_filter($netPrices, 'strlen');
