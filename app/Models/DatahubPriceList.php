@@ -2,61 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DatahubPriceList extends Model
+class DatahubPriceList extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
-    const UPDATED_AT = null;
-
-    protected $guarded = ['created_at', 'deleted_at'];
+    public $timestamps = false;
 
     public $incrementing = false;
 
     protected $keyType = 'string';
 
     protected $primaryKey = ['ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom'];
-
-    protected $fillable = [
-        'ChargeOwner'
-        ,'GLN_Number'
-        ,'ChargeType'
-        ,'ChargeTypeCode'
-        ,'Note'
-        ,'Description'
-        ,'ValidFrom'
-        ,'ValidTo'
-        ,'VATClass'
-        ,'Price1'
-        ,'Price2'
-        ,'Price3'
-        ,'Price4'
-        ,'Price5'
-        ,'Price6'
-        ,'Price7'
-        ,'Price8'
-        ,'Price9'
-        ,'Price10'
-        ,'Price11'
-        ,'Price12'
-        ,'Price13'
-        ,'Price14'
-        ,'Price15'
-        ,'Price16'
-        ,'Price17'
-        ,'Price18'
-        ,'Price19'
-        ,'Price20'
-        ,'Price21'
-        ,'Price22'
-        ,'Price23'
-        ,'Price24'
-        ,'TransparentInvoicing'
-        ,'TaxIndicator'
-        ,'ResolutionDuration'];
 
     public function getMatchingInDb(): DatahubPriceList|bool
     {

@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
@@ -14,9 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $SpotPriceDKK
  * @property float $SpotPriceEUR
  */
-class Elspotprices extends Model
+class Elspotprices extends BaseModel
 {
-    use HasFactory;
-
     public $timestamps = false;
 }
