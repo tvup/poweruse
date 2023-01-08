@@ -17,17 +17,17 @@ class LoadDataDatahubPriceLists extends Command
      *
      * @var string
      */
-    protected $signature = 'energidata:load-datahub-prices';
+    protected $signature = 'energidata:request-and-store-datahub-prices';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Requests all prices from EnergiDataService. Subarea for prices is called "Datahub Price List" at EnergiDataService. All data is stored to local data storage';
+
     private GetDatahubPriceLists $datahubPriceListsService;
     private GetDatahubChargeGroups $datahubChargeGroups;
-
 
 
     /**
@@ -50,7 +50,6 @@ class LoadDataDatahubPriceLists extends Command
     public function handle()
     {
         $more = 1;
-        $newone = 0;
         $i = 0;
         while ($more) {
             $records = $this->datahubPriceListsService->requestAllDatahubPriceListsFromEnergiDataService(100, $i);
@@ -61,8 +60,7 @@ class LoadDataDatahubPriceLists extends Command
                     try {
                         $chargeGroup = $this->datahubChargeGroups->getChargeGroup($chargeOwner);
                     } catch (ModelNotFoundException $e) {
-                        dump($e->getMessage() . ' with GridOperatorName = ' . $chargeOwner);
-                        return '';
+                        throw new RecordsNotFoundException($e->getMessage() . ' with GridOperatorName = ' . $chargeOwner);
                     }
                     return substr($chargeGroup->grid_operator_gln, 0, -4);
                 });
@@ -107,7 +105,7 @@ class LoadDataDatahubPriceLists extends Command
                         'ResolutionDuration' => $record['ResolutionDuration']]);
 
                 } catch (QueryException $e) {
-                    if($e->getCode() == 23000) {
+                    if ($e->getCode() == 23000) {
                         //NOP
                     } else {
                         throw $e;
@@ -117,9 +115,7 @@ class LoadDataDatahubPriceLists extends Command
 
             $i = $i + 100;
             $more = count($records) != 0;
-            $newone++;
         }
-        dump('$newone: ' . $newone);
         return Command::SUCCESS;
 
     }
