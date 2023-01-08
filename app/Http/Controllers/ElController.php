@@ -181,7 +181,7 @@ class ElController extends Controller
             $meterData = [];
             foreach ($fields as $key => $value) {
                 if(strpos($key, 'usage') !== false) {
-                    $timeslot = str_replace('usage', '', $key);
+                    $timeslot = (int) str_replace('usage', '', $key);
                     $newKey = Carbon::now('Europe/Copenhagen')->startOfDay()->hour($timeslot)->format('c');
                     $newValue = $value ? str_replace(',','.', $value) : null;
                     $meterData[$newKey] =($newValue ? : 0);
