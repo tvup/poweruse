@@ -2,13 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Operator extends Model
+class Operator extends BaseModel
 {
-    use HasFactory;
-
     /**
      * @var array<int|string, string>
      */

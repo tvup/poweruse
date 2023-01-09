@@ -3,26 +3,39 @@
 namespace App\Services;
 
 use App\Exceptions\DataUnavailableException;
+use App\Models\DatahubPriceList;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
+/**
+ * @property GetDatahubPriceLists $datahubPriceListService
+ * @property GetMeteringData $meteringDataService
+ */
 class GetPreliminaryInvoice
 {
     const ALL_TARIFFS = 'Alle Tariffer';
     /**
      * @var GetMeteringData
      */
-    private $meteringDataService;
+    private GetMeteringData $meteringDataService;
+
+    /**
+     * @var GetDatahubPriceLists
+     */
+    private GetDatahubPriceLists $datahubPriceListService;
 
     /**
      * Create a new service instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService)
+    public function __construct(GetMeteringData $meteringDataService, GetDatahubPriceLists $datahubPriceListService)
     {
         $this->meteringDataService = $meteringDataService;
+        $this->datahubPriceListService = $datahubPriceListService;
     }
 
     /**
@@ -40,16 +53,16 @@ class GetPreliminaryInvoice
      * @throws ElOverblikApiException
      * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource=null, string $refreshToken=null, array $ewiiCredentials=null, float|string $subscription_at_elsupplier=23.20, float|string $overhead=0.015): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015): array
     {
-        $overhead = str_replace(',','.',$overhead);
+        $overhead = str_replace(',', '.', $overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMeCredentials) {
                 $end_date = Carbon::now()->startOfHour()->format('Y-m-d\TH:i:s');
             }
         }
-        if(Carbon::parse($start_date)->startOfDay()->eq(Carbon::parse($end_date)->startOfDay())) {
+        if (Carbon::parse($start_date)->startOfDay()->eq(Carbon::parse($end_date)->startOfDay())) {
             $end_date = Carbon::now()->addDay()->startOfDay()->toDateString();
             if ($smartMeCredentials) {
                 $end_date = Carbon::now()->addDay()->startOfHour()->format('Y-m-d\TH:i:s');
@@ -60,14 +73,14 @@ class GetPreliminaryInvoice
 
         switch ($dataSource) {
             case 'EWII':
-                if(!$ewiiCredentials || (!array_key_exists('ewiiEmail',$ewiiCredentials) && !array_key_exists('ewiiPassword',$ewiiCredentials))) {
+                if (!$ewiiCredentials || (!array_key_exists('ewiiEmail', $ewiiCredentials) && !array_key_exists('ewiiPassword', $ewiiCredentials))) {
                     throw new \InvalidArgumentException('EWII was selected as provider, but email and password for EWII-account wasn\'t given');
                 }
                 $key = $ewiiCredentials['ewiiEmail'] . ' ' . $start_date . ' ' . $end_date;
                 break;
             case 'DATAHUB':
             case null;
-                if(!$refreshToken) {
+                if (!$refreshToken) {
                     throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
                 }
                 $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
@@ -97,10 +110,10 @@ class GetPreliminaryInvoice
             }
 
             if ($smartMeCredentials) {
-                $source = ($source? : '') . ', Smart-Me';
+                $source = ($source ?: '') . ', Smart-Me';
                 $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
-                $smart_me_end_date = Carbon::parse($end_date,'Europe/Copenhagen')->addDay()->startOfDay();
-                if(count($meterData)>0) {
+                $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->addDay()->startOfDay();
+                if (count($meterData) > 0) {
                     $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 }
 
@@ -141,8 +154,8 @@ class GetPreliminaryInvoice
 
             $charges = cache($key);
             if (!$charges) {
-                if($dataSource=='EWII') {
-                    throw new DataUnavailableException('When querying Ewii, charges from datahub needs to be present at server. Unfortunately we don\'t have them yet',1);
+                if ($dataSource == 'EWII') {
+                    throw new DataUnavailableException('When querying Ewii, charges from datahub needs to be present at server. Unfortunately we don\'t have them yet', 1);
                 }
                 $charges = $this->meteringDataService->getCharges($refreshToken);
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
@@ -162,7 +175,7 @@ class GetPreliminaryInvoice
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
         }
         $diff_in_days = Carbon::parse($start_date, 'Europe/Copenhagen')->diffInDays(Carbon::parse($to_date, 'Europe/Copenhagen'));
-        if(Carbon::parse($to_date, 'Europe/Copenhagen')->gt(Carbon::parse($to_date, 'Europe/Copenhagen')->startOfDay())) {
+        if (Carbon::parse($to_date, 'Europe/Copenhagen')->gt(Carbon::parse($to_date, 'Europe/Copenhagen')->startOfDay())) {
             $diff_in_days + 1;
         }
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days]];
@@ -170,26 +183,39 @@ class GetPreliminaryInvoice
         $sum = 0;
 
         $bill['meta']['Interval']['antal timer i intervallet'] = count($meterData);
-
         foreach ($meterData as $hour => $consumption) {
-            //array_push($bill['meta']['Interval']['time'], $hour);
-            //echo $hour . ': ' . $consumption . PHP_EOL;
             foreach ($tariffs as $tariff) {
-                if (count($tariff['prices']) > 1) {
-                    if (array_key_exists($tariff['name'], $bill)) {
-                        $bill[$tariff['name']] = $bill[$tariff['name']] + $tariff['prices'][Carbon::parse($hour)->hour]['price'] * $consumption;
+                $datahubPriceListsQuery = $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'], $to_date, $start_date);
+                $key = $tariff['owner'] . $tariff['name']. $tariff['description'] . $to_date . $start_date;
+                $datahubPriceLists = cache()->remember($key, 2592000, function () use ($datahubPriceListsQuery) {
+                    return $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
+                });
+                $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
+                    $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo ?? '2030-01-01', 'Europe/Copenhagen'));
+                    return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
+                });
+                $datahubPriceList = $datahubPriceLists->first();
+                if(!$datahubPriceList) {
+                    throw new InvalidArgumentException('Price element for tariff ' . $tariff['name'] . ' by operator ' . $tariff['owner'] . ' with validity period from: ' . $start_date . ' to: ' . $to_date . ' not found');
+                }
+                $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
+                $netPrices = array_filter($netPrices, 'strlen');
+                if (count($netPrices) > 1) {
+                    if (array_key_exists($datahubPriceList->Note, $bill)) {
+                        $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $netPrices[Carbon::parse($hour)->hour] * $consumption;
                     } else {
-                        $bill[$tariff['name']] = $tariff['prices'][Carbon::parse($hour)->hour]['price'] * $consumption;
+                        $bill[$datahubPriceList->Note] = $netPrices[Carbon::parse($hour)->hour] * $consumption;
                     }
                 } else {
-                    if (array_key_exists($tariff['name'], $bill)) {
-                        $bill[$tariff['name']] = $bill[$tariff['name']] + $tariff['prices'][0]['price'] * $consumption;
+                    if (array_key_exists($datahubPriceList->Note, $bill)) {
+                        $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $netPrices[0] * $consumption;
                     } else {
-                        $bill[$tariff['name']] = $tariff['prices'][0]['price'] * $consumption;
+                        $bill[$datahubPriceList->Note] = $netPrices[0] * $consumption;
                     }
                 }
-                $bill[$tariff['name']] = round($bill[$tariff['name']], 2);
+                $bill[$datahubPriceList->Note] = round($bill[$datahubPriceList->Note], 2);
             }
+
             if (array_key_exists('Spotpris', $bill)) {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
                     $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
@@ -228,26 +254,26 @@ class GetPreliminaryInvoice
         $months = $this->getAllMonthsInRange($start_date, $end_date);
 
         $countOfAllDaysInMonhtsInvolved = 0;
-        foreach($months as $month) {
+        foreach ($months as $month) {
             $countOfAllDaysInMonhtsInvolved = $countOfAllDaysInMonhtsInvolved + Carbon::createFromDate(now()->year, $month, 1)->daysInMonth;
         }
 
         foreach ($subscriptions as $subscription) {
-            $bill[$subscription['name'].' (forholdsvis antal dage pr. måned, månedspris: '.round((count($months) * $subscription['price']) ,2).')'] = round((count($months) * $subscription['price']) * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved),2);
+            $bill[$subscription['name'] . ' (forholdsvis antal dage pr. måned, månedspris: ' . round((count($months) * $subscription['price']), 2) . ')'] = round((count($months) * $subscription['price']) * ($bill['meta']['Interval']['antal dage'] / $countOfAllDaysInMonhtsInvolved), 2);
         }
 
-        if(is_string($subscription_at_elsupplier)) {
-            $subscription_at_elsupplier = (float) str_replace(',', '.', $subscription_at_elsupplier);
+        if (is_string($subscription_at_elsupplier)) {
+            $subscription_at_elsupplier = (float)str_replace(',', '.', $subscription_at_elsupplier);
         }
 
 
         $supplierSubscriptionDisplayText = 'Elabonnement (forholdsvis antal dage pr. måned, månedspris: ' . $subscription_at_elsupplier . ')';
-        $bill[$supplierSubscriptionDisplayText] = count($months) * $subscription_at_elsupplier * ($bill['meta']['Interval']['antal dage']/$countOfAllDaysInMonhtsInvolved);
+        $bill[$supplierSubscriptionDisplayText] = count($months) * $subscription_at_elsupplier * ($bill['meta']['Interval']['antal dage'] / $countOfAllDaysInMonhtsInvolved);
         $bill[$supplierSubscriptionDisplayText] = round($bill[$supplierSubscriptionDisplayText], 2);
 
         $bill['Moms'] = 0;
         foreach ($bill as $key => $value) {
-            if($key== self::ALL_TARIFFS) {
+            if ($key == self::ALL_TARIFFS) {
                 continue;
             }
             if (is_numeric($value)) {
@@ -258,7 +284,7 @@ class GetPreliminaryInvoice
 
         $bill['Total'] = 0;
         foreach ($bill as $key => $value) {
-            if($key== '' . self::ALL_TARIFFS . '') {
+            if ($key == '' . self::ALL_TARIFFS . '') {
                 continue;
             }
             if (is_numeric($value)) {
@@ -267,10 +293,10 @@ class GetPreliminaryInvoice
         }
         $bill['Total'] = round($bill['Total'], 2);
 
-        if(array_key_exists('Spotpris',$bill) && $sum!=0) {
-            $bill['Statistik']['Gennemsnitspris, strøm inkl. moms'] = round(($bill['Spotpris'] + $bill['Overhead'])*1.25/$sum, 2) . ' kr./kWh';
-            $bill['Statistik']['Gennemsnitspris, alt tarifering inkl. moms'] = round(($bill[self::ALL_TARIFFS] * 1.25 )/$sum, 2) . ' kr./kWh';
-            $bill['Statistik']['Gennemsnitspris, i alt (abonnementer indregnet) inkl. moms'] = round(($bill['Total'] )/$sum, 2) . ' kr./kWh';
+        if (array_key_exists('Spotpris', $bill) && $sum != 0) {
+            $bill['Statistik']['Gennemsnitspris, strøm inkl. moms'] = round(($bill['Spotpris'] + $bill['Overhead']) * 1.25 / $sum, 2) . ' kr./kWh';
+            $bill['Statistik']['Gennemsnitspris, alt tarifering inkl. moms'] = round(($bill[self::ALL_TARIFFS] * 1.25) / $sum, 2) . ' kr./kWh';
+            $bill['Statistik']['Gennemsnitspris, i alt (abonnementer indregnet) inkl. moms'] = round(($bill['Total']) / $sum, 2) . ' kr./kWh';
         } else {
             $bill['Statistik']['Note'] = 'Der er endnu ikke forbrugsdata at indregne';
         }
@@ -282,7 +308,7 @@ class GetPreliminaryInvoice
     public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015): array
     {
         if (is_string($overhead)) {
-            $overhead = str_replace(',','.',$overhead);
+            $overhead = str_replace(',', '.', $overhead);
         }
 
         $start_date = Carbon::now()->startOfDay()->toDateString();
@@ -378,7 +404,7 @@ class GetPreliminaryInvoice
 
         $bill['Moms'] = 0;
         foreach ($bill as $key => $value) {
-            if($key== self::ALL_TARIFFS) {
+            if ($key == self::ALL_TARIFFS) {
                 continue;
             }
             if (is_numeric($value)) {
@@ -389,7 +415,7 @@ class GetPreliminaryInvoice
 
         $bill['Total'] = 0;
         foreach ($bill as $key => $value) {
-            if($key== '' . self::ALL_TARIFFS . '') {
+            if ($key == '' . self::ALL_TARIFFS . '') {
                 continue;
             }
             if (is_numeric($value)) {
@@ -398,9 +424,9 @@ class GetPreliminaryInvoice
         }
         $bill['Total'] = round($bill['Total'], 2);
 
-        if(array_key_exists('Spotpris',$bill) && $sum!=0) {
-            $bill['Statistik']['Gennemsnitspris, strøm inkl. moms'] = round(($bill['Spotpris'] + $bill['Overhead'])*1.25/$sum, 2) . ' kr./kWh';
-            $bill['Statistik']['Gennemsnitspris, alt tarifering inkl. moms'] = round(($bill[self::ALL_TARIFFS] * 1.25 )/$sum, 2) . ' kr./kWh';
+        if (array_key_exists('Spotpris', $bill) && $sum != 0) {
+            $bill['Statistik']['Gennemsnitspris, strøm inkl. moms'] = round(($bill['Spotpris'] + $bill['Overhead']) * 1.25 / $sum, 2) . ' kr./kWh';
+            $bill['Statistik']['Gennemsnitspris, alt tarifering inkl. moms'] = round(($bill[self::ALL_TARIFFS] * 1.25) / $sum, 2) . ' kr./kWh';
         } else {
             $bill['Statistik']['Note'] = 'Der er endnu ikke forbrugsdata at indregne';
         }
@@ -424,5 +450,18 @@ class GetPreliminaryInvoice
             return $date->format("m");
         })->unique()->toArray());
         return $months;
+    }
+
+    private function getGridOperatorTariffPrices(DatahubPriceList $datahubPriceList): array
+    {
+        $collection = collect($datahubPriceList);
+        $gridOperatorTariffPrices = array();
+        $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
+            if (Str::contains($key, 'Price')) {
+                $key = ((int)Str::replace('Price', '', $key)) - 1;
+                $gridOperatorTariffPrices[$key] = $item;
+            }
+        });
+        return $gridOperatorTariffPrices;
     }
 }

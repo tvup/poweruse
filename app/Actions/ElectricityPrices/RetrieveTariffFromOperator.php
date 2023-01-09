@@ -21,7 +21,7 @@ class RetrieveTariffFromOperator
     {
 
         $service = app()->make(GetDatahubPriceLists::class);
-        $data = $service->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        $data = $service->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $collection = collect($data[0]);
         $gridprices = array();
         $collection->each(function ($item, $key) use (&$gridprices) {

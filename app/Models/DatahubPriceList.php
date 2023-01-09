@@ -2,23 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DatahubPriceList extends Model
+class DatahubPriceList extends BaseModel
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
-    const UPDATED_AT = null;
-
-    protected $guarded = ['created_at', 'deleted_at'];
+    public $timestamps = false;
 
     public $incrementing = false;
 
     protected $keyType = 'string';
 
-    protected $primaryKey = ['GLN_Number', 'ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom', 'ValidTo'];
+    protected $primaryKey = ['ChargeType', 'ChargeTypeCode', 'Note', 'ValidFrom'];
 
     public function getMatchingInDb(): DatahubPriceList|bool
     {

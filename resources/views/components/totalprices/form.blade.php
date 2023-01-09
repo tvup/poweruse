@@ -27,6 +27,12 @@
                         GRAF {{ Form::radio('outputformat', 'GRAF' , (old('outputformat') && old('outputformat')=='GRAF') ? old('outputformat') : (Cookie::get('outputformat') ?? false), ['class' => 'shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md']) }}
                     </div>
 
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Prisområde:</label>
+                        DK1 {{ Form::radio('area', 'DK1' , (old('area') && old('area')=='DK1') ? old('area') : false) }}
+                        DK2 {{ Form::radio('area', 'DK2' , (old('area') && old('area')=='DK2') ? old('area') : true) }}
+                    </div>
+
                     <div class="sm:col-span-3">
                         <label for="grid_operator" class="block text-sm font-medium text-gray-700">
                             {{ __('Grid operator') }}
