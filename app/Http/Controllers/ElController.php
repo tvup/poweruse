@@ -181,11 +181,8 @@ class ElController extends Controller
             $meterData = [];
             foreach ($fields as $key => $value) {
                 if(strpos($key, 'usage') !== false) {
-                    $timeslot = str_replace('usage', '', $key);
-                    if(strlen($timeslot)==1) {
-                        $timeslot = '0' . $timeslot . '';
-                    }
-                    $newKey = Carbon::now('Europe/Copenhagen')->toDateString() . 'T' . $timeslot . ':00:00';
+                    $timeslot = (int) str_replace('usage', '', $key);
+                    $newKey = Carbon::now('Europe/Copenhagen')->startOfDay()->hour($timeslot)->format('c');
                     $newValue = $value ? str_replace(',','.', $value) : null;
                     $meterData[$newKey] =($newValue ? : 0);
                 }
@@ -622,89 +619,6 @@ class ElController extends Controller
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getTotalPrices(Request $request) : RedirectResponse
-    {
-        $includeTomorrow = false;
-        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
-            $includeTomorrow = true;
-        }
-
-        $operator = $request->netcompany;
-
-        $gridOperatorGLNNumber = Operator::$operatorName[$operator];
-        $gridprices = $this->getGridOperatorNettariff($gridOperatorGLNNumber);
-        $priceArea = Operator::$gridOperatorArea[$gridOperatorGLNNumber];
-        $spotPrices = $this->doGetSpotPrices($priceArea);
-        if(count($spotPrices)==0) {
-            $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
-            return redirect('el-totalprices')->with('error', $message)->withInput($request->all());
-        }
-        if ($includeTomorrow) {
-            $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
-            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
-        }
-        $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
-        $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
-        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
-        $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
-
-
-
-        $totalPrice = array();
-        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
-        $limit = $includeTomorrow ? 47 : 23;
-        for ($i = 0; $i <= $limit; $i++) {
-            $j = ($i <= 23 ? $i : $i - 24);
-            $now2 = clone $now;
-            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
-        }
-        $companies = Operator::$operatorName;
-
-        $colours = $this->makeColors(array_values($totalPrice));
-
-        $chart = new \stdClass();
-        $chart->labels = (array_keys($totalPrice));
-        $chart->dataset = (array_values($totalPrice));
-        $chart->colours = $colours;
-
-        return redirect('el-totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all());
-
-    }
-
-    /**
-     * @param array<float> $array
-     * @return array<string>
-     */
-    private function makeColors(array $array) : array
-    {
-        $min = (float)min($array);
-        $max = (float)max($array);
-        $colours = [];
-        foreach ($array as $value) {
-            $value = (float)$value;
-            $percentage = ($value - $min) / ($max - $min);
-            $percentage = $percentage * 100.0;
-
-            $R = 0;
-            $G = 0;
-            $B = 0;
-
-            // 255 ÷ 50 = 5.1
-            if ($percentage > 50) {
-                $R = 5.1 * ($percentage - 50);
-            } elseif ($percentage < 50) {
-                $G = 255 - (5.1 * $percentage);
-            }
-
-            $dechex_r = dechex((int)$R) === '0' ? '00' : dechex((int)$R);
-            $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
-            $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
-
-            $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;
-        }
-        return $colours;
-    }
-
     /**
      * @param string $operator
      * @param string $chargeType
@@ -716,7 +630,7 @@ class ElController extends Controller
      */
     private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
     {
-        $data = $this->datahubPriceListsService->getDatahubTariffPriceLists($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        $data = $this->datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $collection = collect($data[0]);
         $gridprices = array();
         $collection->each(function ($item, $key) use (&$gridprices) {
