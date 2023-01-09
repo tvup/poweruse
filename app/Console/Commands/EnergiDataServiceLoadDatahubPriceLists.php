@@ -9,10 +9,11 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\RecordsNotFoundException;
+use Illuminate\Support\Str;
 
 class EnergiDataServiceLoadDatahubPriceLists extends Command
 {
-    const INTEGRITY_CONSTRAINT_VIOLATION = 23000;
+    const INTEGRITY_CONSTRAINT_VIOLATION = 'SQLSTATE[23000]';
 
     /**
      * The name and signature of the console command.
@@ -96,7 +97,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                         'ResolutionDuration' => $record['ResolutionDuration']]);
 
                 } catch (QueryException $e) {
-                    if ($e->getCode() === self::INTEGRITY_CONSTRAINT_VIOLATION) {
+                    if (Str::contains($e->getMessage(), self::INTEGRITY_CONSTRAINT_VIOLATION)) {
                         //NOP
                     } else {
                         throw $e;
