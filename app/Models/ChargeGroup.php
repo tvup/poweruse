@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * @property int $id
  * @property int $year
@@ -15,9 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $number_of_metering_points
  * @property int $consumption_kwh
  */
-class ChargeGroup extends Model
+class ChargeGroup extends BaseModel
 {
-    use HasFactory;
 
-    protected $fillable = ['year', 'charge_group_1', 'charge_group_2', 'grid_operator_gln', 'grid_operator_name', 'number_of_metering_points','consumption_kwh'];
 }

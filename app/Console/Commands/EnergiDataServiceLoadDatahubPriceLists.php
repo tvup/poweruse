@@ -26,22 +26,6 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
      */
     protected $description = 'Requests all prices from EnergiDataService. Subarea for prices is called "Datahub Price List" at EnergiDataService. All data is stored to local data storage';
 
-    private GetDatahubPriceLists $datahubPriceListsService;
-    private GetEnergiDataServiceChargeGroups $datahubChargeGroups;
-
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(GetDatahubPriceLists $datahubPriceLists, GetEnergiDataServiceChargeGroups $getDatahubChargeGroups)
-    {
-        $this->datahubPriceListsService = $datahubPriceLists;
-        $this->datahubChargeGroups = $getDatahubChargeGroups;
-        parent::__construct();
-    }
-
     /**
      * Execute the console command.
      *
@@ -49,16 +33,21 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
      */
     public function handle()
     {
+        /** @var GetDatahubPriceLists $datahubPriceListsService */
+        $datahubPriceListsService = app(GetDatahubPriceLists::class);
+        /** @var GetEnergiDataServiceChargeGroups $datahubChargeGroups */
+        $datahubChargeGroups = app(GetEnergiDataServiceChargeGroups::class);
+
         $more = 1;
         $i = 0;
         while ($more) {
-            $records = $this->datahubPriceListsService->requestAllDatahubPriceListsFromEnergiDataService(100, $i);
+            $records = $datahubPriceListsService->requestAllDatahubPriceListsFromEnergiDataService(100, $i);
             foreach ($records as $record) {
                 //GLN-number hack because energinet doesn't return gln number as they should
                 $chargeOwner = $record['ChargeOwner'];
-                $gln = cache()->remember('ChargeOwner-' . $chargeOwner, 3600, function () use ($chargeOwner) {
+                $gln = cache()->remember('ChargeOwner-' . $chargeOwner, 3600, function () use ($chargeOwner, $datahubChargeGroups) {
                     try {
-                        $chargeGroup = $this->datahubChargeGroups->getChargeGroup($chargeOwner);
+                        $chargeGroup = $datahubChargeGroups->getChargeGroup($chargeOwner);
                     } catch (ModelNotFoundException $e) {
                         throw new RecordsNotFoundException($e->getMessage() . ' with GridOperatorName = ' . $chargeOwner);
                     }
@@ -105,7 +94,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                         'ResolutionDuration' => $record['ResolutionDuration']]);
 
                 } catch (QueryException $e) {
-                    if ($e->getCode() == 23000) {
+                    if ($e->getCode() === 23000) {
                         //NOP
                     } else {
                         throw $e;
@@ -113,8 +102,8 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                 }
             }
 
-            $i = $i + 100;
-            $more = count($records) != 0;
+            $i += 100;
+            $more = count($records) !== 0;
         }
         return Command::SUCCESS;
 

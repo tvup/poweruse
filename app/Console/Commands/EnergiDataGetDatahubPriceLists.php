@@ -33,19 +33,6 @@ class EnergiDataGetDatahubPriceLists extends Command
      */
     protected $description = 'Get price-lists from datahub';
 
-    private GetDatahubPriceLists $datahubPriceListsService;
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(GetDatahubPriceLists $datahubPriceLists)
-    {
-        $this->datahubPriceListsService = $datahubPriceLists;
-        parent::__construct();
-    }
-
     /**
      * Execute the console command.
      *
@@ -80,6 +67,8 @@ class EnergiDataGetDatahubPriceLists extends Command
             return 1;
         }
 
+        $datahubPriceListsService = app(GetDatahubPriceLists::class);
+
         $safeValues = $validator->validated();
 
         $operator = $safeValues['operator'];;
@@ -90,7 +79,7 @@ class EnergiDataGetDatahubPriceLists extends Command
         $endDate = $safeValues['end_date'];
 
 
-        $records = $this->datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        $records = $datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $this->table(array_keys($records[0]), array_values($records));
         if ($this->option('save-to-db')) {
             foreach ($records as $record) {
