@@ -12,7 +12,7 @@ use Illuminate\Database\RecordsNotFoundException;
 
 class EnergiDataServiceLoadDatahubPriceLists extends Command
 {
-    const INTEGRITY_CONSTANT_VIOLATION = 23000;
+    const INTEGRITY_CONSTRAINT_VIOLATION = 23000;
 
     /**
      * The name and signature of the console command.
@@ -96,7 +96,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                         'ResolutionDuration' => $record['ResolutionDuration']]);
 
                 } catch (QueryException $e) {
-                    if ($e->getCode() === self::INTEGRITY_CONSTANT_VIOLATION) {
+                    if ($e->getCode() === self::INTEGRITY_CONSTRAINT_VIOLATION) {
                         //NOP
                     } else {
                         throw $e;
