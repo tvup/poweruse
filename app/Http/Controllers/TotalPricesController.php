@@ -26,7 +26,7 @@ class TotalPricesController extends Controller
             WHERE GLN_Number IN (SELECT SUBSTRING(grid_operator_gln,
                                                   1,
                                                   CHAR_LENGTH(grid_operator_gln) - 4)
-                                 FROM poweruse.charge_groups
+                                 FROM ".config('database.connections.mysql.database').".charge_groups
                                  WHERE charge_group_2 = 'C')
               AND ChargeType = 'D03'
               AND Note NOT IN ('Nettarif A0', 'Nettarif A høj',
