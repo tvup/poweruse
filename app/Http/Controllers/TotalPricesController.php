@@ -22,7 +22,7 @@ class TotalPricesController extends Controller
         $chart = session('chart');
         $results = DB::select( DB::raw("
             SELECT GLN_Number, concat(concat(ChargeOwner, ' '), Note) as tariff, Note, ChargeOwner
-            FROM poweruse.datahub_price_lists
+            FROM ".config('database.connections.mysql.database').".datahub_price_lists
             WHERE GLN_Number IN (SELECT SUBSTRING(grid_operator_gln,
                                                   1,
                                                   CHAR_LENGTH(grid_operator_gln) - 4)
