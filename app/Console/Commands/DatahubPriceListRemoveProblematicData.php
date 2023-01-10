@@ -45,6 +45,8 @@ class DatahubPriceListRemoveProblematicData extends Command
         $this->info('Removed ' . $count5790001089030 . ' from datahub_price_lists for GLN: 5790001089030');
         $this->info('Removed ' . $count5790000610099 . ' from datahub_price_lists for GLN: 5790000610099');
         $this->info('Removed ' . $count5790001088309 . ' from datahub_price_lists for GLN: 5790001088309');
+        $this->info('Removed total ' . $count5790001089030 + $count5790000610099 + $count5790001088309 . ' from datahub_price_lists');
+
         return Command::SUCCESS;
     }
 }
