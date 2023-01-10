@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('datahub_price_lists')->truncate();
+        DB::table('datahub_price_lists')->truncate();
         Schema::table('datahub_price_lists', function (Blueprint $table) {
             $table->date('ValidFrom')->change();
             $table->date('ValidTo')->nullable()->change();
@@ -53,6 +53,7 @@ return new class extends Migration
      */
     public function down()
     {
+        DB::table('datahub_price_lists')->truncate();
         Schema::table('datahub_price_lists', function (Blueprint $table) {
             $table->string('ValidFrom', 19)->change();
             $table->string('ValidTo', 19)->nullable()->change();
