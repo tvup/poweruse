@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MeteringPoint;
+
+use Illuminate\View\View;
 
 class MeteringPointController extends Controller
 {
@@ -13,10 +14,10 @@ class MeteringPointController extends Controller
      */
     public function create()
     {
-        //
+        return response()->make();
     }
 
-    public function index() {
+    public function index() : View {
         return view('meteringpoint');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
@@ -23,7 +24,7 @@ class MeteringPointController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response | JsonResponse
      */
     public function index()
     {
@@ -39,9 +40,9 @@ class MeteringPointController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering-point data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-                    return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
+                    return response()->json(['error' => $message]);
                 case 401:
-                    return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with token')->withInput($request->all());
+                    return response()->json(['error' => 'Failed - cannot login with token']);
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
@@ -80,7 +81,7 @@ class MeteringPointController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return MeteringPoint
      */
     public function store(Request $request)
     {
@@ -148,7 +149,7 @@ class MeteringPointController extends Controller
      */
     public function show(MeteringPoint $meteringPoint)
     {
-        //
+        return response(MeteringPoint::first()); //TODO
     }
 
     /**
@@ -156,9 +157,9 @@ class MeteringPointController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\MeteringPoint  $meteringPoint
-     * @return \Illuminate\Http\Response
+     * @return MeteringPoint
      */
-    public function update(Request $request, MeteringPoint $meteringPoint)
+    public function update(Request $request, MeteringPoint $meteringPoint) :MeteringPoint
     {
         $this->validate($request, [
                 'metering_point_id' => 'required|string|max:18',
@@ -196,9 +197,9 @@ class MeteringPointController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\MeteringPoint  $meteringPoint
-     * @return \Illuminate\Http\Response
+     * @return MeteringPoint
      */
-    public function destroy(MeteringPoint $meteringPoint)
+    public function destroy(MeteringPoint $meteringPoint):MeteringPoint
     {
         $meteringPoint->delete();
 
