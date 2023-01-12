@@ -24,3 +24,5 @@ Route::get('el/{refreshToken}/smartme', 'ElController@getWithSmartMe');
 Route::get('el/charges/{refreshToken}', 'ElController@getCharges');
 Route::get('el/{start_date}/{end_date}/{price_area}/{refreshToken}', 'ElController@getFromDate');
 Route::get('el/{refreshToken}/delete', 'ElController@delete');
+
+Route::apiResources(['meteringPoint' => 'Api\MeteringPointController']);
