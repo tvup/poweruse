@@ -31,7 +31,7 @@ class MeteringPointController extends Controller
         $data = MeteringPoint::orderBy('id', 'desc')->paginate(5);
 
         try {
-            $data = $this->meteringDataService->getMeteringPointData(User::first()->refresh_token);
+            $data = $this->meteringDataService->getMeteringPointData(auth('api')->user()->refresh_token);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
