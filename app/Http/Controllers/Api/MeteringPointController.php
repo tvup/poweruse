@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MeteringPoint;
-use App\Models\User;
 use App\Services\GetMeteringData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,6 +28,9 @@ class MeteringPointController extends Controller
     public function index()
     {
         $data = MeteringPoint::orderBy('id', 'desc')->paginate(5);
+        if($data->count()!=0) {
+            return response()->json($data);
+        }
 
         try {
             $data = $this->meteringDataService->getMeteringPointData(auth('api')->user()->refresh_token);
