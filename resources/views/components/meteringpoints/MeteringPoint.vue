@@ -40,6 +40,7 @@
               <th>second_consumer_party_name</th>
               <th>hasRelation</th>
               <th></th>
+              <th></th>
             </tr>
             </thead>
             <tbody>
