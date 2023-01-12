@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
@@ -12,7 +13,12 @@ use Illuminate\Support\Collection;
  */
 class PaginationHelper
 {
-    public static function paginate(Collection $results, $showPerPage)
+    /**
+     * @param Collection<int, mixed> $results
+     * @param int $showPerPage
+     * @return LengthAwarePaginator<array>
+     */
+    public static function paginate(Collection $results, int $showPerPage): LengthAwarePaginator
     {
         $pageNumber = Paginator::resolveCurrentPage('page');
 
@@ -28,14 +34,15 @@ class PaginationHelper
     /**
      * Create a new length-aware paginator instance.
      *
-     * @param  \Illuminate\Support\Collection  $items
-     * @param  int  $total
-     * @param  int  $perPage
-     * @param  int  $currentPage
-     * @param  array  $options
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @param \Illuminate\Support\Collection<int, mixed> $items
+     * @param int $total
+     * @param int $perPage
+     * @param int $currentPage
+     * @param array $options
+     * @return LengthAwarePaginator<array>
+     * @throws BindingResolutionException
      */
-    protected static function paginator($items, $total, $perPage, $currentPage, $options)
+    protected static function paginator(Collection $items, int $total, int $perPage, int $currentPage, array $options): LengthAwarePaginator
     {
         return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
             'items', 'total', 'perPage', 'currentPage', 'options'
