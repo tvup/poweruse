@@ -1,7 +1,6 @@
-@extends("layout")
+@extends("layouts.app")
 
 @section('content')
-<x-app-layout>
 <div class="container mt-4">
     @if(session('status'))
         <div class="alert alert-success">
@@ -55,5 +54,4 @@
         </div>
     </div>
 </div>
-</x-app-layout>
 @endsection
