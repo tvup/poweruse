@@ -91,7 +91,7 @@
 </div>
 
 
-<script type="text/javascript">
+<script type="module">
     $('.date').datepicker({
         format: 'yyyy-mm-dd'
     });
@@ -99,7 +99,7 @@
 </script>
 
 
-<script>
+<script type="module">
     $(function() {
         $( "#smart_me" ).change(function() {
             let isSmartMeSelected = $( "#smart_me").is(':checked');
