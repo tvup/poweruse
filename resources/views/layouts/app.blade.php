@@ -33,6 +33,15 @@
                             <a  class="nav-link" href="{{ route('el-charges') }}">{{__('Charges') }}</a>
                         </li>
                         <li class="nav-item">
+                            <a  class="nav-link" href="{{ route('consumption') }}">{{__('Consumption') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a  class="nav-link" href="{{ route('el-spotprices') }}">{{__('Spot prices') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a  class="nav-link" href="{{ route('el') }}">{{__('Calculate your bill') }}</a>
+                        </li>
+                        <li class="nav-item">
                             <a  class="nav-link" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
                         </li>
                     </ul>
