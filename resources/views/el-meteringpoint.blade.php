@@ -45,7 +45,7 @@
         </div>
     </div>
 </div>
-<script>
+<script type="module">
     $(function() {
         $( "#de" ).change(function() {
             updateCredentialsFieldsShow($( "#de").is(':checked'));

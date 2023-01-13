@@ -42,6 +42,9 @@
                             <a  class="nav-link" href="{{ route('el') }}">{{__('Calculate your bill') }}</a>
                         </li>
                         <li class="nav-item">
+                            <a  class="nav-link" href="{{ route('el-custom') }}">{{__('Beregn prisen for et bestemt forbrug i dag') }}</a>
+                        </li>
+                        <li class="nav-item">
                             <a  class="nav-link" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
                         </li>
                     </ul>
