@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends("layouts.app")
+
+@section('content')
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Total prices') }}
@@ -31,8 +33,7 @@
             </div>
         </div>
     </div>
-</x-app-layout>
-
+@endsection
 @if(@isset($chart))
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
