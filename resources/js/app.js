@@ -13,7 +13,7 @@ import swal from 'sweetalert2';
 // Then, set /window.swal as /swal so we can instantiate /swal later within our component.
 window.swal = swal;
 
-import MeteringPoint from "../views/components/meteringpoints/MeteringPoint.vue";
+import MeteringPoint from "../views/components/metering-points/MeteringPoint.vue";
 import Paginate from "vuejs-paginate-next";
 import {
     Button,
