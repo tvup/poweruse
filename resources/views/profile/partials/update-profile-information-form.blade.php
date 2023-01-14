@@ -42,6 +42,12 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="refresh_token" :value="__('Refresh token')" />
+            <x-text-input id="refresh_token" name="refresh_token" type="text" class="mt-1 block w-full" :value="old('refresh_token', $user->refresh_token)" autofocus autocomplete="refresh_token" />
+            <x-input-error class="mt-2" :messages="$errors->get('refresh_token')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
