@@ -41,7 +41,7 @@ class MeteringPoint extends BaseModel
 
     protected $appends = array('source');
 
-    public function getSourceAttribute() {
+    public function getSourceAttribute(): string|null {
         return $this->exists ? self::SOURCE : null;
     }
 
