@@ -19,6 +19,7 @@
         "laravel/breeze": "^1.15",
         "laravel/homestead": "^13.0",
         "laravel/sail": "^1.16",
+        "laravel/ui": "^4.2",
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^6.3",
         "nunomaduro/larastan": "^2.0",

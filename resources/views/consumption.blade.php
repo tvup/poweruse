@@ -1,7 +1,6 @@
-@extends("layout")
+@extends("layouts.app")
 
 @section('content')
-<x-app-layout>
 <div class="container mt-4">
     @if(session('status'))
         <div class="alert alert-success">
@@ -73,15 +72,14 @@
         </div>
     </div>
 </div>
-</x-app-layout>
-<script type="text/javascript">
+<script type="module">
     $('.date').datepicker({
         format: 'yyyy-mm-dd'
     });
 
 </script>
 
-<script>
+<script type="module">
     $(function() {
         $(document).ready(function(){
             $(".alert").slideDown(300).delay(10000).slideUp(300);
@@ -89,7 +87,7 @@
     });
 </script>
 
-<script>
+<script type="module">
     $(function() {
         $('input[type=radio][name=source]').change(function() {
             let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");

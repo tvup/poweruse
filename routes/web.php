@@ -13,10 +13,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Auth::routes();
 
 Route::get('/', function () {
     return redirect('el');
 })->name('home');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 
 Route::get(
     '/totalprices',
@@ -45,8 +49,5 @@ Route::post('getSpotprices', 'ElController@getSpotprices');
 Route::post('getConsumption', 'ElController@getConsumption');
 Route::post('getTotalPrices', 'ElController@getTotalPrices');
 Route::post('processcustom', 'ElController@processCustom');
-
-
-
 
 require __DIR__.'/auth.php';
