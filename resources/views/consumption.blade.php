@@ -72,22 +72,22 @@
         </div>
     </div>
 </div>
-<script type="module">
+<component :is="'script'">
     $('.date').datepicker({
         format: 'yyyy-mm-dd'
     });
 
-</script>
+</component>
 
-<script type="module">
+<component :is="'script'">
     $(function() {
         $(document).ready(function(){
             $(".alert").slideDown(300).delay(10000).slideUp(300);
         });
     });
-</script>
+</component>
 
-<script type="module">
+<component :is="'script'">
     $(function() {
         $('input[type=radio][name=source]').change(function() {
             let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
@@ -99,11 +99,11 @@
             let whoIsSelected = null;
 
             if (isDatahubSelected) {
-                whoIsSelected = 'DATAHUB'
+                whoIsSelected = 'DATAHUB';
             } else if (isEwiiSelected) {
-                whoIsSelected = 'EWII'
+                whoIsSelected = 'EWII';
             } else if (isSmartMeSelected) {
-                whoIsSelected = 'SMART-ME'
+                whoIsSelected = 'SMART-ME';
             }
 
             updateSmartMeCheckBoxShow(isDatahubOrEwiiSelected);
@@ -166,9 +166,9 @@
 
 
         function updateDatePicker($boolean) {
-            const today = new Date()
-            let tomorrow = new Date()
-            tomorrow.setDate(today.getDate() + 1)
+            const today = new Date();
+            let tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
             if($boolean) {
                 $('.end_date').datepicker("setDate", tomorrow);
             } else {
@@ -182,6 +182,6 @@
             $(".alert").slideDown(300).delay(10000).slideUp(300);
         });
     });
-</script>
+</component>
 
 @endsection

@@ -30,12 +30,12 @@
         </div>
     </div>
 </div>
-<script type="module">
+<component :is="'script'">
     $(function() {
         $(document).ready(function(){
             $(".alert").slideDown(300).delay(10000).slideUp(300);
         });
     });
-</script>
+</component>
 
 @endsection

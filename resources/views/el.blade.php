@@ -91,15 +91,15 @@
 </div>
 
 
-<script type="module">
+<component :is="'script'">
     $('.date').datepicker({
         format: 'yyyy-mm-dd'
     });
 
-</script>
+</component>
 
 
-<script type="module">
+<component :is="'script'">
     $(function() {
         $( "#smart_me" ).change(function() {
             let isSmartMeSelected = $( "#smart_me").is(':checked');
@@ -137,9 +137,9 @@
         updateCredentialsFieldsShow({{ old('de') == 'on' }});
 
         function updateDatePicker($boolean) {
-            const today = new Date()
-            let tomorrow = new Date()
-            tomorrow.setDate(today.getDate() + 1)
+            const today = new Date();
+            let tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
             if($boolean) {
                 $('.end_date').datepicker("setDate", tomorrow);
             } else {
@@ -155,7 +155,7 @@
             $(".alert").slideDown(300).delay(10000).slideUp(300);
         });
     });
-</script>
+</component>
 
 
 @endsection

@@ -2,9 +2,9 @@
 
 @section('content')
 @if (Auth::check())
-    <script>window.authUser={!! json_encode(Auth::user()); !!};</script>
+    <component :is="'script'">window.authUser={!! json_encode(Auth::user()); !!};</component>
 @else
-    <script>window.authUser=null;</script>
+    <component :is="'script'">window.authUser=null;</component>
 @endif
 <div id="app">
     <metering-point  />
