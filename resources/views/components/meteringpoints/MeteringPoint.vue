@@ -18,27 +18,27 @@
           <table class="table table-hover">
             <thead>
             <tr>
-              <th>metering_point_id</th>
-              <th>type_of_mp</th>
-              <th>settlement_method</th>
-              <th>meter_number</th>
-              <th>consumer_c_v_r</th>
-              <th>data_access_c_v_r</th>
-              <th>consumer_start_date</th>
-              <th>meter_reading_occurrence</th>
-              <th>balance_supplier_name</th>
-              <th>street_code</th>
-              <th>street_name</th>
-              <th>building_number</th>
-              <th>floor_id</th>
-              <th>room_id</th>
-              <th>city_name</th>
-              <th>city_sub_division_name</th>
-              <th>municipality_code</th>
-              <th>location_description</th>
-              <th>first_consumer_party_name</th>
-              <th>second_consumer_party_name</th>
-              <th>hasRelation</th>
+              <th>Metering point id</th>
+              <th>Type of mp</th>
+              <th>Settlement method</th>
+              <th>Meter number</th>
+              <th>Consumer CVR</th>
+              <th>Data access CVR</th>
+              <th>Consumer start date</th>
+              <th>Meter reading occurrence</th>
+              <th>Balance supplier name</th>
+              <th>Street code</th>
+              <th>Street name</th>
+              <th>Building number</th>
+              <th>Floor id</th>
+              <th>Room id</th>
+              <th>City name</th>
+              <th>City sub division name</th>
+              <th>Municipality code</th>
+              <th>Location description</th>
+              <th>First consumer party name</th>
+              <th>Second consumer party name</th>
+              <th>Has relation</th>
               <th></th>
               <th></th>
             </tr>
@@ -92,8 +92,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <!-- Show/hide headings dynamically based on /isFormCreateMeteringPointMode value (true/false) -->
-            <h5 v-show="isFormCreateMeteringPointMode" class="modal-title" id="exampleModalLabel">Add new user</h5>
-            <h5 v-show="!isFormCreateMeteringPointMode" class="modal-title" id="exampleModalLabel">Update user</h5>
+            <h5 v-show="isFormCreateMeteringPointMode" class="modal-title" id="exampleModalLabel">Add new metering point</h5>
+            <h5 v-show="!isFormCreateMeteringPointMode" class="modal-title" id="exampleModalLabel">Update metering point</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
