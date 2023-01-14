@@ -30,7 +30,7 @@ class MeteringPointController extends Controller
     {
         if(auth('api')->check()) {
             if(!$refresh_token) {
-                $data = MeteringPoint::orderBy('id', 'desc')->paginate(5);
+                $data = MeteringPoint::whereUserId(auth('api')->user()->id)->orderBy('id', 'desc')->paginate(5);
                 if ($data->count() != 0) {
                     return response()->json($data);
                 }
@@ -148,6 +148,7 @@ class MeteringPointController extends Controller
             'first_consumer_party_name' => $request['first_consumer_party_name'],
             'second_consumer_party_name' => $request['second_consumer_party_name'],
             'hasRelation' => $request['hasRelation'],
+            'user_id' => auth('api')->user()->id,
         ]);
     }
 

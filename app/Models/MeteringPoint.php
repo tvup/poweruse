@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Faker\Provider\Base;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -33,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property MeteringPoint[] $children
+ * @property User $user
  *
  */
 class MeteringPoint extends BaseModel
@@ -43,6 +43,13 @@ class MeteringPoint extends BaseModel
 
     public function getSourceAttribute(): string|null {
         return $this->exists ? self::SOURCE : null;
+    }
+
+    /**
+     * @return BelongsTo<User, MeteringPoint>
+     */
+    public function user() : BelongsTo {
+        return $this->belongsTo(User::class);
     }
 
 }
