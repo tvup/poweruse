@@ -68,13 +68,6 @@ class ElController extends Controller
         return view('el')->with('data', $data ? $data->original : null);
     }
 
-    public function indexMeteringPoint() : View
-    {
-        $data = session('data');
-
-        return view('el-meteringpoint')->with('data', $data ? : null);
-    }
-
     public function indexCharges() : View
     {
         $data = session('data');
