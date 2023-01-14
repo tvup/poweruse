@@ -1,7 +1,7 @@
 @extends("layouts.app")
 
 @section('content')
-    <div class="card-header text-center font-weight-bold"">
+    <div class="card-header text-center font-weight-bold">
     <h2>
         {{ __('Profile') }}
     </h2>
