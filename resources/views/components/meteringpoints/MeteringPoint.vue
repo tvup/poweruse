@@ -6,8 +6,8 @@
           <h3 class="card-title">Metering point</h3>
           <div class="card-tools">
             <div class="input-group input-group-sm">
-              <!-- Button "add new user". When clicked, it will call /showModal function (function to display modal pop up containing "add new user" form). -->
-              <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"
+              <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
+              <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
                       @click.prevent="showModal"><i class="fas fa-user-plus"></i>Add new metering point
               </button>
             </div>
@@ -150,9 +150,9 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="submit" class="btn btn-primary" @click="createMeteringPoint();">Save to poweruse</button>
-                          <button type="submit" class="btn btn-info" >Update</button>
-                          <button type="button" class="btn btn-secondary">Close</button>
+                          <button type="submit" class="btn btn-primary" v-if="metering_point.source != 'Poweruse'" @click="createMeteringPoint();">Save to poweruse</button>
+                          <button type="submit" class="btn btn-info" v-if="metering_point.source == 'Poweruse'" @click="editMeteringPoint(metering_point);">Update</button>
+                          <button type="button" class="btn btn-secondary" v-if="metering_point.source == 'Poweruse'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
                         </div>
                       </div>
                     </form>
@@ -164,7 +164,7 @@
         </div>
         <div v-else>
           <div class="card-body table-responsive p-0">
-            <!-- Data-table with pagination for user list. -->
+            <!-- Data-table with pagination for metering point list. -->
             <table class="table table-hover">
               <thead>
               <tr>
@@ -194,7 +194,7 @@
               </tr>
               </thead>
               <tbody>
-              <!-- Loop through each user record and display user details -->
+              <!-- Loop through each metering point record and display metering point details -->
               <tr v-for="metering_point in metering_points" :key="metering_point.id">
                 <td class="align-middle">{{ metering_point.metering_point_id }}</td>
                 <td class="align-middle">{{ metering_point.type_of_mp }}</td>
@@ -237,20 +237,20 @@
       </div>
     </div>
 
-    <!-- Modal containing dynamic form for adding/updating user details. -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <!-- Modal containing dynamic form for adding/updating metering point details. -->
+    <div class="modal fade" id="meteringPointModal" tabindex="-1" role="dialog" aria-labelledby="meteringPointModalLabel"
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <!-- Show/hide headings dynamically based on /isFormCreateMeteringPointMode value (true/false) -->
-            <h5 v-show="isFormCreateMeteringPointMode" class="modal-title" id="exampleModalLabel">Add new metering point</h5>
-            <h5 v-show="!isFormCreateMeteringPointMode" class="modal-title" id="exampleModalLabel">Update metering point</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <h5 v-show="isFormCreateMeteringPointMode" class="modal-title" id="meteringPointModalLabel">Add new metering point</h5>
+            <h5 v-show="!isFormCreateMeteringPointMode" class="modal-title" id="meteringPointModalLabel">Update metering point</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
           </div>
-          <!-- Form for adding/updating user details. When submitted call /createUser() function if /isFormCreateMeteringPointMode value is true. Otherwise call /updateUser() function. -->
+          <!-- Form for adding/updating metering point details. When submitted call /createUser() function if /isFormCreateMeteringPointMode value is true. Otherwise call /updateUser() function. -->
           <form @submit.prevent="isFormCreateMeteringPointMode ? createMeteringPoint() : updateMeteringPoint()">
             <div class="modal-body">
               <div class="form-group">
@@ -373,7 +373,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-primary" v-show="isFormCreateMeteringPointMode">Save changes</button>
               <button type="submit" class="btn btn-primary" v-show="!isFormCreateMeteringPointMode">Update</button>
             </div>
@@ -392,7 +392,7 @@ export default {
   props: {
     list: ''
   },
-  // Declare users (as object), form (as /vform instance) and /isFormCreateMeteringPointMode (as boolean defaulted to 'true') inside /data() { return {} }.
+  // Declare metering points (as object), form (as /vform instance) and /isFormCreateMeteringPointMode (as boolean defaulted to 'true') inside /data() { return {} }.
   data() {
     return {
       metering_points: [],
@@ -427,7 +427,7 @@ export default {
   },
 
   methods: {
-    // /getUsers() function. Function we use to get user list by calling api/users method GET.
+    // /getUsers() function. Function we use to get metering point list by calling api/users method GET.
     getMeteringPoints(page) {
       if (typeof page === 'undefined') {
         page = 1;
@@ -446,17 +446,17 @@ export default {
         }
       });
     },
-    // /showModal() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'true', 2. Reset form data, 3. Show modal containing dynamic form for adding/updating user details.
+    // /showModal() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'true', 2. Reset form data, 3. Show modal containing dynamic form for adding/updating metering point details.
     showModal() {
       this.isFormCreateMeteringPointMode = true;
       this.form.reset(); // v form reset
-      $('#exampleModal').modal('show'); // show modal
+      $('#meteringPointModal').modal('show'); // show modal
     },
-    // /createUser() function. Function we use to store user details by calling api/users method POST (carrying form input data).
+    // /createUser() function. Function we use to store metering point details by calling api/users method POST (carrying form input data).
     createMeteringPoint() {
       // request post
       this.form.post('api/meteringPoint', {}).then(() => {
-        $('#exampleModal').modal('hide'); // hide modal
+        $('#meteringPointModal').modal('hide'); // hide modal
 
         // sweet alert 2
         // swal.fire({
@@ -470,24 +470,24 @@ export default {
         console.log('transaction fail');
       });
     },
-    // /editUser() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating user details, 4. Fill form with user details.
+    // /editUser() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
     editMeteringPoint(metering_point) {
       this.isFormCreateMeteringPointMode = false;
       this.form.reset(); // v form reset inputs
       this.form.clear(); // v form clear errors
-      $('#exampleModal').modal('show'); // show modal
+      $('#meteringPointModal').modal('show'); // show modal
       this.form.fill(metering_point);
     },
-    // /updateUser() function. Function we use to update user details by calling api/users/{id} method PUT (carrying form input data).
+    // /updateUser() function. Function we use to update metering point details by calling api/users/{id} method PUT (carrying form input data).
     updateMeteringPoint() {
       // request put
       this.form.put('api/meteringPoint/' + this.form.id, {}).then(() => {
-        $('#exampleModal').modal('hide'); // hide modal
+        $('#meteringPointModal').modal('hide'); // hide modal
 
         // sweet alert 2
         // swal.fire({
         //     icon: 'success',
-        //     title: 'User updated successfully'
+        //     title: 'Metering point updated successfully'
         // })
 
         this.getMeteringPoints();
@@ -495,7 +495,7 @@ export default {
         console.log('transaction fail');
       });
     },
-    // /deleteUser() function. Function we use to delete user record by calling api/users/{id} method DELETE.
+    // /deleteUser() function. Function we use to delete metering point record by calling api/users/{id} method DELETE.
     deleteMeteringPoint(id) {
       // sweet alert confirmation
       // swal.fire({
@@ -519,7 +519,7 @@ export default {
       //                 'success'
       //             )
       //
-      //             this.getMeteringPoints(); // reload table users
+      //             this.getMeteringPoints(); // reload table metering_points
       //         }).catch(() => {
       //             // sweet alert fail
       //             swal.fire({

@@ -39,4 +39,10 @@ class MeteringPoint extends BaseModel
 {
     use HasFactory;
 
+    protected $appends = array('source');
+
+    public function getSourceAttribute() {
+        return self::SOURCE;
+    }
+
 }
