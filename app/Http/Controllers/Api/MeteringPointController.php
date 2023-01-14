@@ -124,7 +124,7 @@ class MeteringPointController extends Controller
             'meter_number' => $request['meter_number'],
             'consumer_c_v_r' => $request['consumer_c_v_r'],
             'data_access_c_v_r' => $request['data_access_c_v_r'],
-            'consumer_start_date' => Carbon::parse($request['consumer_start_date'])->toDateString(),
+            'consumer_start_date' => Carbon::parse($request['consumer_start_date'],'UTC')->timezone('Europe/Copenhagen')->toDateString(),
             'meter_reading_occurrence' => $request['meter_reading_occurrence'],
             'balance_supplier_name' => $request['balance_supplier_name'],
             'street_code' => $request['street_code'],
