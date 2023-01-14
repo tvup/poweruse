@@ -26,15 +26,24 @@ class MeteringPointController extends Controller
      *
      * @return \Illuminate\Http\Response | JsonResponse
      */
-    public function index()
+    public function index($refresh_token = null)
     {
-        $data = MeteringPoint::orderBy('id', 'desc')->paginate(5);
-        if($data->count()!=0) {
-            return response()->json($data);
+        if(auth('api')->check()) {
+            if(!$refresh_token) {
+                $data = MeteringPoint::orderBy('id', 'desc')->paginate(5);
+                if ($data->count() != 0) {
+                    return response()->json($data);
+                }
+                $refresh_token = auth('api')->user()->refresh_token;
+            }
+        }
+
+        if(!$refresh_token) {
+            return response('', 200);
         }
 
         try {
-            $data = $this->meteringDataService->getMeteringPointData(auth('api')->user()->refresh_token);
+            $data = $this->meteringDataService->getMeteringPointData($refresh_token);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:

@@ -4,12 +4,24 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">Metering point</h3>
-          <div class="card-tools">
+          <div class="card-tools" v-if="authUser && authUser.refresh_token">
             <div class="input-group input-group-sm">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
                       @click.prevent="showModal"><i class="fas fa-bolt"></i> Add new metering point
               </button>
+            </div>
+          </div>
+          <div class="card-tools" v-else>
+            <div class="input-group input-group-sm">
+              <form>
+                <label class="col-sm-3 control-label" for="token">Refresh token</label>
+                <input class="form-control" id="token" type="text" v-model="token">
+                <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
+                <button type="submit" class="btn btn-primary"
+                        @click.prevent="getMeteringPointsFromToken()"><i class="fas fa-bolt"></i> Get metering points
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -149,9 +161,9 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary" v-if="metering_point.source != 'Poweruse'" @click="createMeteringPoint();">Save to poweruse</button>
-                          <button type="button" class="btn btn-info" v-if="metering_point.source == 'Poweruse'" @click.prevent="editMeteringPoint(metering_point);">Update</button>
-                          <button type="button" class="btn btn-secondary" v-if="metering_point.source == 'Poweruse'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
+                          <button type="button" class="btn btn-primary" v-if="authUser && metering_point.source != 'Poweruse'" @click="createMeteringPoint();">Save to poweruse</button>
+                          <button type="button" class="btn btn-info" v-if="authUser && metering_point.source == 'Poweruse'" @click.prevent="editMeteringPoint(metering_point);">Update</button>
+                          <button type="button" class="btn btn-secondary" v-if="authUser && metering_point.source == 'Poweruse'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
                         </div>
                       </div>
                     </form>
@@ -421,7 +433,9 @@ export default {
       }),
       isFormCreateMeteringPointMode: true,
       last_page: 0,
-      total: 0
+      total: 0,
+      authUser: window.authUser,
+      token: ''
     }
   },
 
@@ -437,6 +451,17 @@ export default {
           page: page
         }
       }).then(data => {
+        this.metering_points = data.data.data;
+        this.last_page = data.data.last_page;
+        this.total = data.data.total;
+        if(this.total==1) {
+          this.form.fill(this.metering_points[0]);
+        }
+      });
+    },
+    getMeteringPointsFromToken() {
+
+      axios.get('api/meteringPoint/'+this.token).then(data => {
         this.metering_points = data.data.data;
         this.last_page = data.data.last_page;
         this.total = data.data.total;

@@ -18,6 +18,6 @@ class MeteringPointController extends Controller
     }
 
     public function index() : View {
-        return view('metering-point');
+        return view('metering-point')->with('auth_user',  auth()->user());;
     }
 }
