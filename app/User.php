@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property string $password
  * @property string $remember_token
  * @property string $refresh_token
+ * @property string $locale
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -21,7 +22,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'refresh_token'
+        'name', 'email', 'password', 'refresh_token', 'locale'
     ];
 
     protected $hidden = [
