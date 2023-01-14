@@ -19,15 +19,26 @@
                         <div class="row mt-2">
                             @if (session('status') === 'profile-updated')
                                 <div class="alert alert-success" role="alert">
-                                    Saved.
+                                    {{ __('Profile updated.') }}
                                 </div>
                             @endif
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="text-right">Profile Settings</h4>
+                                <h4 class="text-right">{{ __('Profile Settings') }}</h4>
                             </div>
-                            <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control" placeholder="name" name="name" value="{{old('name', $user->name)}}"></div>
-                            <div class="col-md-6"><label class="labels">Email</label><input type="text" class="form-control" placeholder="email" name="email" value="{{ old('email', $user->email) }}"></div>
-                            <div class="col-md-12"><label class="labels">Refresh token</label><input type="password" class="form-control" placeholder="refresh token" name="refresh_token" value="{{ old('email', $user->refresh_token) }}"></div>
+                            <div class="col-md-6 labels mt-2"><label class="labels">{{ __('Name') }}</label><input type="text" class="form-control" placeholder="name" name="name" value="{{old('name', $user->name)}}"></div>
+                            <div class="col-md-6 labels mt-2"><label class="labels">{{ __('Email') }}</label><input type="text" class="form-control" placeholder="email" name="email" value="{{ old('email', $user->email) }}"></div>
+                            <div class="col-md-12 labels mt-2"><label class="labels">{{ __('Refresh token') }}</label><input type="password" class="form-control" placeholder="refresh token" name="refresh_token" value="{{ old('email', $user->refresh_token) }}"></div>
+                                <div class="col-md-12">
+                                    <label class="labels mt-2">{{ __('Language') }}</label>
+                                    <div class="form-check form-check">
+                                        <label class="form-check-label" for="localEnUs">🇺🇸 {{ __('English') }}</label>
+                                        <input class="form-check-input" {{ $user->locale === 'en_US' ? 'checked' : '' }} id="localEnUs" type="radio" name="locale" value="en_US">
+                                    </div>
+                                    <div class="form-check form-check">
+                                        <label class="form-check-label" for="localeDaDk">🇩🇰 {{ __('Danish') }}</label>
+                                        <input class="form-check-input" {{ $user->locale === 'da_DK' ? 'checked' : '' }} id="localeDaDk" type="radio" name="locale" value="da_DK">
+                                    </div>
+                                </div>
                         </div>
                         <div class="mt-5 text-left"><button  class="btn btn-primary">{{ __('Save') }}</button>
                         </div>
