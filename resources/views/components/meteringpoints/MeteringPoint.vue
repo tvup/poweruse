@@ -381,15 +381,3 @@ export default {
   }
 }
 </script>
-
-<!-- We put our custom css/scss inside style (type can be css or scss) -->
-<style type="scss">
-.pagination-container {
-  height: 75px;
-  display: grid;
-}
-
-.pagination {
-  margin: auto !important;
-}
-</style>
