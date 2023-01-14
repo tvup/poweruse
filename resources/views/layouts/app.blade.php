@@ -88,11 +88,11 @@
                 </ul>
             </div>
         </div>
-    </nav>
-
-    <main class="py-4">
-        @yield('content')
-    </main>
-</div>
+        </nav>
+        <main class="py-4">
+            @include('errors')
+            @yield('content')
+        </main>
+    </div>
 </body>
 </html>
