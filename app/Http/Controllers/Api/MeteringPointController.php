@@ -26,7 +26,7 @@ class MeteringPointController extends Controller
      *
      * @return \Illuminate\Http\Response | JsonResponse
      */
-    public function index($refresh_token = null)
+    public function index(string $refresh_token = null)
     {
         if(auth('api')->check()) {
             if(!$refresh_token) {
