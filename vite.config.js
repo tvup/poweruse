@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/sass/app.scss',
                 'resources/js/app.js',
                 'resources/js/serviceworker.js',
+                'resources/js/custom.js'
             ],
             refresh: true,
         }),
