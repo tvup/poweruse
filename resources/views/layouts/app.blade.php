@@ -90,8 +90,8 @@
                 </div>
             </div>
         </nav>
-
         <main class="py-4">
+            @include('errors')
             @yield('content')
         </main>
     </div>
