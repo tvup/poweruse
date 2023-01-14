@@ -26,12 +26,8 @@ class GetMeteringData
      * @return array<string, string>
      * @throws ElOverblikApiException
      */
-    public function getData(string $start_date, string $end_date, string $refreshToken = null, bool $debug = false) : array
+    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false) : array
     {
-        if (!$refreshToken) {
-            $refreshToken = config('services.energioverblik.refresh_token');
-        }
-
         logger('Accessing EloverblikApi. MD5 of refresh token: ' . md5($refreshToken));
         $energiOverblikApi = $this->getEloverblikApi($refreshToken);
 
