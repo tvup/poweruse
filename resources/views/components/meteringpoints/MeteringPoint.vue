@@ -8,7 +8,7 @@
             <div class="input-group input-group-sm">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
-                      @click.prevent="showModal"><i class="fas fa-user-plus"></i>Add new metering point
+                      @click.prevent="showModal"><i class="fas fa-bolt"></i> Add new metering point
               </button>
             </div>
           </div>
@@ -150,8 +150,8 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="submit" class="btn btn-primary" v-if="metering_point.source != 'Poweruse'" @click="createMeteringPoint();">Save to poweruse</button>
-                          <button type="submit" class="btn btn-info" v-if="metering_point.source == 'Poweruse'" @click="editMeteringPoint(metering_point);">Update</button>
+                          <button type="button" class="btn btn-primary" v-if="metering_point.source != 'Poweruse'" @click="createMeteringPoint();">Save to poweruse</button>
+                          <button type="button" class="btn btn-info" v-if="metering_point.source == 'Poweruse'" @click.prevent="editMeteringPoint(metering_point);">Update</button>
                           <button type="button" class="btn btn-secondary" v-if="metering_point.source == 'Poweruse'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
                         </div>
                       </div>
@@ -250,7 +250,7 @@
               <span aria-hidden="true">×</span>
             </button>
           </div>
-          <!-- Form for adding/updating metering point details. When submitted call /createUser() function if /isFormCreateMeteringPointMode value is true. Otherwise call /updateUser() function. -->
+          <!-- Form for adding/updating metering point details. When submitted call /createMeteringPoint() function if /isFormCreateMeteringPointMode value is true. Otherwise call /updateMeteringPoint() function. -->
           <form @submit.prevent="isFormCreateMeteringPointMode ? createMeteringPoint() : updateMeteringPoint()">
             <div class="modal-body">
               <div class="form-group">
@@ -387,7 +387,7 @@
 <!-- We put our scripts inside script tag -->
 <script>
 import Form from "vform";
-// Declare /user-management component
+// Declare /metering-point-management component
 export default {
   props: {
     list: ''
@@ -427,7 +427,7 @@ export default {
   },
 
   methods: {
-    // /getUsers() function. Function we use to get metering point list by calling api/users method GET.
+    // /getMeteringPoints() function. Function we use to get metering point list by calling api/metering-points method GET.
     getMeteringPoints(page) {
       if (typeof page === 'undefined') {
         page = 1;
@@ -452,17 +452,17 @@ export default {
       this.form.reset(); // v form reset
       $('#meteringPointModal').modal('show'); // show modal
     },
-    // /createUser() function. Function we use to store metering point details by calling api/users method POST (carrying form input data).
+    // /createMeteringPoint() function. Function we use to store metering point details by calling api/metering-points method POST (carrying form input data).
     createMeteringPoint() {
       // request post
       this.form.post('api/meteringPoint', {}).then(() => {
         $('#meteringPointModal').modal('hide'); // hide modal
 
-        // sweet alert 2
-        // swal.fire({
-        //     icon: 'success',
-        //     title: 'Metering Point created successfully'
-        // })
+        //sweet alert 2
+        swal.fire({
+            icon: 'success',
+            title: 'Metering Point created successfully'
+        })
 
         this.getMeteringPoints();
 
@@ -470,7 +470,7 @@ export default {
         console.log('transaction fail');
       });
     },
-    // /editUser() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
+    // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
     editMeteringPoint(metering_point) {
       this.isFormCreateMeteringPointMode = false;
       this.form.reset(); // v form reset inputs
@@ -478,59 +478,59 @@ export default {
       $('#meteringPointModal').modal('show'); // show modal
       this.form.fill(metering_point);
     },
-    // /updateUser() function. Function we use to update metering point details by calling api/users/{id} method PUT (carrying form input data).
+    // /updateMeteringPoint() function. Function we use to update metering point details by calling api/metering-points/{id} method PUT (carrying form input data).
     updateMeteringPoint() {
       // request put
       this.form.put('api/meteringPoint/' + this.form.id, {}).then(() => {
         $('#meteringPointModal').modal('hide'); // hide modal
 
-        // sweet alert 2
-        // swal.fire({
-        //     icon: 'success',
-        //     title: 'Metering point updated successfully'
-        // })
+        //sweet alert 2
+        swal.fire({
+            icon: 'success',
+            title: 'Metering point updated successfully'
+        })
 
         this.getMeteringPoints();
       }).catch(() => {
         console.log('transaction fail');
       });
     },
-    // /deleteUser() function. Function we use to delete metering point record by calling api/users/{id} method DELETE.
+    // /deleteMeteringPoint() function. Function we use to delete metering point record by calling api/metering-points/{id} method DELETE.
     deleteMeteringPoint(id) {
       // sweet alert confirmation
-      // swal.fire({
-      //     title: 'Are you sure?',
-      //     text: "You won't be able to revert this!",
-      //     icon: 'warning',
-      //     showCancelButton: true,
-      //     confirmButtonColor: '#3085d6',
-      //     cancelButtonColor: '#d33',
-      //     confirmButtonText: 'Yes, delete it!'
-      // }).then((result) => {
-      //     // confirm delete?
-      //     if (result.value) {
-      //         // request delete
-      //         this.form.delete('api/meteringPoint/' + id, {
-      //         }).then(() => {
-      //             // sweet alert success
-      //             swal.fire(
-      //                 'Deleted!',
-      //                 'Your file has been deleted.',
-      //                 'success'
-      //             )
-      //
-      //             this.getMeteringPoints(); // reload table metering_points
-      //         }).catch(() => {
-      //             // sweet alert fail
-      //             swal.fire({
-      //                 icon: 'error',
-      //                 title: 'Oops...',
-      //                 text: 'Something went wrong!',
-      //                 footer: '<a href>Why do I have this issue?</a>'
-      //             })
-      //         });
-      //     }
-      // })
+      swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+          // confirm delete?
+          if (result.value) {
+              // request delete
+              this.form.delete('api/meteringPoint/' + id, {
+              }).then(() => {
+                  // sweet alert success
+                  swal.fire(
+                      'Deleted!',
+                      'Metering point has been deleted.',
+                      'success'
+                  )
+
+                  this.getMeteringPoints(); // reload table metering_points
+              }).catch(() => {
+                  // sweet alert fail
+                  swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Something went wrong!',
+                      footer: '<a href>Why do I have this issue?</a>'
+                  })
+              });
+          }
+      })
     }
   },
   created() {

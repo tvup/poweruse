@@ -21,9 +21,10 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.2.1",
-    "vform": "^2.1.2",
+    "bootstrap-datepicker": "^1.9.0",
     "jquery": "^3.6.3",
-    "vuejs-paginate-next": "^1.0.2",
-    "bootstrap-datepicker": "^1.9.0"
+    "sweetalert2": "^11.7.0",
+    "vform": "^2.1.2",
+    "vuejs-paginate-next": "^1.0.2"
   }
 }
