@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('metering_points', function (Blueprint $table) {
-            $table->integer('user_id');
+            $table->integer('user_id')->after('hasRelation');
         });
     }
 
