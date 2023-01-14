@@ -6,6 +6,7 @@ use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MeteringPoint;
 use App\Services\GetMeteringData;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -91,27 +92,26 @@ class MeteringPointController extends Controller
         // if validation fails JSON response will be sent for AJAX requests
         $this->validate($request, [
                 'metering_point_id' => 'required|string|max:18',
-                'parent_id' => 'sometimes|string|max:18',
+                'parent_id' => 'sometimes|nullable|max:18',
                 'type_of_mp' => 'required|string|max:3',
-                'estimated_annual_volume' => 'required|digits|max:18',
                 'settlement_method' => 'required|string|max:3',
                 'meter_number' => 'required|string|max:15',
-                'consumer_c_v_r' => 'sometimes|string|max:10',
-                'data_access_c_v_r' => 'sometimes|string|max:10',
+                'consumer_c_v_r' => 'sometimes|nullable|max:10',
+                'data_access_c_v_r' => 'sometimes|nullable|max:10',
                 'consumer_start_date' => 'sometimes|date',
                 'meter_reading_occurrence' => 'required|string|max:5',
                 'balance_supplier_name' => 'required|string',
                 'street_code' => 'required|string|max:4',
                 'street_name' => 'required|string|max:40',
                 'building_number' => 'required|string|max:6',
-                'floor_id' => 'sometimes|string|max:4',
-                'room_id' => 'sometimes|string|max:4',
+                'floor_id' => 'sometimes|nullable|max:4',
+                'room_id' => 'sometimes|nullable|max:4',
                 'city_name' => 'required|string|max:25',
-                'city_sub_division_name' => 'sometimes|string|max:34',
+                'city_sub_division_name' => 'sometimes|nullable|max:34',
                 'municipality_code' => 'required|string|max:3',
-                'location_description' => 'sometimes|string|max:132',
-                'first_consumer_party_name' => 'sometimes|string|max:132',
-                'second_consumer_party_name' => 'sometimes|string|max:132',
+                'location_description' => 'sometimes|nullable|max:132',
+                'first_consumer_party_name' => 'sometimes|nullable|max:132',
+                'second_consumer_party_name' => 'sometimes|nullable|max:132',
                 'hasRelation' => 'required|boolean',
             ]
         );
@@ -120,12 +120,11 @@ class MeteringPointController extends Controller
             'metering_point_id' => $request['metering_point_id'],
             'parent_id' => $request['parent_id'],
             'type_of_mp' => $request['type_of_mp'],
-            'estimated_annual_volume' =>$request['estimated_annual_volume'],
             'settlement_method' => $request['settlement_method'],
             'meter_number' => $request['meter_number'],
             'consumer_c_v_r' => $request['consumer_c_v_r'],
             'data_access_c_v_r' => $request['data_access_c_v_r'],
-            'consumer_start_date' => $request['consumer_start_date'],
+            'consumer_start_date' => Carbon::parse($request['consumer_start_date'])->toDateString(),
             'meter_reading_occurrence' => $request['meter_reading_occurrence'],
             'balance_supplier_name' => $request['balance_supplier_name'],
             'street_code' => $request['street_code'],

@@ -13,74 +13,226 @@
             </div>
           </div>
         </div>
-        <div class="card-body table-responsive p-0">
-          <!-- Data-table with pagination for user list. -->
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th>Metering point id</th>
-              <th>Type of mp</th>
-              <th>Settlement method</th>
-              <th>Meter number</th>
-              <th>Consumer CVR</th>
-              <th>Data access CVR</th>
-              <th>Consumer start date</th>
-              <th>Meter reading occurrence</th>
-              <th>Balance supplier name</th>
-              <th>Street code</th>
-              <th>Street name</th>
-              <th>Building number</th>
-              <th>Floor id</th>
-              <th>Room id</th>
-              <th>City name</th>
-              <th>City sub division name</th>
-              <th>Municipality code</th>
-              <th>Location description</th>
-              <th>First consumer party name</th>
-              <th>Second consumer party name</th>
-              <th>Has relation</th>
-              <th></th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Loop through each user record and display user details -->
-            <tr v-for="metering_point in metering_points" :key="metering_point.id">
-              <td class="align-middle">{{ metering_point.metering_point_id }}</td>
-              <td class="align-middle">{{ metering_point.type_of_mp }}</td>
-              <td class="align-middle">{{ metering_point.settlement_method }}</td>
-              <td class="align-middle">{{ metering_point.meter_number }}</td>
-              <td class="align-middle">{{ metering_point.consumer_c_v_r }}</td>
-              <td class="align-middle">{{ metering_point.data_access_c_v_r }}</td>
-              <td class="align-middle">{{ metering_point.consumer_start_date }}</td>
-              <td class="align-middle">{{ metering_point.meter_reading_occurrence }}</td>
-              <td class="align-middle">{{ metering_point.balance_supplier_name }}</td>
-              <td class="align-middle">{{ metering_point.street_code }}</td>
-              <td class="align-middle">{{ metering_point.street_name }}</td>
-              <td class="align-middle">{{ metering_point.building_number }}</td>
-              <td class="align-middle">{{ metering_point.floor_id }}</td>
-              <td class="align-middle">{{ metering_point.room_id }}</td>
-              <td class="align-middle">{{ metering_point.city_name }}</td>
-              <td class="align-middle">{{ metering_point.city_sub_division_name }}</td>
-              <td class="align-middle">{{ metering_point.municipality_code }}</td>
-              <td class="align-middle">{{ metering_point.location_description }}</td>
-              <td class="align-middle">{{ metering_point.first_consumer_party_name }}</td>
-              <td class="align-middle">{{ metering_point.second_consumer_party_name }}</td>
-              <td class="align-middle">{{ metering_point.hasRelation }}</td>
-              <td class="align-middle">
-                <a href="" @click.prevent="editMeteringPoint(metering_point)">
-                  <i class="fa fa-edit"></i>
-                </a>
-                <a href="" @click.prevent="deleteMeteringPoint(metering_point.id)">
-                  <i class="fa fa-trash"></i>
-                </a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-          <nav aria-label="Page navigation example" class="pagination-container">
-            <pagination :data="metering_points" @pagination-change-page="getMeteringPoints" :pageCount="last_page"></pagination>
-          </nav>
+        <div v-if="total==1">
+          <div class="col-md-8" v-for="metering_point in metering_points" :key="metering_point.id">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="h4 text-center">Metering point</div>
+                <div class="row pv-lg">
+                  <div class="col-lg-2"></div>
+                  <div class="col-lg-8">
+                    <form class="form-horizontal ng-pristine ng-valid">
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputMeteringPointId">Metering point id</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputMeteringPointId" type="text" v-model="form.metering_point_id">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputTypeOfMP">Type of MP</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputTypeOfMP" type="text" v-model="form.type_of_mp">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputSettlementMethod">Settlement method</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputSettlementMethod" type="text" v-model="form.settlement_method">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputMeterNumber">Meter number</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputMeterNumber" type="text" v-model="form.meter_number">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputConsumerCVR">Consumer CVR</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputConsumerCVR" type="text" v-model="form.consumer_c_v_r">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputDataAccessCVR">Data access CVR</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputDataAccessCVR" type="text" v-model="form.data_access_c_v_r">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputConsumerStartDate">Consumer start date</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputConsumerStartDate" type="text" v-model="form.consumer_start_date">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputMeterReadingOccurrence">Meter reading occurrence</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputMeterReadingOccurrence" type="text" v-model="form.meter_reading_occurrence">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputBalanceSupplierName">Balance supplier name</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputBalanceSupplierName" type="text" v-model="form.balance_supplier_name">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputStreetCode">Street code</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputStreetCode" type="text" v-model="form.street_code">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputStreetName">Street nae</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputStreetName" type="text" v-model="form.street_name">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputBuildingNumber">Building number</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputBuildingNumber" type="text" v-model="form.building_number">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputFloorId">Floor id</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputFloorId" type="text" v-model="form.floor_id">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputRoomId">Room id</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputRoomId" type="text" v-model="form.room_id">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputCityName">City name</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputCityName" type="text" v-model="form.city_name">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputCitySubDivisionName">City sub division name</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputCitySubDivisionName" type="text" v-model="form.city_sub_division_name">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputMunicipalityCode">Municipality code</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputMunicipalityCode" type="text" v-model="form.municipality_code">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputLocationDescription">Location description</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputLocationDescription" type="text" v-model="form.location_description">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputFirstConsumerPartyName">First consumer party name</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputFirstConsumerPartyName" type="text" v-model="form.first_consumer_party_name">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputSecondConsumerPartyName">Second consumer party name</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputSecondConsumerPartyName" type="text" v-model="form.second_consumer_party_name">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputHasRelation">Has relation</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputHasRelation" type="text" v-model="form.hasRelation">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                          <button type="submit" class="btn btn-primary" @click="createMeteringPoint();">Save to poweruse</button>
+                          <button type="submit" class="btn btn-info" >Update</button>
+                          <button type="button" class="btn btn-secondary">Close</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="card-body table-responsive p-0">
+            <!-- Data-table with pagination for user list. -->
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>Metering point id</th>
+                <th>Type of mp</th>
+                <th>Settlement method</th>
+                <th>Meter number</th>
+                <th>Consumer CVR</th>
+                <th>Data access CVR</th>
+                <th>Consumer start date</th>
+                <th>Meter reading occurrence</th>
+                <th>Balance supplier name</th>
+                <th>Street code</th>
+                <th>Street name</th>
+                <th>Building number</th>
+                <th>Floor id</th>
+                <th>Room id</th>
+                <th>City name</th>
+                <th>City sub division name</th>
+                <th>Municipality code</th>
+                <th>Location description</th>
+                <th>First consumer party name</th>
+                <th>Second consumer party name</th>
+                <th>Has relation</th>
+                <th></th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <!-- Loop through each user record and display user details -->
+              <tr v-for="metering_point in metering_points" :key="metering_point.id">
+                <td class="align-middle">{{ metering_point.metering_point_id }}</td>
+                <td class="align-middle">{{ metering_point.type_of_mp }}</td>
+                <td class="align-middle">{{ metering_point.settlement_method }}</td>
+                <td class="align-middle">{{ metering_point.meter_number }}</td>
+                <td class="align-middle">{{ metering_point.consumer_c_v_r }}</td>
+                <td class="align-middle">{{ metering_point.data_access_c_v_r }}</td>
+                <td class="align-middle">{{ metering_point.consumer_start_date }}</td>
+                <td class="align-middle">{{ metering_point.meter_reading_occurrence }}</td>
+                <td class="align-middle">{{ metering_point.balance_supplier_name }}</td>
+                <td class="align-middle">{{ metering_point.street_code }}</td>
+                <td class="align-middle">{{ metering_point.street_name }}</td>
+                <td class="align-middle">{{ metering_point.building_number }}</td>
+                <td class="align-middle">{{ metering_point.floor_id }}</td>
+                <td class="align-middle">{{ metering_point.room_id }}</td>
+                <td class="align-middle">{{ metering_point.city_name }}</td>
+                <td class="align-middle">{{ metering_point.city_sub_division_name }}</td>
+                <td class="align-middle">{{ metering_point.municipality_code }}</td>
+                <td class="align-middle">{{ metering_point.location_description }}</td>
+                <td class="align-middle">{{ metering_point.first_consumer_party_name }}</td>
+                <td class="align-middle">{{ metering_point.second_consumer_party_name }}</td>
+                <td class="align-middle">{{ metering_point.hasRelation }}</td>
+                <td class="align-middle">
+                  <a href="" @click.prevent="editMeteringPoint(metering_point)">
+                    <i class="fa fa-edit"></i>
+                  </a>
+                  <a href="" @click.prevent="deleteMeteringPoint(metering_point.id)">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <nav aria-label="Page navigation example" class="pagination-container">
+              <pagination :data="metering_points" @pagination-change-page="getMeteringPoints"
+                          :pageCount="last_page"></pagination>
+            </nav>
+          </div>
         </div>
       </div>
     </div>
@@ -269,7 +421,8 @@ export default {
         hasRelation: ''
       }),
       isFormCreateMeteringPointMode: true,
-      last_page: 0
+      last_page: 0,
+      total: 0
     }
   },
 
@@ -287,6 +440,10 @@ export default {
       }).then(data => {
         this.metering_points = data.data.data;
         this.last_page = data.data.last_page;
+        this.total = data.data.total;
+        if(this.total==1) {
+          this.form.fill(this.metering_points[0]);
+        }
       });
     },
     // /showModal() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'true', 2. Reset form data, 3. Show modal containing dynamic form for adding/updating user details.

@@ -28,6 +28,7 @@ return new class extends Migration
         Schema::create('metering_points', function (Blueprint $table) {
             $table->id();
             $table->string('metering_point_id',18);
+            $table->string('parent_id',18)->nullable();
             $table->string('type_of_mp', 3);
             $table->string('settlement_method', 3);
             $table->string('meter_number', 15);
