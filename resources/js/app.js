@@ -17,10 +17,6 @@ import {
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
 
-import $ from 'jquery';
-window.$ = $;
-
-
 const app = createApp({});
 app.component('metering-point', MeteringPoint);
 app.component('pagination', Paginate);
