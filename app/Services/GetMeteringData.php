@@ -21,7 +21,7 @@ class GetMeteringData
     /**
      * @param string $start_date
      * @param string $end_date
-     * @param null $refreshToken
+     * @param string $refreshToken
      * @param bool $debug
      * @return array<string, string>
      * @throws ElOverblikApiException

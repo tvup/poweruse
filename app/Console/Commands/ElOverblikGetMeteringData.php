@@ -17,7 +17,7 @@ class ElOverblikGetMeteringData extends Command
      *
      * @var string
      */
-    protected $signature = 'eloverblik:get-meter-data {--start-date=} {--end-date=} {--show-count=10 : Number of rows to show. Use \'ALL\' to show everything}';
+    protected $signature = 'eloverblik:get-meter-data {--start-date=} {--end-date=}{ --refresh-token=} {--show-count=10 : Number of rows to show. Use \'ALL\' to show everything}';
 
     /**
      * The console command description.
@@ -64,12 +64,14 @@ class ElOverblikGetMeteringData extends Command
         ];
 
         $rules = [
+            'refresh_token' => ['required'],
             'start_date' => ['required', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date_format:Y-m-d', 'after:start_date'],
             'show-count' => ['required', $rulesForShowCount[$this->getShowCounttype($showCount)]],
         ];
 
         $validator = Validator::make([
+            'refresh_token' => $this->option('refresh-token'),
             'start_date' => $this->option('start-date'),
             'end_date' => $this->option('end-date'),
             'show-count' => $showCount,
@@ -86,6 +88,7 @@ class ElOverblikGetMeteringData extends Command
 
         $safeValues = $validator->validated();
 
+        $refresh_token = $safeValues['refresh_token'];
         $start_date = $safeValues['start_date'];
         $end_date = $safeValues['end_date'];
         $optionShowCount = $safeValues['show-count'];
@@ -103,7 +106,7 @@ class ElOverblikGetMeteringData extends Command
         }
 
         try {
-            $response = $this->meteringDataService->getData($start_date, $end_date, null, $this->getOutput()->isVerbose());
+            $response = $this->meteringDataService->getData($start_date, $end_date, $refresh_token, $this->getOutput()->isVerbose());
         } catch (ElOverblikApiException $e) {
             if ($e->getCode() == 400) {
                 $this->logExceptionApiMessages($e->getErrors(), 'Request for mertering data at eloverblik failed');

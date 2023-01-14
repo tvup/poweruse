@@ -311,7 +311,7 @@ class ElController extends Controller
         }
     }
 
-    public function getWithSmartMe(string $refreshToken = null) : Response|JsonResponse
+    public function getWithSmartMe(string $refreshToken) : Response|JsonResponse
     {
         try {
             $smartMeCredentials = [
@@ -330,7 +330,7 @@ class ElController extends Controller
                     }
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', $smartMeCredentials);
+                    return $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, 'EWII', $smartMeCredentials);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
@@ -375,7 +375,7 @@ class ElController extends Controller
     }
 
     /**
-     * @param string|null $refreshToken
+     * @param string $refreshToken
      * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
      * @param string|null $dataSource
      * @param array|null $smartMeCredentials
