@@ -444,8 +444,20 @@ class ElController extends Controller
 
     public function getChargesForWeb(Request $request) : Response|RedirectResponse
     {
+
+        $refreshToken = null;
+        if(!$request->token) {
+            if (auth()->check() && auth()->user()->refresh_token) {
+                $refreshToken = auth()->user()->refresh_token;
+            } else {
+                return redirect('consumption')->with('error', 'Failed - token cannot be empty')->withInput($request->all());
+            }
+        } else {
+            $refreshToken = $request->token;
+        }
+
         try {
-            $data = $this->meteringDataService->getCharges($request->token);
+            $data = $this->meteringDataService->getCharges($refreshToken);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
