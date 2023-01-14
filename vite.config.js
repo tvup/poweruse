@@ -6,7 +6,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/app.css',
+                'resources/sass/app.scss',
                 'resources/js/app.js',
                 'resources/js/serviceworker.js',
             ],
@@ -24,6 +24,7 @@ export default defineConfig({
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',
+            $: "jQuery",
         },
     },
 });

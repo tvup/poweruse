@@ -4,6 +4,7 @@
 /public/storage
 /public/build/*
 /storage/*.key
+/storage/refresh_tokens*
 /vendor
 .env
 .phpunit.result.cache
