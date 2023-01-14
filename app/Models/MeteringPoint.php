@@ -39,7 +39,7 @@ class MeteringPoint extends BaseModel
 {
     use HasFactory;
 
-    protected $appends = array('source');
+    protected $appends = ['source'];
 
     public function getSourceAttribute(): string|null {
         return $this->exists ? self::SOURCE : null;
