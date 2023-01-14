@@ -1,7 +1,6 @@
-@extends("layout")
+@extends("layouts.app")
 
 @section('content')
-<x-app-layout>
 <div class="container mt-4">
     @if(session('status'))
         <div class="alert alert-success">
@@ -90,10 +89,9 @@
         </div>
     </div>
 </div>
-</x-app-layout>
 
 
-<script type="text/javascript">
+<script type="module">
     $('.date').datepicker({
         format: 'yyyy-mm-dd'
     });
@@ -101,7 +99,7 @@
 </script>
 
 
-<script>
+<script type="module">
     $(function() {
         $( "#smart_me" ).change(function() {
             let isSmartMeSelected = $( "#smart_me").is(':checked');

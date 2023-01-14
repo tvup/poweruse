@@ -1,4 +1,5 @@
 import './bootstrap';
+import './bootstrap-datepicker';
 
 import Alpine from 'alpinejs';
 
