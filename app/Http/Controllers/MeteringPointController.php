@@ -18,6 +18,6 @@ class MeteringPointController extends Controller
     }
 
     public function index() : View {
-        return view('meteringpoint');
+        return view('metering-point');
     }
 }

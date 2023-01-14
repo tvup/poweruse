@@ -2,7 +2,7 @@
 
 @section('content')
 <div id="app">
-    <meteringpoint  />
+    <metering-point  />
 </div>
 
 @endsection

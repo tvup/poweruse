@@ -4,6 +4,9 @@ import './bootstrap-datepicker';
 import {createApp} from "vue";
 
 import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+Alpine.start();
+
 import MeteringPoint from "../views/components/meteringpoints/MeteringPoint.vue";
 import Paginate from "vuejs-paginate-next";
 import {
@@ -14,12 +17,12 @@ import {
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
 
-window.Alpine = Alpine;
+import $ from 'jquery';
+window.$ = $;
 
-Alpine.start();
 
 const app = createApp({});
-app.component('meteringpoint', MeteringPoint);
+app.component('metering-point', MeteringPoint);
 app.component('pagination', Paginate);
 app.component(Button.name, Button);
 app.component('has-error', HasError);
