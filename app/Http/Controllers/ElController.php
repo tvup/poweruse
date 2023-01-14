@@ -106,10 +106,17 @@ class ElController extends Controller
                 default:
                     $dataSource = 'DATAHUB';
             }
-
+            $refreshToken = null;
             if($dataSource == 'DATAHUB' && !$request->token) {
-                return redirect('el')->with('error', 'Failed - token cannot be empty when datahub is selected.')->withInput($request->all());
+                if (auth()->check() && auth()->user()->refresh_token) {
+                    $refreshToken = auth()->user()->refresh_token;
+                } else {
+                    return redirect('consumption')->with('error', 'Failed - token cannot be empty when datahub is selected.')->withInput($request->all());
+                }
+            } else {
+                $refreshToken = $request->token;
             }
+
 
             $smartMeCredentials = null;
             if ($request->smart_me == 'on') {
@@ -124,7 +131,7 @@ class ElController extends Controller
             ];
 
 
-            $data = $this->getPreliminaryInvoice($request->token, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
+            $data = $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -137,7 +144,7 @@ class ElController extends Controller
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
                     return redirect('el')->with('error', $message)->withInput($request->all());
                 case 401:
-                    return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($request->token))->withInput($request->all());
+                    return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($refreshToken))->withInput($request->all());
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
@@ -161,7 +168,7 @@ class ElController extends Controller
         } catch (DataUnavailableException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
-        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $request->token, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
+        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
     }
 
     public function processCustom(Request $request) : RedirectResponse|Response
@@ -229,12 +236,24 @@ class ElController extends Controller
                 default:
                     $dataSource = 'DATAHUB';
             }
+
+            $refreshToken = null;
+            if($dataSource == 'DATAHUB' && !$request->token) {
+                if (auth()->check() && auth()->user()->refresh_token) {
+                    $refreshToken = auth()->user()->refresh_token;
+                } else {
+                    return redirect('consumption')->with('error', 'Failed - token cannot be empty when datahub is selected.')->withInput($request->all());
+                }
+            } else {
+                $refreshToken = $request->token;
+            }
+
             switch ($dataSource) {
                 case 'EWII':
                     $data = $this->meteringDataService->getMeteringPointDataFromEwii($request->ewiiemail, $request->ewiipassword);
                     break;
                 case 'DATAHUB':
-                    $data = $this->meteringDataService->getMeteringPointData($request->token);
+                    $data = $this->meteringDataService->getMeteringPointData($refreshToken);
                     break;
                 default:
                     throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
@@ -285,7 +304,7 @@ class ElController extends Controller
         }
     }
 
-    public function getWithSmartMe(string $refreshToken = null) : Response|JsonResponse
+    public function getWithSmartMe(string $refreshToken) : Response|JsonResponse
     {
         try {
             $smartMeCredentials = [
@@ -304,7 +323,7 @@ class ElController extends Controller
                     }
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-                    return $this->getPreliminaryInvoice(null, $ewiiCredentials, 'EWII', $smartMeCredentials);
+                    return $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, 'EWII', $smartMeCredentials);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
@@ -349,7 +368,7 @@ class ElController extends Controller
     }
 
     /**
-     * @param string|null $refreshToken
+     * @param string $refreshToken
      * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
      * @param string|null $dataSource
      * @param array|null $smartMeCredentials
@@ -363,7 +382,7 @@ class ElController extends Controller
      * @throws ElOverblikApiException
      * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken = null, array $ewiiCredentials=null, string $dataSource=null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials=null, string $dataSource=null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
     {
         if(!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -418,8 +437,20 @@ class ElController extends Controller
 
     public function getChargesForWeb(Request $request) : Response|RedirectResponse
     {
+
+        $refreshToken = null;
+        if(!$request->token) {
+            if (auth()->check() && auth()->user()->refresh_token) {
+                $refreshToken = auth()->user()->refresh_token;
+            } else {
+                return redirect('consumption')->with('error', 'Failed - token cannot be empty')->withInput($request->all());
+            }
+        } else {
+            $refreshToken = $request->token;
+        }
+
         try {
-            $data = $this->meteringDataService->getCharges($request->token);
+            $data = $this->meteringDataService->getCharges($refreshToken);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -564,13 +595,25 @@ class ElController extends Controller
             $smartMe['password'] = $request->smartmepassword;
             $smartMe['id'] = $request->smartmeid;
         }
+
+        if(!$request->token) {
+            if (auth()->check() && auth()->user()->refresh_token) {
+                $refreshToken = auth()->user()->refresh_token;
+            } else {
+                $message = 'Request token should be provided either on input or saved on user';
+                return redirect('consumption')->with('error', $message)->withInput($request->all());
+            }
+        } else {
+            $refreshToken = $request->token;
+        }
+
         try {
             switch ($dataSource) {
                 case 'EWII':
                     $data = $this->meteringDataService->getDataFromEwii($request->start_date, $end_date, $request->ewiiEmail, $request->ewiiPassword);
                     break;
                 case 'DATAHUB':
-                    $data = $this->meteringDataService->getData($request->start_date, $end_date, $request->token);
+                    $data = $this->meteringDataService->getData($request->start_date, $end_date, $refreshToken);
                     break;
                 case 'SMART-ME':
                     $data = $this->smartMeMeterDataService->getInterval($request->start_date,$end_date, $smartMe);
