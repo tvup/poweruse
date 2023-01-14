@@ -15,9 +15,16 @@ class MeteringPointController extends Controller
 {
     private GetMeteringData $meteringDataService;
 
+    private bool $userIsLoggedIn = false;
+
 
     public function __construct(GetMeteringData $meteringDataService)
     {
+        if(auth('api')->check()) {
+            $this->userIsLoggedIn = true;
+        } else {
+            $this->userIsLoggedIn = false;
+        }
         $this->meteringDataService = $meteringDataService;
     }
 
@@ -28,7 +35,7 @@ class MeteringPointController extends Controller
      */
     public function index(string $refresh_token = null)
     {
-        if(auth('api')->check()) {
+        if($this->userIsLoggedIn) {
             if(!$refresh_token) {
                 $data = MeteringPoint::whereUserId(auth('api')->user()->id)->orderBy('id', 'desc')->paginate(5);
                 if ($data->count() != 0) {
