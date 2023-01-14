@@ -14,13 +14,13 @@
 
         <div class="form-group">
             <label for="name">{{__('Name') }}</label>
-            <input id="name" name="name" type="text" class="form-control" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <input id="name" name="name" type="text" class="form-control" value="{{old('name', $user->name)}}" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <label for="email" >{{__('Email') }} </label>
-            <input id="email" name="email" type="email" class="form-control" :value="old('email', $user->email)" required autocomplete="email" />
+            <input id="email" name="email" type="email" class="form-control" value="{{ old('email', $user->email) }}" required autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
@@ -44,7 +44,7 @@
 
         <div>
             <label for="refresh_token"> {{__('Refresh token') }}</label>
-            <input id="refresh_token" name="refresh_token" type="text" class="form-control" :value="old('refresh_token', $user->refresh_token)" autofocus autocomplete="refresh_token" />
+            <input id="refresh_token" name="refresh_token" type="text" class="form-control" value="{{ old('refresh_token', $user->refresh_token) }}" autofocus autocomplete="refresh_token" />
             <x-input-error class="mt-2" :messages="$errors->get('refresh_token')" />
         </div>
 
