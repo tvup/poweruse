@@ -17,7 +17,6 @@
           <div class="col-md-8" v-for="metering_point in metering_points" :key="metering_point.id">
             <div class="panel panel-default">
               <div class="panel-body">
-                <div class="h4 text-center">Metering point</div>
                 <div class="row pv-lg">
                   <div class="col-lg-2"></div>
                   <div class="col-lg-8">
