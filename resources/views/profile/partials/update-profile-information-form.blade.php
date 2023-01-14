@@ -2,7 +2,6 @@
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
-
     <form method="post" action="{{ route('profile.update') }}">
         @csrf
         @method('patch')
