@@ -98,18 +98,6 @@ class ChargeController extends Controller
      */
     public function store(StoreChargeRequest $request): JsonResponse
     {
-        $this->validate($request, [
-                'type' => 'required|string',
-                'name' => 'required|string',
-                'description' => 'required|string',
-                'owner' => 'required',
-                'valid_from' => 'required|date',
-                'valid_to' => 'nullable|date',
-                'period_type' => 'required|string|max:5',
-                'price' => 'nullable|string',
-                'quantity' => 'nullable|string|max:4',
-            ]
-        );
         /** @var Charge $charge */
         $charge = Charge::create([
             'type' => $request['type'],
@@ -158,7 +146,36 @@ class ChargeController extends Controller
      */
     public function update(UpdateChargeRequest $request, Charge $charge): JsonResponse
     {
-        return response()->json();
+        $requestArray = [
+            'type' => $request['type'],
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'owner' => $request['owner'],
+            'valid_from' => $request['valid_from'],
+            'valid_to' => $request['valid_to'],
+            'period_type' => $request['period_type'],
+            'price' => $request['price'],
+            'quantity' => $request['quantity'],
+        ];
+        //$request['prices']
+        $charge->update($requestArray);
+        return response()->json($charge);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Models\Charge $charge
+     * @return JsonResponse
+     */
+    public function destroy(Charge $charge): JsonResponse
+    {
+        foreach ($charge->chargePrices as $chargePrice) {
+            $chargePrice->delete();
+        }
+        $charge->delete();
+
+        return response()->json($charge);
     }
 
     /**
@@ -167,7 +184,7 @@ class ChargeController extends Controller
      * @param \App\Models\MeteringPoint $meteringPoint
      * @return JsonResponse
      */
-    public function destroy(MeteringPoint $meteringPoint): JsonResponse
+    public function destroyAll(MeteringPoint $meteringPoint): JsonResponse
     {
         $chargesQuery = Charge::whereMeteringPointId($meteringPoint->id);
         $charges = $chargesQuery->get();

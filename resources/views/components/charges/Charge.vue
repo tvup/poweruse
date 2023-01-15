@@ -77,10 +77,12 @@
                   </div>
                 </td>
                 <td class="align-middle">
-                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'" @click.prevent="editCharge(charge)">
+                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'"
+                     @click.prevent="editCharge(charge)">
                     <i class="fa fa-edit"></i>
                   </a>
-                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'" @click.prevent="deleteCharge(charge.id)">
+                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'"
+                     @click.prevent="deleteCharge(charge.id)">
                     <i class="fa fa-trash"></i>
                   </a>
                 </td>
@@ -91,8 +93,14 @@
               <pagination :data="charges" @pagination-change-page="getCharges"
                           :pageCount="last_page"></pagination>
             </nav>
-            <button type="button" class="btn btn-primary" v-if="authUser && (charges[0] ? charges[0].source : '') != 'Poweruse'" @click.prevent="saveCharges()">Save all charges to DB</button>
-            <button type="button" class="btn btn-danger" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'" @click.prevent="deleteCharges(metering_point_id)">Delete all charges in DB</button>
+            <button type="button" class="btn btn-primary"
+                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') != 'Poweruse'"
+                    @click.prevent="saveCharges()">Save all charges to DB
+            </button>
+            <button type="button" class="btn btn-danger"
+                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'Poweruse'"
+                    @click.prevent="deleteCharges(metering_point_id)">Delete all charges in DB
+            </button>
           </div>
         </div>
       </div>
@@ -115,54 +123,48 @@
           <form @submit.prevent="isFormCreateChargeMode ? createCharge() : updateCharge()">
             <div class="modal-body">
               <div class="form-group">
-                <input v-model="form.charge_id" type="metering_point_id" name="metering_point_id"
-                       placeholder="Charge id"
-                       class="form-control" :class="{ 'is-invalid': form.errors.has('charge_id') }">
-                <has-error :form="form" field="metering_point_id"></has-error>
-              </div>
-              <div class="form-group">
-                <input v-model="form.type" type="type" name="type_of_mp"
+                <input v-model="form.type" type="text" name="type"
                        placeholder="Type of charge"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
                 <has-error :form="form" field="type"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.name" type="name" name="name"
+                <input v-model="form.name" type="text" name="name"
                        placeholder="Name"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                 <has-error :form="form" field="name"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.description" type="description" name="description" placeholder="Description"
+                <input v-model="form.description" type="text" name="description" placeholder="Description"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('description') }">
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.owner" type="owner" name="owner"
+                <input v-model="form.owner" type="text" name="owner"
                        placeholder="Owner"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('owner') }">
                 <has-error :form="form" field="owner"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.valid_from" type="valid_from" name="valid_from"
+                <input v-model="form.valid_from" type="text" name="valid_from"
                        placeholder="Valid from"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('valid_from') }">
                 <has-error :form="form" field="valid_from"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.valid_to" type="valid_to" name="valid_to"
+                <input v-model="form.valid_to" type="text" name="valid_to"
                        placeholder="Valid to"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('valid_to') }">
                 <has-error :form="form" field="valid_to"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.period_type" type="period_type"
+                <input v-model="form.period_type" type="text"
                        name="period_type" placeholder="Period type"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('period_type') }">
                 <has-error :form="form" field="period_type"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.price" type="price" name="price"
+                <input v-model="form.price" type="text" name="price"
                        placeholder="Price"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('price') }">
                 <has-error :form="form" field="price"></has-error>
@@ -173,10 +175,42 @@
                 <has-error :form="form" field="quantity"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.prices" type="text" name="prices" placeholder="Prices"
-                       class="form-control" :class="{ 'is-invalid': form.errors.has('prices') }">
-                <has-error :form="form" field="prices"></has-error>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    @click="addMore()">
+                  Tilføj pris
+                </button>
+                <div v-for="(price, index) in form.prices" :key="index">
+                  <div class="row-cols-2">
+                    <div class="row">
+                      <div class="form-group col-xs-4 col-md-4">
+                        <label for="position" class="control-label">Position</label>
+                        <input
+                            v-model="price.position" id="position"
+                            placeholder="Position"
+                            class="form-control"/>
+                      </div>
+                      <div class="form-group col-xs-4 col-md-4">
+                        <label for="price" class="control-label">Price</label>
+                        <input
+                            v-model="price.price" id="price"
+                            placeholder="Price"
+                            class="form-control"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-xs-4 col-md-4">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        @click="remove(index)">
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </div>
+
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -202,10 +236,17 @@ export default {
   // Declare metering points (as object), form (as /vform instance) and /isFormCreateMeteringPointMode (as boolean defaulted to 'true') inside /data() { return {} }.
   data() {
     return {
-      charges: [],
+      charges: [{
+        id: '',
+        prices: [{
+          position: 0,
+          price: ''
+        }]
+      }],
       form: new Form({
         id: '',
         type: '',
+        name: '',
         description: '',
         owner: '',
         valid_from: '',
@@ -213,7 +254,7 @@ export default {
         period_type: '',
         price: '',
         quantity: '',
-        prices: '',
+        prices: [{position: 0, price: ''}],
       }),
       isFormCreateChargeMode: true,
       last_page: 0,
@@ -225,6 +266,15 @@ export default {
   },
 
   methods: {
+    addMore() {
+      this.form.prices.push({
+        position: this.form.prices.slice(-1)[0] ? this.form.prices.slice(-1)[0].position + 1 : 0,
+        price: ''
+      });
+    },
+    remove(index) {
+      this.form.prices.splice(index, 1);
+    },
     // /getMeteringPoints() function. Function we use to get metering point list by calling api/metering-points method GET.
     getCharges(page) {
       if (typeof page === 'undefined') {
@@ -468,7 +518,44 @@ export default {
         // confirm delete?
         if (result.value) {
           // request delete
-          axios.delete('api/charge/' + metering_point_id, {}).then(() => {
+          axios.delete('api/charges/' + metering_point_id, {}).then(() => {
+            // sweet alert success
+            swal.fire(
+                'Deleted!',
+                'Charges have been deleted.',
+                'success'
+            )
+
+            this.charges = null;
+            this.getCharges();
+          }).catch(() => {
+            // sweet alert fail
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+              footer: '<a href>Why do I have this issue?</a>'
+            })
+          });
+        }
+      });
+    },
+    // /deleteCharge() function. Function we use to delete metering point record by calling api/metering-points/{id} method DELETE.
+    deleteCharge(id) {
+      // sweet alert confirmation
+      swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        // confirm delete?
+        if (result.value) {
+          // request delete
+          axios.delete('api/charge/' + id, {}).then(() => {
             // sweet alert success
             swal.fire(
                 'Deleted!',
