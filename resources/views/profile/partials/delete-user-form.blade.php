@@ -2,7 +2,7 @@
     <div class="container rounded bg-white mt-5 mb-5">
         <div class="row">
             <div class="col-md-3 border-right">
-                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="mt-5" width="150px" src="https://iconarchive.com/download/i19002/iconshock/vista-general/trash.ico">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="mt-5" width="150" src="https://iconarchive.com/download/i19002/iconshock/vista-general/trash.ico">
                 </div>
             </div>
             <div class="col-md-5 border-right">
