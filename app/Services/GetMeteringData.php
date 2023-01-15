@@ -225,8 +225,9 @@ class GetMeteringData
             throw $exception;
 
         }
+        $fees = [];
 
-        return array($subscriptions, $tariffs);
+        return array($subscriptions, $tariffs, $fees);
     }
 
     private function getEloverblikApi(string $refreshToken = null) : ElOverblikApiInterface

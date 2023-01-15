@@ -63,19 +63,23 @@
         </div>
     </div>
 </div>
-<script type="module">
-    $('.date').datepicker({
-        format: 'yyyy-mm-dd'
-    });
-
-</script>
-
-<script type="module">
-    $(function() {
-        $(document).ready(function(){
-            $(".alert").slideDown(300).delay(10000).slideUp(300);
-        });
-    });
-</script>
 
 @endsection
+
+<script type="module">
+    window.onload = function () {
+        $('.date').datepicker({
+            format: 'yyyy-mm-dd'
+        });
+    }
+</script>
+
+<script type="module">
+    window.onload = function () {
+        $(function() {
+            $(document).ready(function(){
+                $(".alert").slideDown(300).delay(10000).slideUp(300);
+            });
+        });
+    }
+</script>

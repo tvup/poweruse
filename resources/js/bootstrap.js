@@ -4,8 +4,12 @@ window._ = _;
 import $ from 'jquery';
 window.$ = $;
 
+import * as Popper from '@popperjs/core';
+window.Popper = Popper;
+
 import 'bootstrap';
 
+import './custom';
 
 
 /**

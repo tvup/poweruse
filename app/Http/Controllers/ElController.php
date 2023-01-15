@@ -68,20 +68,6 @@ class ElController extends Controller
         return view('el')->with('data', $data ? $data->original : null);
     }
 
-    public function indexMeteringPoint() : View
-    {
-        $data = session('data');
-
-        return view('el-meteringpoint')->with('data', $data ? : null);
-    }
-
-    public function indexCharges() : View
-    {
-        $data = session('data');
-
-        return view('el-charges')->with('data', $data ? : null);
-    }
-
     public function indexSpotprices() : View
     {
         $data = session('data');
@@ -440,41 +426,6 @@ class ElController extends Controller
             $list[$subscription['name']] = $subscription['description'];
         }
         return response()->json($list);
-    }
-
-    public function getChargesForWeb(Request $request) : Response|RedirectResponse
-    {
-
-        $refreshToken = null;
-        if(!$request->token) {
-            if (auth()->check() && auth()->user()->refresh_token) {
-                $refreshToken = auth()->user()->refresh_token;
-            } else {
-                return redirect('consumption')->with('error', 'Failed - token cannot be empty')->withInput($request->all());
-            }
-        } else {
-            $refreshToken = $request->token;
-        }
-
-        try {
-            $data = $this->meteringDataService->getCharges($refreshToken);
-        } catch (ElOverblikApiException $e) {
-            switch ($e->getCode()) {
-                case 400:
-                case 503:
-                    $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for charges data at eloverblik failed</strong>' . '<br/>';
-                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-                    return redirect('el-charges')->with('error', $message)->withInput($request->all());
-                case 401:
-                    return redirect('el-charges')->with('error', 'Failed - cannot login with token')->withInput($request->all());
-                default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
-            }
-        }
-        return redirect('el-charges')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
     public function getSpotprices(Request $request) : Response|RedirectResponse

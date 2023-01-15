@@ -60,7 +60,7 @@
 
                 <div class="form-group">
                     <label for="exampleInputEmail1">Start dato</label>
-                    <input name="start_date" class="date form-control" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
+                    <input name="start_date" class="date form-control start_date" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Slut dato (eks.)</label>
@@ -72,116 +72,120 @@
         </div>
     </div>
 </div>
-<script type="module">
-    $('.date').datepicker({
-        format: 'yyyy-mm-dd'
-    });
-
-</script>
-
-<script type="module">
-    $(function() {
-        $(document).ready(function(){
-            $(".alert").slideDown(300).delay(10000).slideUp(300);
-        });
-    });
-</script>
-
-<script type="module">
-    $(function() {
-        $('input[type=radio][name=source]').change(function() {
-            let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
-            let isDatahubSelected = $('input[name=source][value=DATAHUB]').is(":checked");
-            let isEwiiSelected = $('input[name=source][value=EWII]').is(":checked");
-            let isSmartMeSelected = $('input[name=source][value=SMART-ME]').is(":checked");
-            let addSmartMeIsSelected = $( "#smart_me").is(':checked');
-            let smartMeIsInPlay = addSmartMeIsSelected || isSmartMeSelected;
-            let whoIsSelected = null;
-
-            if (isDatahubSelected) {
-                whoIsSelected = 'DATAHUB'
-            } else if (isEwiiSelected) {
-                whoIsSelected = 'EWII'
-            } else if (isSmartMeSelected) {
-                whoIsSelected = 'SMART-ME'
-            }
-
-            updateSmartMeCheckBoxShow(isDatahubOrEwiiSelected);
-            updateCredentialsFieldsShow(whoIsSelected, addSmartMeIsSelected);
-            updateDatePicker(smartMeIsInPlay);
-        });
-
-        function updateSmartMeCheckBoxShow($boolean) {
-            if($boolean) {
-                $('.smart_me').show();
-            } else {
-                $('#smart_me').prop('checked', false);
-                $('.smart_me').hide();
-            }
-
-        }
-        var my_bool2 = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
-        updateSmartMeCheckBoxShow(my_bool2);
-
-        $( "#smart_me" ).change(function() {
-            let addSmartMeIsSelected = $( "#smart_me").is(':checked');
-            updateDatePicker(addSmartMeIsSelected);
-            if(addSmartMeIsSelected) {
-                $('.smartmedetails').show();
-            } else {
-                $('.smartmedetails').hide();
-            }
-        });
-
-
-        function updateCredentialsFieldsShow(source, isAddSmartMeChecked) {
-            switch(source) {
-                case 'DATAHUB':
-                    $('.datahub').show();
-                    $('.ewii').hide();
-                    if(isAddSmartMeChecked) {
-                        $('.smartmedetails').show();
-                    } else {
-                        $('.smartmedetails').hide();
-                    }
-                    break;
-                case 'EWII':
-                    $('.ewii').show();
-                    $('.datahub').hide();
-                    if(isAddSmartMeChecked) {
-                        $('.smartmedetails').show();
-                    } else {
-                        $('.smartmedetails').hide();
-                    }
-                    break;
-                case 'SMART-ME':
-                    $('.smartmedetails').show();
-                    $('.ewii').hide();
-                    $('.datahub').hide();
-                    break;
-            }
-        }
-        let isSmartMeInPlay = {{ (old('smart_me') == 'on' || old('source') == 'SMART-ME') ? 'true' : 'false' }} ;
-        updateCredentialsFieldsShow({!! old('source') ? '\''.old('source'). '\'' : '\''. 'DATAHUB'.'\'' !!}, isSmartMeInPlay);
-
-
-        function updateDatePicker($boolean) {
-            const today = new Date()
-            let tomorrow = new Date()
-            tomorrow.setDate(today.getDate() + 1)
-            if($boolean) {
-                $('.end_date').datepicker("setDate", tomorrow);
-            } else {
-                $('.end_date').datepicker("setDate", today);
-            }
-
-        }
-        updateDatePicker({{ old('smart_me') == 'on' }});
-
-        $(document).ready(function(){
-            $(".alert").slideDown(300).delay(10000).slideUp(300);
-        });
-    });
-</script>
 
 @endsection
+<script type="module">
+    window.onload = function () {
+        $(function() {
+            $(document).ready(function(){
+                $(".alert").slideDown(300).delay(10000).slideUp(300);
+            });
+        });
+    }
+
+</script>
+
+<script type="module">
+    window.onload = function () {
+        $(function() {
+            $('input[type=radio][name=source]').change(function() {
+                let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
+                let isDatahubSelected = $('input[name=source][value=DATAHUB]').is(":checked");
+                let isEwiiSelected = $('input[name=source][value=EWII]').is(":checked");
+                let isSmartMeSelected = $('input[name=source][value=SMART-ME]').is(":checked");
+                let addSmartMeIsSelected = $( "#smart_me").is(':checked');
+                let smartMeIsInPlay = addSmartMeIsSelected || isSmartMeSelected;
+                let whoIsSelected = null;
+
+                if (isDatahubSelected) {
+                    whoIsSelected = 'DATAHUB';
+                } else if (isEwiiSelected) {
+                    whoIsSelected = 'EWII';
+                } else if (isSmartMeSelected) {
+                    whoIsSelected = 'SMART-ME';
+                }
+
+                updateSmartMeCheckBoxShow(isDatahubOrEwiiSelected);
+                updateCredentialsFieldsShow(whoIsSelected, addSmartMeIsSelected);
+                updateDatePicker(smartMeIsInPlay);
+            });
+
+            function updateSmartMeCheckBoxShow($boolean) {
+                if($boolean) {
+                    $('.smart_me').show();
+                } else {
+                    $('#smart_me').prop('checked', false);
+                    $('.smart_me').hide();
+                }
+
+            }
+            var my_bool2 = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
+            updateSmartMeCheckBoxShow(my_bool2);
+
+            $( "#smart_me" ).change(function() {
+                let addSmartMeIsSelected = $( "#smart_me").is(':checked');
+                updateDatePicker(addSmartMeIsSelected);
+                if(addSmartMeIsSelected) {
+                    $('.smartmedetails').show();
+                } else {
+                    $('.smartmedetails').hide();
+                }
+            });
+
+
+            function updateCredentialsFieldsShow(source, isAddSmartMeChecked) {
+                switch(source) {
+                    case 'DATAHUB':
+                        $('.datahub').show();
+                        $('.ewii').hide();
+                        if(isAddSmartMeChecked) {
+                            $('.smartmedetails').show();
+                        } else {
+                            $('.smartmedetails').hide();
+                        }
+                        break;
+                    case 'EWII':
+                        $('.ewii').show();
+                        $('.datahub').hide();
+                        if(isAddSmartMeChecked) {
+                            $('.smartmedetails').show();
+                        } else {
+                            $('.smartmedetails').hide();
+                        }
+                        break;
+                    case 'SMART-ME':
+                        $('.smartmedetails').show();
+                        $('.ewii').hide();
+                        $('.datahub').hide();
+                        break;
+                }
+            }
+            let isSmartMeInPlay = {{ (old('smart_me') == 'on' || old('source') == 'SMART-ME') ? 'true' : 'false' }} ;
+            updateCredentialsFieldsShow({!! old('source') ? '\''.old('source'). '\'' : '\''. 'DATAHUB'.'\'' !!}, isSmartMeInPlay);
+
+
+            function updateDatePicker($boolean) {
+                const today = new Date();
+                let tomorrow = new Date();
+                tomorrow.setDate(today.getDate() + 1);
+                if($boolean) {
+                    $('.end_date').datepicker("setDate", tomorrow);
+                } else {
+                    $('.end_date').datepicker("setDate", today);
+                }
+
+            }
+
+            $('.start_date, .end_date').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+            updateDatePicker({{ old('smart_me') == 'on' }});
+            $('.start_date').datepicker("setDate", "{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}");
+
+            $(document).ready(function(){
+                $(".alert").slideDown(300).delay(10000).slideUp(300);
+            });
+        });
+    }
+
+</script>
