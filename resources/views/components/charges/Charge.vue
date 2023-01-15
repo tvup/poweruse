@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Charges - {{ metering_point_id }}</h3>
+          <h3 class="card-title">Charges - {{ metering_point_gsrn }}</h3>
           <div class="card-tools" v-if="authUser && authUser.refresh_token">
             <div class="input-group input-group-sm">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
@@ -222,7 +222,8 @@ export default {
       last_page: 0,
       total: 0,
       token: '',
-      metering_point_id: ''
+      metering_point_id: '',
+      metering_point_gsrn: ''
     }
   },
 
@@ -266,6 +267,7 @@ export default {
           this.last_page = data.data.last_page;
           this.total = data.data.total;
           this.metering_point_id = data.data.data[3][0]['metering_point_id'];
+          this.metering_point_gsrn = data.data.data[4][0]['metering_point_gsrn'];
           if (this.total == 1) {
             this.form.fill(this.charges[0]);
           }
@@ -302,6 +304,8 @@ export default {
           this.last_page = data.data.last_page;
           this.total = data.data.total;
           this.metering_point_id = data.data.data[3][0]['metering_point_id'];
+          console.log(data.data.data);
+          this.metering_point_gsrn = data.data.data[4][0]['metering_point_gsrn'];
           if (this.total == 1) {
             this.form.fill(this.charges[0]);
           }

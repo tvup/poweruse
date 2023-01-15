@@ -51,7 +51,7 @@ class ChargeController extends Controller
                     $secondQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Tarif');
                     $thirdQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Gebyr');
                     if ($firstQuery->count() + $secondQuery->count() + $thirdQuery->count() != 0) {
-                        $data = [$firstQuery->get(), $secondQuery->get(), $thirdQuery->get(), [['metering_point_id' => $meteringPointId]]];
+                        $data = [$firstQuery->get(), $secondQuery->get(), $thirdQuery->get(), [['metering_point_id' => $meteringPointId]],[['metering_point_gsrn' => $meteringPoint->metering_point_id]]];
                         $data = collect($data);
                         $data = PaginationHelper::paginate($data, 10);
                         return response()->json($data);
@@ -83,6 +83,7 @@ class ChargeController extends Controller
             }
         }
         array_push($data, [['metering_point_id' => $meteringPointId]]);
+        array_push($data, [['metering_point_gsrn' => $meteringPoint ? $meteringPoint->metering_point_id : '']]);
         $data = collect($data);
         $data = PaginationHelper::paginate($data, 10);
         return response()->json($data);
