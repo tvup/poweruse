@@ -8,6 +8,7 @@ use App\Http\Requests\StoreChargeRequest;
 use App\Http\Requests\UpdateChargeRequest;
 use App\Models\Charge;
 use App\Services\GetMeteringData;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
@@ -24,9 +25,9 @@ class ChargeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function index()
+    public function index() : JsonResponse
     {
         $refreshToken = config('services.energioverblik.refresh_token');
 
@@ -40,12 +41,11 @@ class ChargeController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for charges data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-                    return redirect('el-charges')->with('error', $message);
+                    return response()->json(['error' => $message]);
                 case 401:
-                    return redirect('el-charges')->with('error', 'Failed - cannot login with token');
+                    return response()->json(['error' => 'Failed - cannot login with token']);
                 default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
+                    return response()->json(['message' => $e->getMessage(), 'code' => $e->getCode()]);
             }
         }
         $data = collect($data);
@@ -57,9 +57,9 @@ class ChargeController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreChargeRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function store(StoreChargeRequest $request)
+    public function store(StoreChargeRequest $request) : JsonResponse
     {
         $this->validate($request, [
                 'type' => 'required|string',
@@ -75,7 +75,7 @@ class ChargeController extends Controller
             ]
         );
 
-        return Charge::create([
+        return response()->json(Charge::create([
             'type' => $request['type'],
             'name' => $request['name'],
             'description' => $request['description'],
@@ -87,18 +87,18 @@ class ChargeController extends Controller
             'quantity' => $request['quantity'],
             //'prices' => $request['prices'],
             'metering_point_id' => $request['metering_point_id']
-        ]);
+        ]));
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \App\Models\Charge  $charge
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function show(Charge $charge)
+    public function show(Charge $charge) : JsonResponse
     {
-        //
+        return response()->json();
     }
 
     /**
@@ -106,21 +106,21 @@ class ChargeController extends Controller
      *
      * @param  \App\Http\Requests\UpdateChargeRequest  $request
      * @param  \App\Models\Charge  $charge
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function update(UpdateChargeRequest $request, Charge $charge)
+    public function update(UpdateChargeRequest $request, Charge $charge) : JsonResponse
     {
-        //
+        return response()->json();
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Charge  $charge
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function destroy(Charge $charge)
+    public function destroy(Charge $charge) : JsonResponse
     {
-        //
+        return response()->json();
     }
 }
