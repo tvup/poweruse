@@ -40,6 +40,7 @@ class ChargeController extends Controller
     public function index(string $refresh_token = null): JsonResponse
     {
         $meteringPointId = '';
+        $meteringPoint = null;
 
         if ($this->userIsLoggedIn) {
             $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
@@ -51,7 +52,7 @@ class ChargeController extends Controller
                     $secondQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Tarif');
                     $thirdQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Gebyr');
                     if ($firstQuery->count() + $secondQuery->count() + $thirdQuery->count() != 0) {
-                        $data = [$firstQuery->get(), $secondQuery->get(), $thirdQuery->get(), [['metering_point_id' => $meteringPointId]],[['metering_point_gsrn' => $meteringPoint->metering_point_id]]];
+                        $data = [$firstQuery->get(), $secondQuery->get(), $thirdQuery->get(), [['metering_point_id' => $meteringPointId]], [['metering_point_gsrn' => $meteringPoint->metering_point_id]]];
                         $data = collect($data);
                         $data = PaginationHelper::paginate($data, 10);
                         return response()->json($data);
@@ -168,18 +169,14 @@ class ChargeController extends Controller
      */
     public function destroy(MeteringPoint $meteringPoint): JsonResponse
     {
-        if (!$meteringPoint) {
-            return response()->json();
-        } else {
-            $chargesQuery = Charge::whereMeteringPointId($meteringPoint->id);
-            $charges = $chargesQuery->get();
-            foreach ($charges as $charge) {
-                ChargePrice::whereChargeId($charge->id)->delete();
-            }
-            $chargesQuery->delete();
-
-
-            return response()->json($charges);
+        $chargesQuery = Charge::whereMeteringPointId($meteringPoint->id);
+        $charges = $chargesQuery->get();
+        foreach ($charges as $charge) {
+            ChargePrice::whereChargeId($charge->id)->delete();
         }
+        $chargesQuery->delete();
+
+
+        return response()->json($charges);
     }
 }
