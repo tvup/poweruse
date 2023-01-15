@@ -77,14 +77,11 @@
                   </div>
                 </td>
                 <td class="align-middle">
-                  <a href="" @click.prevent="editCharge(charge)">
+                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'" @click.prevent="editCharge(charge)">
                     <i class="fa fa-edit"></i>
                   </a>
-                  <a href="" @click.prevent="deleteCharge(charge.id)">
+                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'" @click.prevent="deleteCharge(charge.id)">
                     <i class="fa fa-trash"></i>
-                  </a>
-                  <a href="" @click.prevent="saveCharge(charge)">
-                    <i class="fa fa-save"></i>
                   </a>
                 </td>
               </tr>
@@ -94,8 +91,8 @@
               <pagination :data="charges" @pagination-change-page="getCharges"
                           :pageCount="last_page"></pagination>
             </nav>
-            <button type="button" class="btn btn-primary" @click.prevent="saveCharges()">Save all charges to DB</button>
-            <button type="button" class="btn btn-danger" @click.prevent="deleteCharges(metering_point_id)">Delete all charges in DB</button>
+            <button type="button" class="btn btn-primary" v-if="authUser && (charges[0] ? charges[0].source : '') != 'Poweruse'" @click.prevent="saveCharges()">Save all charges to DB</button>
+            <button type="button" class="btn btn-danger" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'" @click.prevent="deleteCharges(metering_point_id)">Delete all charges in DB</button>
           </div>
         </div>
       </div>
