@@ -46,7 +46,6 @@ class ChargeController extends Controller
                 $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
                 if($meteringPoint) {
                     $meteringPointId = $meteringPoint->metering_point_id;
-                    /** @var LengthAwarePaginator $data */
                     $firstQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Abonnement');
                     $secondQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Tarif');
                     $thirdQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Gebyr');

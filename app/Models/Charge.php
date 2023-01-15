@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon $updated_at
  * @property integer $metering_point_id
  * @property ChargePrice[] $chargePrices
+ * @property ChargePrice[] $prices
  * @property MeteringPoint $meteringPoint
  */
 class Charge extends BaseModel
@@ -40,7 +41,12 @@ class Charge extends BaseModel
         return $this->hasMany(ChargePrice::class);
     }
 
-    public function prices() {
+    /**
+     * We need this fake relation as well because the datadefinition for chargePrices on charge is simply called "prices"
+     *
+     * @return HasManyHasMany<ChargePrice>
+     */
+    public function prices() : HasMany {
         return $this->chargePrices();
     }
 }
