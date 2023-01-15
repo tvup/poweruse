@@ -14,7 +14,7 @@
             </form>
         @endif
         <div id="app">
-            <charge :auth-user="{{ Auth::check() ? json_encode(Auth::user()) : null }}" />
+            <charge :auth-user="{{ Auth::check() ? json_encode(Auth::user()) : "'no'" }}" />
         </div>
     </div>
 </div>

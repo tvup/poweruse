@@ -402,7 +402,7 @@ import Form from "vform";
 export default {
   props: {
     list: '',
-    'auth-user': ''
+    authUser: null
   },
   // Declare metering points (as object), form (as /vform instance) and /isFormCreateMeteringPointMode (as boolean defaulted to 'true') inside /data() { return {} }.
   data() {
@@ -452,7 +452,7 @@ export default {
         }
       }).then(data => {
         this.metering_points = data.data.data;
-        this.last_page = data.data.last_page;
+        this.last_page = data.data.last_page ?? 0;
         this.total = data.data.total;
         if(this.total==1) {
           this.form.fill(this.metering_points[0]);
