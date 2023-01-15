@@ -8,7 +8,7 @@
         <div class="container rounded bg-white mt-5 mb-5">
             <div class="row">
                 <div class="col-md-3 border-right">
-                    <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                    <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
                         <span class="font-weight-bold">{{ $user->name }}</span>
                         <span class="text-black-50">{{ $user->email }}</span>
                     </div>

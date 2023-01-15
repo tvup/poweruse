@@ -23,6 +23,16 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware('locale')->group(function () {
+
+    // Routes that requires auth
+    Route::middleware('protected.routes')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    });
+
+    // Routes that does NOT require auth
     Route::get(
         '/totalprices',
         App\Http\Controllers\TotalPricesController::class
@@ -33,19 +43,14 @@ Route::middleware('locale')->group(function () {
         App\Http\Controllers\TotalPrices\ProcessController::class,
     )->name('totalprices.process');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
     Route::get('el/', 'ElController@index')->name('el');
-    Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-meteringpoint');
-    Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
+    Route::get('el-meteringpoint/', 'MeteringPointController@index')->name('el-meteringpoint');
+    Route::get('el-charges/', 'ChargeController@index')->name('el-charges');
     Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
     Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
     Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
     Route::post('processdata', 'ElController@processData');
     Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
-    Route::post('getChargesForWeb', 'ElController@getChargesForWeb');
     Route::post('getSpotprices', 'ElController@getSpotprices');
     Route::post('getConsumption', 'ElController@getConsumption');
     Route::post('getTotalPrices', 'ElController@getTotalPrices');

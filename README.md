@@ -33,6 +33,11 @@ sail up -d
 
 Navigate to http://localhost/
 
+## Passport
+```bash
+sail artisan passport:install
+```
+
 ## Migrate
 
 ```bash
