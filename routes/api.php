@@ -27,5 +27,6 @@ Route::get('el/{refreshToken}/delete', 'ElController@delete');
 
 Route::get('meteringPoint/{refresh_token?}', 'Api\MeteringPointController@index');
 Route::apiResource('meteringPoint', 'Api\MeteringPointController')->middleware('auth:api')->except('index');
-Route::apiResource('charge', 'Api\ChargeController')->middleware('auth:api');
+Route::get('charge/{refresh_token?}', 'Api\ChargeController@index');
+Route::apiResource('charge', 'Api\ChargeController')->middleware('auth:api')->except('index');
 

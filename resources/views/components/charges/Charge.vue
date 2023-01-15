@@ -238,46 +238,72 @@ export default {
         }
       }).then(data => {
         let arr = [];
-        data.data.data.forEach((value, index) => {
-
-          value.forEach((value2, index2) => {
-            let type = '';
-            switch (index) {
-              case 0:
-                type = "Abonnement";
-                break;
-              case 1:
-                type = "Tarif";
-                break;
-              case 2:
-                type = "Gebyr";
-                break;
-              default:
-                type = "";
-            }
-            if(type!="") {
-              value2.type = type;
-              arr.push(value2);
-            }
+        if (data.data.data) {
+          data.data.data.forEach((value, index) => {
+            value.forEach((value2, index2) => {
+              let type = '';
+              switch (index) {
+                case 0:
+                  type = "Abonnement";
+                  break;
+                case 1:
+                  type = "Tarif";
+                  break;
+                case 2:
+                  type = "Gebyr";
+                  break;
+                default:
+                  type = "";
+              }
+              if (type != "") {
+                value2.type = type;
+                arr.push(value2);
+              }
+            });
           });
-        });
-        this.charges = arr;
-        this.last_page = data.data.last_page;
-        this.total = data.data.total;
-        this.metering_point_id = data.data.data[3][0]['metering_point_id'];
-        if (this.total == 1) {
-          this.form.fill(this.charges[0]);
+          this.charges = arr;
+          this.last_page = data.data.last_page;
+          this.total = data.data.total;
+          this.metering_point_id = data.data.data[3][0]['metering_point_id'];
+          if (this.total == 1) {
+            this.form.fill(this.charges[0]);
+          }
         }
       });
     },
     getChargesFromToken() {
-
       axios.get('api/charge/' + this.token).then(data => {
-        this.charges = data.data.data;
-        this.last_page = data.data.last_page;
-        this.total = data.data.total;
-        if (this.total == 1) {
-          this.form.fill(this.charges[0]);
+        let arr = [];
+        if (data.data.data) {
+          data.data.data.forEach((value, index) => {
+            value.forEach((value2, index2) => {
+              let type = '';
+              switch (index) {
+                case 0:
+                  type = "Abonnement";
+                  break;
+                case 1:
+                  type = "Tarif";
+                  break;
+                case 2:
+                  type = "Gebyr";
+                  break;
+                default:
+                  type = "";
+              }
+              if (type != "") {
+                value2.type = type;
+                arr.push(value2);
+              }
+            });
+          });
+          this.charges = arr;
+          this.last_page = data.data.last_page;
+          this.total = data.data.total;
+          this.metering_point_id = data.data.data[3][0]['metering_point_id'];
+          if (this.total == 1) {
+            this.form.fill(this.charges[0]);
+          }
         }
       });
     },
@@ -306,7 +332,7 @@ export default {
       });
     },
     // /editCharge() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
-    saveCharge(charge, sweetAlert=true) {
+    saveCharge(charge, sweetAlert = true) {
       // request post
       let formData = new FormData();
 
@@ -374,7 +400,7 @@ export default {
       axios.defaults.headers.post['Content-Type'] = 'application/json';
 
       axios.post('api/charge', formData).then(() => {
-        if(sweetAlert) {
+        if (sweetAlert) {
           //sweet alert 2
           swal.fire({
             icon: 'success',

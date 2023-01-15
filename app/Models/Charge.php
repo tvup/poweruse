@@ -33,4 +33,8 @@ class Charge extends BaseModel
     public function chargePrices() : HasMany {
         return $this->hasMany(ChargePrice::class);
     }
+
+    public function prices() {
+        return $this->chargePrices();
+    }
 }

@@ -8,7 +8,9 @@ use App\Http\Requests\StoreChargeRequest;
 use App\Http\Requests\UpdateChargeRequest;
 use App\Models\Charge;
 use App\Models\ChargePrice;
+use App\Models\MeteringPoint;
 use App\Services\GetMeteringData;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -16,24 +18,55 @@ use Tvup\ElOverblikApi\ElOverblikApiException;
 class ChargeController extends Controller
 {
     private GetMeteringData $meteringDataService;
+    private bool $userIsLoggedIn;
 
     public function __construct(GetMeteringData $meteringDataService)
     {
+        if(auth('api')->check()) {
+            $this->userIsLoggedIn = true;
+        } else {
+            $this->userIsLoggedIn = false;
+        }
+
         $this->meteringDataService = $meteringDataService;
     }
 
 
     /**
-     * Display a listing of the resource.
+     * isplay a listing of the resource.
      *
+     * @param string|null $refresh_token
      * @return JsonResponse
      */
-    public function index() : JsonResponse
+    public function index(string $refresh_token = null) : JsonResponse
     {
-        $refreshToken = config('services.energioverblik.refresh_token');
+        $meteringPointId = '';
+        if($this->userIsLoggedIn) {
+            if(!$refresh_token) {
+                $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
+                if($meteringPoint) {
+                    $meteringPointId = $meteringPoint->metering_point_id;
+                    /** @var LengthAwarePaginator $data */
+                    $firstQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Abonnement');
+                    $secondQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Tarif');
+                    $thirdQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Gebyr');
+                    if ($firstQuery->count() + $secondQuery->count() + $thirdQuery->count() != 0) {
+                        $data = [$firstQuery->get(), $secondQuery->get(), $thirdQuery->get(), [['metering_point_id' => $meteringPointId]]];
+                        $data = collect($data);
+                        $data = PaginationHelper::paginate($data, 10);
+                        return response()->json($data);
+                    }
+                    $refresh_token = auth('api')->user()->refresh_token;
+                }
+            }
+        }
+
+        if(!$refresh_token) {
+            return response()->json();
+        }
 
         try {
-            $data = $this->meteringDataService->getCharges($refreshToken);
+            $data = $this->meteringDataService->getCharges($refresh_token);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -49,7 +82,7 @@ class ChargeController extends Controller
                     return response()->json(['message' => $e->getMessage(), 'code' => $e->getCode()]);
             }
         }
-        array_push($data, [['metering_point_id' => '571313174112923291']]);
+        array_push($data, [['metering_point_id' => $meteringPointId]]);
         $data = collect($data);
         $data = PaginationHelper::paginate($data, 10);
         return response()->json($data);

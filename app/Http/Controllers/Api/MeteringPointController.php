@@ -37,7 +37,7 @@ class MeteringPointController extends Controller
     {
         if($this->userIsLoggedIn) {
             if(!$refresh_token) {
-                $data = MeteringPoint::whereUserId(auth('api')->user()->id)->orderBy('id', 'desc')->paginate(5);
+                $data = MeteringPoint::whereUserId(auth('api')->user()->id)->orderBy('id', 'desc')->paginate(10);
                 if ($data->count() != 0) {
                     return response()->json($data);
                 }
