@@ -81,12 +81,12 @@ class GetPreliminaryInvoice
                 break;
             case 'DATAHUB':
             case null:
-            if (!$refreshToken) {
-                throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
-            }
-            $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
-            $source = 'DATAHUB';
-            break;
+                if (!$refreshToken) {
+                    throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
+                }
+                $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
+                $source = 'DATAHUB';
+                break;
             default:
                 throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
         }
