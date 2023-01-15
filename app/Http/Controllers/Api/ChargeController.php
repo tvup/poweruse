@@ -49,6 +49,7 @@ class ChargeController extends Controller
                     return response()->json(['message' => $e->getMessage(), 'code' => $e->getCode()]);
             }
         }
+        array_push($data, [['metering_point_id' => '571313174112923291']]);
         $data = collect($data);
         $data = PaginationHelper::paginate($data, 10);
         return response()->json($data);
@@ -72,7 +73,6 @@ class ChargeController extends Controller
                 'period_type' => 'required|string|max:5',
                 'price' => 'nullable|string',
                 'quantity' => 'nullable|string|max:4',
-                //'prices' => 'nullable|string|max:40',
             ]
         );
         /** @var Charge $charge */

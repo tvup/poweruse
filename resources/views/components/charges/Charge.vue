@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Charges</h3>
+          <h3 class="card-title">Charges - {{ metering_point_id }}</h3>
           <div class="card-tools" v-if="authUser && authUser.refresh_token">
             <div class="input-group input-group-sm">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
@@ -220,7 +220,8 @@ export default {
       isFormCreateChargeMode: true,
       last_page: 0,
       total: 0,
-      token: ''
+      token: '',
+      metering_point_id: ''
     }
   },
 
@@ -248,16 +249,22 @@ export default {
               case 1:
                 type = "Tarif";
                 break;
+              case 2:
+                type = "Gebyr";
+                break;
               default:
                 type = "";
             }
-            value2.type = type;
-            arr.push(value2);
+            if(type!="") {
+              value2.type = type;
+              arr.push(value2);
+            }
           });
         });
         this.charges = arr;
         this.last_page = data.data.last_page;
         this.total = data.data.total;
+        this.metering_point_id = data.data.data[3][0]['metering_point_id'];
         if (this.total == 1) {
           this.form.fill(this.charges[0]);
         }
@@ -362,7 +369,7 @@ export default {
           formData.append(key, values[i]);
         }
       }
-      formData.append('metering_point_id', '571313174112923291');
+      formData.append('metering_point_id', this.metering_point_id);
 
       axios.defaults.headers.post['Content-Type'] = 'application/json';
 
