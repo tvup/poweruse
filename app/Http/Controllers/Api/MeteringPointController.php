@@ -107,7 +107,7 @@ class MeteringPointController extends Controller
      */
     public function store(StoreMeteringPointRequest $request)
     {
-        $validated = $request->validate($request->rules());
+        $validated = $request->validated();
 
         return MeteringPoint::updateOrCreate(
             [
