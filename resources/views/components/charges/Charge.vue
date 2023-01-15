@@ -59,7 +59,7 @@
                 <td class="align-middle">{{ charge.price }}</td>
                 <td class="align-middle">{{ charge.quantity }}</td>
                 <td class="align-middle">
-                  <div v-if="charge.prices.length!=0">
+                  <div v-if="charge.prices && charge.prices.length!=0">
                     <table class="table table-hover">
                       <thead>
                       <tr>
