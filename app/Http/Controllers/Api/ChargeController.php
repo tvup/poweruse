@@ -159,13 +159,14 @@ class ChargeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resources from storage.
      *
-     * @param  \App\Models\Charge  $charge
+     * @param  \App\Models\MeteringPoint  $meteringPoint
      * @return JsonResponse
      */
-    public function destroy(Charge $charge) : JsonResponse
+    public function destroy(MeteringPoint $meteringPoint) : JsonResponse
     {
+        Charge::whereMeteringPointId($meteringPoint->metering_point_id)->delete();
         return response()->json();
     }
 }

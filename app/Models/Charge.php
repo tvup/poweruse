@@ -44,7 +44,7 @@ class Charge extends BaseModel
     /**
      * We need this fake relation as well because the datadefinition for chargePrices on charge is simply called "prices"
      *
-     * @return HasManyHasMany<ChargePrice>
+     * @return HasMany<ChargePrice>
      */
     public function prices() : HasMany {
         return $this->chargePrices();
