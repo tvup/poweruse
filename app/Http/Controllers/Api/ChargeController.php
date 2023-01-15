@@ -2,13 +2,24 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreChargeRequest;
 use App\Http\Requests\UpdateChargeRequest;
 use App\Models\Charge;
+use App\Services\GetMeteringData;
+use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class ChargeController extends Controller
 {
+    private GetMeteringData $meteringDataService;
+
+    public function __construct(GetMeteringData $meteringDataService)
+    {
+        $this->meteringDataService = $meteringDataService;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +27,29 @@ class ChargeController extends Controller
      */
     public function index()
     {
-        //
+        $refreshToken = config('services.energioverblik.refresh_token');
+
+        try {
+            $data = $this->meteringDataService->getCharges($refreshToken);
+        } catch (ElOverblikApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for charges data at eloverblik failed</strong>' . '<br/>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    return redirect('el-charges')->with('error', $message)->withInput($request->all());
+                case 401:
+                    return redirect('el-charges')->with('error', 'Failed - cannot login with token')->withInput($request->all());
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
+        }
+        $data = collect($data);
+        $data = PaginationHelper::paginate($data, 10);
+        return response()->json($data);
     }
 
     /**

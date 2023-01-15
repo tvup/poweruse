@@ -14,6 +14,7 @@ import swal from 'sweetalert2';
 window.swal = swal;
 
 import MeteringPoint from "../views/components/metering-points/MeteringPoint.vue";
+import Charge from "../views/components/charges/Charge.vue";
 import Paginate from "vuejs-paginate-next";
 import {
     Button,
@@ -25,6 +26,7 @@ import {
 
 const app = createApp({});
 app.component('metering-point', MeteringPoint);
+app.component('charge', Charge);
 app.component('pagination', Paginate);
 app.component(Button.name, Button);
 app.component('has-error', HasError);
