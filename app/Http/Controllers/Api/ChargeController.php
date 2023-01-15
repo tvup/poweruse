@@ -60,7 +60,33 @@ class ChargeController extends Controller
      */
     public function store(StoreChargeRequest $request)
     {
-        //
+        $this->validate($request, [
+                'type' => 'required|string|max:3',
+                'name' => 'required|string|max:3',
+                'description' => 'required|string|max:15',
+                'owner' => 'sometimes|nullable|max:10',
+                'valid_from' => 'sometimes|nullable|max:10',
+                'valid_to' => 'sometimes|date',
+                'period_type' => 'required|string|max:5',
+                'price' => 'required|string',
+                'quantity' => 'required|string|max:4',
+                'prices' => 'required|string|max:40',
+            ]
+        );
+
+        return Charge::create([
+            'type' => $request['type'],
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'owner' => $request['owner'],
+            'valid_from' => $request['valid_from'],
+            'valid_to' => $request['valid_to'],
+            'period_type' => $request['period_type'],
+            'price' => Carbon::parse($request['price'],'UTC')->timezone('Europe/Copenhagen')->toDateString(),
+            'quantity' => $request['quantity'],
+            'prices' => $request['prices'],
+            'user_id' => auth('api')->user()->id,
+        ]);
     }
 
     /**

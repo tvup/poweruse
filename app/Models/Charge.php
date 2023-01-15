@@ -19,7 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $quantity
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property integer $metering_point_id
  * @property Price[] $prices
+ * @property MeteringPoint $meteringPoint
  */
 class Charge extends Model
 {

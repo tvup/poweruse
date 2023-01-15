@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('period_type')->nullable();
             $table->decimal('price',12,4)->nullable();
             $table->string('quantity')->nullable();
+            $table->integer('metering_point_id');
             $table->timestamps();
         });
     }
