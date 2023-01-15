@@ -45,7 +45,6 @@ Route::middleware('locale')->group(function () {
     Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
     Route::post('processdata', 'ElController@processData');
     Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
-    Route::post('getChargesForWeb', 'ElController@getChargesForWeb');
     Route::post('getSpotprices', 'ElController@getSpotprices');
     Route::post('getConsumption', 'ElController@getConsumption');
     Route::post('getTotalPrices', 'ElController@getTotalPrices');
