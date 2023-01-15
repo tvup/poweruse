@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property integer $id
@@ -26,7 +27,10 @@ class Charge extends BaseModel
 {
     use HasFactory;
 
-    public function chargePrices() {
+    /**
+     * @return HasMany
+     */
+    public function chargePrices() : HasMany {
         return $this->hasMany(ChargePrice::class);
     }
 }

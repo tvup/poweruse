@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 /**
@@ -21,7 +22,10 @@ class ChargePrice extends Model
 {
     use HasFactory;
 
-    public function charge() {
+    /**
+     * @return BelongsTo
+     */
+    public function charge() : BelongsTo {
         return $this->belongsTo(Charge::class);
     }
 }
