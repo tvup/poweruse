@@ -8,5 +8,17 @@
   "Spot prices" : "Spotpriser",
   "Profile Settings" : "Profil indstillinger",
   "Name" : "Navn",
-  "Language" : "Sprog"
+  "Language" : "Sprog",
+  "Metering point": "Målepunkt",
+  "Charges": "Priselementer",
+  "Consumption": "Forbrug",
+  "Calculate your bill": "Beregn din regning",
+  "Change password": "Skift kodeord",
+  "Password updated": "Kodeord opdateret",
+  "Current password": "Nuværende kodeord",
+  "New password": "Nyt kodeord",
+  "Confirm password": "Bekræft kodeord",
+  "Save": "Gem",
+  "Delete account": "Slet konto",
+  "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "Når din konto bliver slettet, vil alt data blive slettet permanent. Venligst download alt data og information, som du ønsker at gemme."
 }
