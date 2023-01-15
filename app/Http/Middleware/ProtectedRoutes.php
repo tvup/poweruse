@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Auth\Middleware\Authenticate as IlluminateAuthenticate;
 use Illuminate\Support\Facades\Auth;
 
-class Authenticate extends IlluminateAuthenticate
+class ProtectedRoutes extends IlluminateAuthenticate
 {
     public function handle($request, Closure $next, ...$guards): mixed
     {
