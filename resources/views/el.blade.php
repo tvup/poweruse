@@ -91,71 +91,75 @@
 </div>
 
 
-<script type="module">
-    $('.date').datepicker({
-        format: 'yyyy-mm-dd'
-    });
-
-</script>
-
-
-<script type="module">
-    $(function() {
-        $( "#smart_me" ).change(function() {
-            let isSmartMeSelected = $( "#smart_me").is(':checked');
-            updateSmartMeDetailFieldsShow(isSmartMeSelected);
-            updateDatePicker(isSmartMeSelected);
-        });
-
-        function updateSmartMeDetailFieldsShow($boolean) {
-            if($boolean) {
-                $('.smartmedetails').show();
-            } else {
-                $('.smartmedetails').hide();
-                $('.smartmedetails').each (function(){
-                    $(this).find('input').val('');
-                });
-
-            }
-
-        }
-        updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
-
-        $( "#de" ).change(function() {
-            updateCredentialsFieldsShow($( "#de").is(':checked'));
-        });
-
-        function updateCredentialsFieldsShow($boolean) {
-            if($boolean) {
-                $('.ewii').show();
-                $('.datahub').hide();
-            } else {
-                $('.datahub').show();
-                $('.ewii').hide();
-            }
-        }
-        updateCredentialsFieldsShow({{ old('de') == 'on' }});
-
-        function updateDatePicker($boolean) {
-            const today = new Date()
-            let tomorrow = new Date()
-            tomorrow.setDate(today.getDate() + 1)
-            if($boolean) {
-                $('.end_date').datepicker("setDate", tomorrow);
-            } else {
-                $('.end_date').datepicker("setDate", today);
-            }
-
-        }
-
-        updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
-
-
-        $(document).ready(function(){
-            $(".alert").slideDown(300).delay(10000).slideUp(300);
-        });
-    });
-</script>
-
 
 @endsection
+
+<script type="module">
+    window.onload = function () {
+        $('.date').datepicker({
+            format: 'yyyy-mm-dd'
+        });
+    }
+</script>
+
+
+<script type="module">
+    window.onload = function () {
+        $(function() {
+            $( "#smart_me" ).change(function() {
+                let isSmartMeSelected = $( "#smart_me").is(':checked');
+                updateSmartMeDetailFieldsShow(isSmartMeSelected);
+                updateDatePicker(isSmartMeSelected);
+            });
+
+            function updateSmartMeDetailFieldsShow($boolean) {
+                if($boolean) {
+                    $('.smartmedetails').show();
+                } else {
+                    $('.smartmedetails').hide();
+                    $('.smartmedetails').each (function(){
+                        $(this).find('input').val('');
+                    });
+
+                }
+
+            }
+            updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
+
+            $( "#de" ).change(function() {
+                updateCredentialsFieldsShow($( "#de").is(':checked'));
+            });
+
+            function updateCredentialsFieldsShow($boolean) {
+                if($boolean) {
+                    $('.ewii').show();
+                    $('.datahub').hide();
+                } else {
+                    $('.datahub').show();
+                    $('.ewii').hide();
+                }
+            }
+            updateCredentialsFieldsShow({{ old('de') == 'on' }});
+
+            function updateDatePicker($boolean) {
+                const today = new Date();
+                let tomorrow = new Date();
+                tomorrow.setDate(today.getDate() + 1);
+                if($boolean) {
+                    $('.end_date').datepicker("setDate", tomorrow);
+                } else {
+                    $('.end_date').datepicker("setDate", today);
+                }
+
+            }
+
+            updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
+
+
+            $(document).ready(function(){
+                $(".alert").slideDown(300).delay(10000).slideUp(300);
+            });
+        });
+    }
+
+</script>

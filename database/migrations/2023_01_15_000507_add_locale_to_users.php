@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->text('refresh_token')->nullable()->after('remember_token');
+            $table->string('locale', 5)->nullable()->default('da_DK')->after('refresh_token');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('refresh_token');
+            $table->dropColumn('locale');
         });
     }
 };

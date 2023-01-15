@@ -401,7 +401,8 @@ import Form from "vform";
 // Declare /metering-point-management component
 export default {
   props: {
-    list: ''
+    list: '',
+    'auth-user': ''
   },
   // Declare metering points (as object), form (as /vform instance) and /isFormCreateMeteringPointMode (as boolean defaulted to 'true') inside /data() { return {} }.
   data() {
@@ -434,7 +435,6 @@ export default {
       isFormCreateMeteringPointMode: true,
       last_page: 0,
       total: 0,
-      authUser: window.authUser,
       token: ''
     }
   },
