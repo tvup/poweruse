@@ -58,7 +58,20 @@
                 <td class="align-middle">{{ charge.periodType }}</td>
                 <td class="align-middle">{{ charge.price }}</td>
                 <td class="align-middle">{{ charge.quantity }}</td>
-                <td class="align-middle">{{ charge.prices }}</td>
+                <td class="align-middle">
+                  <table class="table table-hover">
+                    <thead>
+                    <tr>Position</tr>
+                    <tr>Price</tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="chargePrice in charge.prices" :key="chargePrice.id">
+                      <td class="align-middle">{{ chargePrice.position }}</td>
+                      <td class="align-middle">{{ chargePrice.price }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </td>
                 <td class="align-middle">
                   <a href="" @click.prevent="editCharge(charge)">
                     <i class="fa fa-edit"></i>
@@ -223,7 +236,7 @@ export default {
 
           value.forEach((value2, index2) => {
             let type = '';
-            switch(index) {
+            switch (index) {
               case 0:
                 type = "Abonnement";
                 break;
@@ -233,25 +246,25 @@ export default {
               default:
                 type = "";
             }
-            value2.type=type;
+            value2.type = type;
             arr.push(value2);
           });
         });
         this.charges = arr;
         this.last_page = data.data.last_page;
         this.total = data.data.total;
-        if(this.total==1) {
+        if (this.total == 1) {
           this.form.fill(this.charges[0]);
         }
       });
     },
     getChargesFromToken() {
 
-      axios.get('api/charge/'+this.token).then(data => {
+      axios.get('api/charge/' + this.token).then(data => {
         this.charges = data.data.data;
         this.last_page = data.data.last_page;
         this.total = data.data.total;
-        if(this.total==1) {
+        if (this.total == 1) {
           this.form.fill(this.charges[0]);
         }
       });
@@ -270,8 +283,8 @@ export default {
 
         //sweet alert 2
         swal.fire({
-            icon: 'success',
-            title: 'Charge saved successfully'
+          icon: 'success',
+          title: 'Charge saved successfully'
         })
 
         this.getCharges();
@@ -294,7 +307,7 @@ export default {
         arr = [];
         let key = keys[i];
 
-        switch(keys[i]) {
+        switch (keys[i]) {
           case 'validFromDate':
             key = 'valid_from';
             break;
@@ -312,7 +325,7 @@ export default {
               let price_value = Object.values(prices[j]);
 
               for (let k = 0; k < Object.keys(price_key).length; k++) {
-                myo2 = Object.defineProperty(myo2, price_key[k],  {value: price_value[k]});
+                myo2 = Object.defineProperty(myo2, price_key[k], {value: price_value[k]});
               }
               arr.push(myo2);
             }
@@ -326,15 +339,15 @@ export default {
             for (let m = 0; m < Object.getOwnPropertyNames(item).length; m++) {
               switch (m) {
                 case 0:
-                  formData.append("prices."+n+".position", item.position);
+                  formData.append("prices." + n + ".position", item.position);
                   break;
                 case 1:
-                  formData.append("prices."+n+".price", item.price);
+                  formData.append("prices." + n + ".price", item.price);
                   break;
                 default:
               }
             }
-            n = n+1;
+            n = n + 1;
           });
 
         } else {
@@ -352,8 +365,8 @@ export default {
 
         //sweet alert 2
         swal.fire({
-            icon: 'success',
-            title: 'Charge saved successfully'
+          icon: 'success',
+          title: 'Charge saved successfully'
         })
 
         this.getCharges();
@@ -378,8 +391,8 @@ export default {
 
         //sweet alert 2
         swal.fire({
-            icon: 'success',
-            title: 'Charge updated successfully'
+          icon: 'success',
+          title: 'Charge updated successfully'
         })
 
         this.getCharges();
@@ -391,37 +404,36 @@ export default {
     deleteCharge(id) {
       // sweet alert confirmation
       swal.fire({
-          title: 'Are you sure?',
-          text: "You won't be able to revert this!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!'
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
-          // confirm delete?
-          if (result.value) {
-              // request delete
-              this.form.delete('api/charge/' + id, {
-              }).then(() => {
-                  // sweet alert success
-                  swal.fire(
-                      'Deleted!',
-                      'Charge has been deleted.',
-                      'success'
-                  )
+        // confirm delete?
+        if (result.value) {
+          // request delete
+          this.form.delete('api/charge/' + id, {}).then(() => {
+            // sweet alert success
+            swal.fire(
+                'Deleted!',
+                'Charge has been deleted.',
+                'success'
+            )
 
-                  this.getCharges(); // reload table metering_points
-              }).catch(() => {
-                  // sweet alert fail
-                  swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: 'Something went wrong!',
-                      footer: '<a href>Why do I have this issue?</a>'
-                  })
-              });
-          }
+            this.getCharges(); // reload table metering_points
+          }).catch(() => {
+            // sweet alert fail
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+              footer: '<a href>Why do I have this issue?</a>'
+            })
+          });
+        }
       })
     }
   },
