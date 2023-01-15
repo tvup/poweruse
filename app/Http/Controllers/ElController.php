@@ -25,12 +25,13 @@ use Tvup\EwiiApi\EwiiApiException;
 
 class ElController extends Controller
 {
-    const TOKEN_FILENAME = 'eloverblik-token.serialized';
+    public const TOKEN_FILENAME = 'eloverblik-token.serialized';
 
     /**
      * @var GetMeteringData
      */
     private $meteringDataService;
+
     /**
      * @var GetPreliminaryInvoice
      */
@@ -45,6 +46,7 @@ class ElController extends Controller
      * @var GetSmartMeMeterData
      */
     private $smartMeMeterDataService;
+
     private GetDatahubPriceLists $datahubPriceListsService;
 
     /**
@@ -72,21 +74,21 @@ class ElController extends Controller
     {
         $data = session('data');
 
-        return view('el-spotprices')->with('data', $data ? : null);
+        return view('el-spotprices')->with('data', $data ?: null);
     }
 
     public function indexConsumption() : View
     {
         $data = session('data');
 
-        return view('consumption')->with('data', $data ? : null);
+        return view('consumption')->with('data', $data ?: null);
     }
 
     public function indexCustomUsage() : View
     {
         $data = session('data');
 
-        return view('el-custom')->with('data', $data ? : null);
+        return view('el-custom')->with('data', $data ?: null);
     }
 
     public function processData(Request $request) : RedirectResponse|Response
@@ -100,7 +102,7 @@ class ElController extends Controller
                     $dataSource = 'DATAHUB';
             }
             $refreshToken = null;
-            if($dataSource == 'DATAHUB' && !$request->token) {
+            if ($dataSource == 'DATAHUB' && !$request->token) {
                 if (auth()->check() && auth()->user()->refresh_token) {
                     $refreshToken = auth()->user()->refresh_token;
                 } else {
@@ -110,19 +112,17 @@ class ElController extends Controller
                 $refreshToken = $request->token;
             }
 
-
             $smartMeCredentials = null;
             if ($request->smart_me == 'on') {
-                $smartMeCredentials = array();
+                $smartMeCredentials = [];
                 $smartMeCredentials['username'] = $request->smartmeuser;
-                $smartMeCredentials['password'] = $request->smartmepassword  ;
+                $smartMeCredentials['password'] = $request->smartmepassword;
                 $smartMeCredentials['id'] = $request->smartmeid;
             }
             $ewiiCredentials = [
                 'ewiiEmail' => $request->ewiiEmail,
-                'ewiiPassword' => $request->ewiiPassword
+                'ewiiPassword' => $request->ewiiPassword,
             ];
-
 
             $data = $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
         } catch (ElOverblikApiException $e) {
@@ -134,7 +134,8 @@ class ElController extends Controller
                     $error = $e->getErrors();
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
-                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('el')->with('error', $message)->withInput($request->all());
                 case 401:
                     return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($refreshToken))->withInput($request->all());
@@ -150,7 +151,8 @@ class ElController extends Controller
                     $error = $e->getErrors();
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('el')->with('error', $message)->withInput($request->all());
                 case 2:
                     return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
@@ -161,23 +163,24 @@ class ElController extends Controller
         } catch (DataUnavailableException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
+
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
     }
 
     public function processCustom(Request $request) : RedirectResponse|Response
     {
-        if(!$request->token) {
+        if (!$request->token) {
             return redirect('el-custom')->with('error', 'Failed - token cannot be empty is selected.')->withInput($request->all());
         }
         try {
             $fields = $request->all();
             $meterData = [];
             foreach ($fields as $key => $value) {
-                if(strpos($key, 'usage') !== false) {
+                if (strpos($key, 'usage') !== false) {
                     $timeslot = (int) str_replace('usage', '', $key);
                     $newKey = Carbon::now('Europe/Copenhagen')->startOfDay()->hour($timeslot)->format('c');
-                    $newValue = $value ? str_replace(',','.', $value) : null;
-                    $meterData[$newKey] =($newValue ? : 0);
+                    $newValue = $value ? str_replace(',', '.', $value) : null;
+                    $meterData[$newKey] = ($newValue ?: 0);
                 }
             }
             $data = $this->getUsageCost($meterData, $request->token, $request->area, $request->overhead);
@@ -189,7 +192,8 @@ class ElController extends Controller
                     $error = $e->getErrors();
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
-                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('el')->with('error', $message)->withInput($request->all());
                 case 401:
                     return redirect('el')->with('error', 'Failed - cannot login with data-access token. MD5 of refresh token: ' . md5($request->token))->withInput($request->all());
@@ -205,7 +209,8 @@ class ElController extends Controller
                     $error = $e->getErrors();
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('el')->with('error', $message)->withInput($request->all());
                 case 2:
                     return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
@@ -216,6 +221,7 @@ class ElController extends Controller
         } catch (DataUnavailableException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
+
         return redirect('el-custom')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
@@ -231,7 +237,7 @@ class ElController extends Controller
             }
 
             $refreshToken = null;
-            if($dataSource == 'DATAHUB' && !$request->token) {
+            if ($dataSource == 'DATAHUB' && !$request->token) {
                 if (auth()->check() && auth()->user()->refresh_token) {
                     $refreshToken = auth()->user()->refresh_token;
                 } else {
@@ -251,8 +257,6 @@ class ElController extends Controller
                 default:
                     throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
             }
-
-
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -261,6 +265,7 @@ class ElController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering-point data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
                 case 401:
                     return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with token')->withInput($request->all());
@@ -268,7 +273,7 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
-        }  catch (EwiiApiException $e) {
+        } catch (EwiiApiException $e) {
             switch ($e->getCode()) {
                 case 400:
                 case 500:
@@ -276,7 +281,8 @@ class ElController extends Controller
                     $error = $e->getErrors();
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for metering-point data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>'. $error['Code'] .'</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
                 case 2:
                     return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
@@ -285,6 +291,7 @@ class ElController extends Controller
                         ->header('Content-Type', 'text/plain');
             }
         }
+
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
@@ -304,27 +311,30 @@ class ElController extends Controller
                 config('services.smartme.id'),
                 config('services.smartme.username'),
                 config('services.smartme.paasword')];
+
             return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', $smartMeCredentials);
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
-            if($code==503 || $code==500) {
+            if ($code == 503 || $code == 500) {
                 try {
-                    if($refreshToken != config('services.energioverblik.refresh_token')) {
+                    if ($refreshToken != config('services.energioverblik.refresh_token')) {
                         logger('Can\'t try with fetching from ewii');
+
                         return response($exception->getMessage(), $code)
                             ->header('Content-Type', 'text/plain');
                     }
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
+
                     return $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, 'EWII', $smartMeCredentials);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
             }
+
             return response($exception->getMessage(), $code)
                 ->header('Content-Type', 'text/plain');
         }
-
     }
 
     public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
@@ -335,9 +345,11 @@ class ElController extends Controller
             if ($e->getCode() == 400) {
                 $message = 'Request for mertering data at eloverblik failed' . PHP_EOL;
                 $message = $message . 'Message: ' . $e->getErrors()['Message'] . PHP_EOL;
+
                 return response($message, $e->getCode())
                     ->header('Content-Type', 'text/plain');
             }
+
             return response($e->getMessage(), $e->getCode())
                 ->header('Content-Type', 'text/plain');
         }
@@ -357,6 +369,7 @@ class ElController extends Controller
             $result = File::delete($path);
         }
         $response = $result ? response('Data access-token deleted', 200) : response('Data access-token not found', 404);
+
         return $response->header('Content-Type', 'text/plain');
     }
 
@@ -375,12 +388,12 @@ class ElController extends Controller
      * @throws ElOverblikApiException
      * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials=null, string $dataSource=null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription=23.20, float $overhead=0.015) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, string $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015) : Response|JsonResponse
     {
-        if(!$start_date) {
+        if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
         }
-        if(!$end_date) {
+        if (!$end_date) {
             $end_date = Carbon::now()->addMonth()->startOfMonth()->toDateString();
         }
         if ($refreshToken == 'MIT_LÆKRE_TOKEN_HER') {
@@ -400,7 +413,7 @@ class ElController extends Controller
      * @return JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead=0.015) : JsonResponse
+    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.015) : JsonResponse
     {
         $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead);
 
@@ -416,21 +429,20 @@ class ElController extends Controller
 
         list($subscriptions, $tariffs) = $this->meteringDataService->getCharges($refreshToken);
 
-        $list = array();
+        $list = [];
 
         foreach ($tariffs as $tariff) {
             $list[$tariff['name']] = $tariff['description'];
-
         }
         foreach ($subscriptions as $subscription) {
             $list[$subscription['name']] = $subscription['description'];
         }
+
         return response()->json($list);
     }
 
     public function getSpotprices(Request $request) : Response|RedirectResponse
     {
-
         switch ($request->outputformat) {
             case 'POWERUSE':
                 $format = GetSpotPrices::FORMAT_INTERNAL;
@@ -446,12 +458,12 @@ class ElController extends Controller
                 return true;
             }
         })->map(function ($item, $value) {
-            return str_replace('Checkbox','', $value);
+            return str_replace('Checkbox', '', $value);
         })->flatten()->toArray();
         $data = $this->spotPricesService->getData($request->start_date, $request->end_date, $request->area, $requestInputs, $format);
 
         if ($request->outputformat == 'SQL') {
-            $data = (array)$data;
+            $data = (array) $data;
             $data = $this->formatAsSql($data['records']);
             redirect('el-spotprices')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
         }
@@ -469,30 +481,28 @@ class ElController extends Controller
             case 'text/plain':
             case '*/*':
             default:
-            $spotprice_format = GetSpotPrices::FORMAT_JSON;
+                $spotprice_format = GetSpotPrices::FORMAT_JSON;
         }
         $area = null;
-        if(isset($request->filter)) {
+        if (isset($request->filter)) {
             $json = json_decode($request->filter, true);
             $area = $json['PriceArea'];
 
-            if($area == 'ALL')
-            {
+            if ($area == 'ALL') {
                 $area = null;
             }
-
         }
-        $requestInputs= array();
-        if(isset($request->columns)) {
+        $requestInputs = [];
+        if (isset($request->columns)) {
             $requestInputs = explode(',', $request->columns);
         }
-
 
         $data = $this->spotPricesService->getData($request->start, $request->end, $area, $requestInputs, $spotprice_format);
 
         if ($request->getAcceptableContentTypes()[0] == 'text/sql') {
-            $data = (array)$data;
-            return response($this->formatAsSql($data['records']))->header('Content-Type', 'text/sql');;
+            $data = (array) $data;
+
+            return response($this->formatAsSql($data['records']))->header('Content-Type', 'text/sql');
         }
 
         return response($data);
@@ -532,11 +542,12 @@ class ElController extends Controller
                     case 'unknown type':
                     case 'double': //for historical reasons "double" is returned in case of a float, and not simply "float"
                     default:
-                        return $item!='' ? '\'' . $item . '\'' : 'null';
+                        return $item != '' ? '\'' . $item . '\'' : 'null';
                 }
             })->toArray();
             $response = $response . vsprintf($query, $bindings) . ';' . PHP_EOL;
         }
+
         return $response;
     }
 
@@ -554,11 +565,12 @@ class ElController extends Controller
             $smartMe['id'] = $request->smartmeid;
         }
 
-        if(!$request->token) {
+        if (!$request->token) {
             if (auth()->check() && auth()->user()->refresh_token) {
                 $refreshToken = auth()->user()->refresh_token;
             } else {
                 $message = 'Request token should be provided either on input or saved on user';
+
                 return redirect('consumption')->with('error', $message)->withInput($request->all());
             }
         } else {
@@ -574,7 +586,7 @@ class ElController extends Controller
                     $data = $this->meteringDataService->getData($request->start_date, $end_date, $refreshToken);
                     break;
                 case 'SMART-ME':
-                    $data = $this->smartMeMeterDataService->getInterval($request->start_date,$end_date, $smartMe);
+                    $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
                     break;
                 default:
                     throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
@@ -601,6 +613,7 @@ class ElController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for consumption-point data at ewii failed</strong>' . '<br/>';
                     $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return redirect('consumption')->with('error', $message)->withInput($request->all());
                 case 2:
                     return redirect('consumption')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
@@ -626,13 +639,14 @@ class ElController extends Controller
     {
         $data = $this->datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $collection = collect($data[0]);
-        $gridprices = array();
+        $gridprices = [];
         $collection->each(function ($item, $key) use (&$gridprices) {
             if (Str::contains($key, 'Price')) {
                 $key = ((int) Str::replace('Price', '', $key)) - 1;
                 $gridprices[$key] = $item;
             }
         });
+
         return $gridprices;
     }
 
@@ -668,14 +682,15 @@ class ElController extends Controller
      * @param Carbon|null $from
      * @return array<float>
      */
-    private function doGetSpotPrices(string$area, Carbon $from = null) : array
+    private function doGetSpotPrices(string $area, Carbon $from = null) : array
     {
-        if(!$from) {
+        if (!$from) {
             $from = Carbon::now('Europe/Copenhagen')->startOfDay();
         }
         $startDate = $from->toDateString();
         $endDate = $from->addDay()->toDateString();
         $spotPrices = array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+
         return $spotPrices;
     }
 
@@ -749,9 +764,7 @@ class ElController extends Controller
         $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
-
-
-        $totalPrice = array();
+        $totalPrice = [];
         $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
         $limit = $includeTomorrow ? 47 : 23;
         for ($i = 0; $i <= $limit; $i++) {
@@ -762,5 +775,4 @@ class ElController extends Controller
 
         return ['result'=>['data' =>$totalPrice]];
     }
-
 }

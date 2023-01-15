@@ -30,6 +30,7 @@ class ElOverblikGetMeteringData extends Command
      * @var int
      */
     private $showCount;
+
     /**
      * @var bool
      */
@@ -60,7 +61,7 @@ class ElOverblikGetMeteringData extends Command
 
         $rulesForShowCount = [
             'string' => 'in:ALL',
-            'numeric' => 'integer'
+            'numeric' => 'integer',
         ];
 
         $rules = [
@@ -83,6 +84,7 @@ class ElOverblikGetMeteringData extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return 1;
         }
 
@@ -102,6 +104,7 @@ class ElOverblikGetMeteringData extends Command
                 break;
             default:
                 $this->error('Show-count should either be a number or \'ALL\'');
+
                 return 1;
         }
 
@@ -110,6 +113,7 @@ class ElOverblikGetMeteringData extends Command
         } catch (ElOverblikApiException $e) {
             if ($e->getCode() == 400) {
                 $this->logExceptionApiMessages($e->getErrors(), 'Request for mertering data at eloverblik failed');
+
                 return 1;
             }
             throw $e;
@@ -118,6 +122,7 @@ class ElOverblikGetMeteringData extends Command
         if ($response) {
             $this->output($response);
         }
+
         return 0;
     }
 
@@ -135,6 +140,7 @@ class ElOverblikGetMeteringData extends Command
         if (!$this->showAll) {
             $this->info('(..) table output truncated');
         }
+
         return $returnArray;
     }
 
@@ -146,5 +152,4 @@ class ElOverblikGetMeteringData extends Command
             return gettype($showCount);
         }
     }
-
 }

@@ -28,13 +28,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $location_description
  * @property string $first_consumer_party_name
  * @property string $second_consumer_party_name
- * @property boolean $hasRelation
+ * @property bool $hasRelation
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property MeteringPoint[] $children
  * @property User $user
  * @property Charge[] $charges
- *
  */
 class MeteringPoint extends BaseModel
 {
@@ -42,15 +41,16 @@ class MeteringPoint extends BaseModel
 
     protected $appends = ['source'];
 
-    public function getSourceAttribute(): string|null {
+    public function getSourceAttribute(): string|null
+    {
         return $this->exists ? self::SOURCE : null;
     }
 
     /**
      * @return BelongsTo<User, MeteringPoint>
      */
-    public function user() : BelongsTo {
+    public function user() : BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
-
 }

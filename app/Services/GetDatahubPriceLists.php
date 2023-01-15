@@ -21,19 +21,20 @@ class GetDatahubPriceLists
      */
     public function requestDatahubPriceListsFromEnergiDataService(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate = null): array
     {
-        if(!$endDate) {
+        if (!$endDate) {
             $endDate = Carbon::parse($startDate, 'Europe/Copenhagen')->addDay()->toDateString();
         }
         $GLN_number = DatahubPriceList::whereChargeowner($operator)->firstOrFail()->GLN_Number;
         $url = 'https://api.energidataservice.dk/dataset/DatahubPricelist?'
-            . 'start=' . substr($startDate,0,10) . '&'
-            . 'end=' . substr($endDate,0,10) . '&'
+            . 'start=' . substr($startDate, 0, 10) . '&'
+            . 'end=' . substr($endDate, 0, 10) . '&'
             . 'filter={'
             . '"ChargeType":"' . $chargeType . '",'
             . '"ChargeTypeCode":"' . $chargeTypeCode . '",'
             . '"GLN_Number":"' . $GLN_number . '",'
             . '"Note":"' . $note . '"'
             . '}';
+
         return Http::acceptJson()
             ->get($url)->json('records');
     }
@@ -43,9 +44,10 @@ class GetDatahubPriceLists
      * @param int $offset
      * @return array
      */
-    public function requestAllDatahubPriceListsFromEnergiDataService(int $limit = 100, int $offset= 0): array
+    public function requestAllDatahubPriceListsFromEnergiDataService(int $limit = 100, int $offset = 0): array
     {
-        $url = 'https://api.energidataservice.dk/dataset/DatahubPricelist?limit='.$limit . '&offset='.$offset;
+        $url = 'https://api.energidataservice.dk/dataset/DatahubPricelist?limit=' . $limit . '&offset=' . $offset;
+
         return Http::acceptJson()
             ->get($url)->json('records');
     }
@@ -58,7 +60,8 @@ class GetDatahubPriceLists
      * @param string $fromDate
      * @return Builder
      */
-    public function getQueryForFetchingSpecificTariffFromDB(string $name, string $gln_number, string $description, string $toDate, string $fromDate) : Builder {
+    public function getQueryForFetchingSpecificTariffFromDB(string $name, string $gln_number, string $description, string $toDate, string $fromDate) : Builder
+    {
         return DatahubPriceList::whereNote($name)->whereGlnNumber($gln_number)->whereDescription($description)->whereRaw('NOT (ValidFrom > \'' . $toDate . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . $fromDate . '\' ))');
     }
 
@@ -66,7 +69,8 @@ class GetDatahubPriceLists
      * @param Builder $query
      * @return Collection<int, DatahubPriceList>
      */
-    public function getFromQuery(Builder $query): Collection {
+    public function getFromQuery(Builder $query): Collection
+    {
         return $query->get();
     }
 }

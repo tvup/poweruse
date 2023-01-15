@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\View\View;
 
 class MeteringPointController extends Controller
@@ -17,7 +16,8 @@ class MeteringPointController extends Controller
         return response()->make();
     }
 
-    public function index() : View {
-        return view('metering-point')->with('auth_user',  auth()->user());;
+    public function index() : View
+    {
+        return view('metering-point')->with('auth_user', auth()->user());
     }
 }

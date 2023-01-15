@@ -12,16 +12,16 @@ use Tests\TestCase;
 
 class GetPreliminaryInvoiceTest extends TestCase
 {
-
     private $charges;
-    private mixed $spotPrices;
-    private mixed $testConsumptions;
-    private mixed $testCharges;
 
+    private mixed $spotPrices;
+
+    private mixed $testConsumptions;
+
+    private mixed $testCharges;
 
     protected function setUp(): void
     {
-
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
         $this->charges = $this->loadTestData(fixture_path('typical_charges.json'));
@@ -33,7 +33,7 @@ class GetPreliminaryInvoiceTest extends TestCase
         $this->testConsumptions = $this->loadTestData(fixture_path('consumption_data.json'));
 
         $array = [];
-        foreach($this->loadTestData(fixture_path('charges.json')) as $object) {
+        foreach ($this->loadTestData(fixture_path('charges.json')) as $object) {
             $datahubPriceList = new DatahubPriceList();
             $datahubPriceList->fill($object);
             array_push($array, $datahubPriceList);
@@ -41,14 +41,13 @@ class GetPreliminaryInvoiceTest extends TestCase
 
         $this->testCharges = collect($array);
 
-
         parent::setUp();
     }
 
     /**
      * Goal here is to check that the calculations can be performed on the expected datastructes.
      * Won't test the actual data/data-structures from providers - this is should be done in
-     * other test (and is also important)
+     * other test (and is also important).
      *
      * @throws \App\Exceptions\DataUnavailableException
      * @throws \Tvup\ElOverblikApi\ElOverblikApiException
@@ -140,28 +139,18 @@ class GetPreliminaryInvoiceTest extends TestCase
                 ->andReturn($this->testCharges->filter(function ($item) {
                     return $item->Note == 'Nettarif C time';
                 }));
-
-
         });
 
         $expectedResult = [
-            'meta' =>
-                [
-                    'Interval' =>
-                        [
-                            'fra' =>
-                                "2022-10-01",
-                            'til' =>
-                                "2022-10-02",
-                            'antal dage' =>
-                                1,
-                            'antal timer i intervallet' =>
-                                24,
+            'meta' => [
+                    'Interval' => [
+                            'fra' => '2022-10-01',
+                            'til' => '2022-10-02',
+                            'antal dage' => 1,
+                            'antal timer i intervallet' => 24,
                         ],
-                    'Forbrug' =>
-                        "33.68 kWh",
-                    'Kilde for forbrugsdata' =>
-                        "DATAHUB",
+                    'Forbrug' => '33.68 kWh',
+                    'Kilde for forbrugsdata' => 'DATAHUB',
                 ],
             'Transmissions nettarif' => 1.65,
             'Systemtarif' => 2.04,
@@ -174,12 +163,11 @@ class GetPreliminaryInvoiceTest extends TestCase
             'Elabonnement (forholdsvis antal dage pr. måned, månedspris: 23.2)' => 0.75,
             'Moms' => 13.03,
             'Total' => 65.15,
-            'Statistik' =>
-                [
-                    'Gennemsnitspris, strøm inkl. moms' => "0.44 kr./kWh",
-                    'Gennemsnitspris, alt tarifering inkl. moms' => "1.88 kr./kWh",
-                    'Gennemsnitspris, i alt (abonnementer indregnet) inkl. moms' => "1.93 kr./kWh",
-                ]
+            'Statistik' => [
+                    'Gennemsnitspris, strøm inkl. moms' => '0.44 kr./kWh',
+                    'Gennemsnitspris, alt tarifering inkl. moms' => '1.88 kr./kWh',
+                    'Gennemsnitspris, i alt (abonnementer indregnet) inkl. moms' => '1.93 kr./kWh',
+                ],
         ];
 
         $preLiminaryInvoice = app(GetPreliminaryInvoice::class);
@@ -191,6 +179,6 @@ class GetPreliminaryInvoiceTest extends TestCase
         $refreshToken = 'someFakeRefreshToken'; //Won't be used because we're mocking the service that contacts datahub
         //Only six parameters are needed here, the rest has defaults. We'll test the simple one for now
         $returnArray = $preLiminaryInvoice->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);
-        $this->assertEquals($expectedResult,$returnArray);
+        $this->assertEquals($expectedResult, $returnArray);
     }
 }

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
 {
-
     public function create(): View
     {
         return view('auth.login');

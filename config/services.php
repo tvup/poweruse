@@ -58,7 +58,6 @@ return [
         'id' => env('SMART_ME_ID', 'test-id'),
         'username' => env('SMART_ME_USERNAME', 'test-user-name'),
         'paasword' => env('SMART_ME_PASSWORD', 'test-password'),
-    ]
-
+    ],
 
 ];

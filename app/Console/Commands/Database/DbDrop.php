@@ -39,14 +39,16 @@ class DbDrop extends Command
     {
         $defaultDatabaseConnectionName = config('database.default');
         $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
-        if (config('env') =='production') {
+        if (config('env') == 'production') {
             $this->warn('Warning! Application in production. Proceed?');
-            $choice = $this->choice('Yes/No', array('Yes','No'), 0, 1);
+            $choice = $this->choice('Yes/No', ['Yes', 'No'], 0, 1);
             if ($choice == 'No') {
                 $this->warn('Abort');
+
                 return 1;
             }
             $this->dropDatabase($databaseName);
+
             return 0;
         }
         $this->dropDatabase($databaseName);
@@ -54,7 +56,7 @@ class DbDrop extends Command
 
     /**
      * Drop and create database specified by connection name.
-     * @param String $databaseName
+     * @param string $databaseName
      */
     private function dropDatabase(String $databaseName) : void
     {
@@ -77,13 +79,10 @@ class DbDrop extends Command
                 $conn->statement('DROP TABLE ' . $droplist);
                 $conn->statement('SET FOREIGN_KEY_CHECKS = 1');
             }
-
-
         } catch (\Illuminate\Database\QueryException $e) {
-            if (preg_match("/Unknown database/", $e->getMessage())) {
+            if (preg_match('/Unknown database/', $e->getMessage())) {
                 $this->error(sprintf('Missing database %s', $databaseName));
             }
         }
     }
-
 }

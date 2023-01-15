@@ -9,9 +9,11 @@ use Tests\TestCase;
 
 class GetSpotPricesTest extends TestCase
 {
-    const START_DATE = '2022-09-02';
-    const END_DATE = '2022-09-03';
-    const PRICE_AREA = 'DK2';
+    public const START_DATE = '2022-09-02';
+
+    public const END_DATE = '2022-09-03';
+
+    public const PRICE_AREA = 'DK2';
 
     private array $spotPricesDataSeres;
 
@@ -20,8 +22,7 @@ class GetSpotPricesTest extends TestCase
         $this->spotPricesDataSeres = $this->loadTestData(fixture_path('spot_prices_data_series.json'));
         parent::setUp();
         Http::fake([
-            'api.energidataservice.dk/dataset/Elspotprices*'
-            => Http::response($this->loadTestData(fixture_path('records.json')), 200)]);
+            'api.energidataservice.dk/dataset/Elspotprices*' => Http::response($this->loadTestData(fixture_path('records.json')), 200)]);
     }
 
     public function testGetData()

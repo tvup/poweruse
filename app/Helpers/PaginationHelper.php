@@ -9,7 +9,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
 /**
- * https://stackoverflow.com/a/65711265/1299357
+ * https://stackoverflow.com/a/65711265/1299357.
  */
 class PaginationHelper
 {
@@ -28,7 +28,6 @@ class PaginationHelper
             'path' => Paginator::resolveCurrentPath(),
             'pageName' => 'page',
         ]);
-
     }
 
     /**
@@ -45,7 +44,11 @@ class PaginationHelper
     protected static function paginator(Collection $items, int $total, int $perPage, int $currentPage, array $options): LengthAwarePaginator
     {
         return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
-            'items', 'total', 'perPage', 'currentPage', 'options'
+            'items',
+            'total',
+            'perPage',
+            'currentPage',
+            'options'
         ));
     }
 }

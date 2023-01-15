@@ -24,8 +24,7 @@ class ElOverblikApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('Tvup\ElOverblikApi\ElOverblikApiInterface', function($app, $params)
-        {
+        $this->app->bind('Tvup\ElOverblikApi\ElOverblikApiInterface', function ($app, $params) {
             $refreshToken = isset($params['refreshToken']) ? $params['refreshToken'] : null;
 
             return new ElOverblikApi($refreshToken);

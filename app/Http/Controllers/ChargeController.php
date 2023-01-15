@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\View\View;
 
 class ChargeController extends Controller
@@ -17,7 +16,8 @@ class ChargeController extends Controller
         return response()->make();
     }
 
-    public function index() : View {
+    public function index() : View
+    {
         return view('charges')->with('data', session('data'));
     }
 }

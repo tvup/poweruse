@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\DatahubPriceList;
-use App\Services\GetEnergiDataServiceChargeGroups;
 use App\Services\GetDatahubPriceLists;
+use App\Services\GetEnergiDataServiceChargeGroups;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 class EnergiDataServiceLoadDatahubPriceLists extends Command
 {
-    const INTEGRITY_CONSTRAINT_VIOLATION = 'SQLSTATE[23000]';
+    public const INTEGRITY_CONSTRAINT_VIOLATION = 'SQLSTATE[23000]';
 
     /**
      * The name and signature of the console command.
@@ -54,6 +54,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                     } catch (ModelNotFoundException $e) {
                         throw new RecordsNotFoundException($e->getMessage() . ' with GridOperatorName = ' . $chargeOwner);
                     }
+
                     return substr($chargeGroup->grid_operator_gln, 0, -4);
                 });
                 try {
@@ -101,7 +102,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                     //In case there is more to it, we'll handle integrity violations by writing a warning.
                     if (Str::contains($e->getMessage(), self::INTEGRITY_CONSTRAINT_VIOLATION)) {
                         logger()->warning('Duplicate entry for GLN: ' . $gln . ' ChargeType: ' . $record['ChargeType'] . ' ChargeTypeCode: ' . $record['ChargeTypeCode'] . ' ValidFrom: ' . $record['ValidFrom']);
-                        logger()->warning('More from same record: ValidTo: ' . $record['ValidTo'] . ' VATClass: ' . $record['VATClass'] . ' Resolution: ' . $record['ResolutionDuration']. ' Description: ' . $record['Description']);
+                        logger()->warning('More from same record: ValidTo: ' . $record['ValidTo'] . ' VATClass: ' . $record['VATClass'] . ' Resolution: ' . $record['ResolutionDuration'] . ' Description: ' . $record['Description']);
                     } else {
                         throw $e;
                     }
@@ -111,7 +112,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
             $i += 100;
             $more = count($records) !== 0;
         }
-        return Command::SUCCESS;
 
+        return Command::SUCCESS;
     }
 }

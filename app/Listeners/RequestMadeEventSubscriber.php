@@ -21,7 +21,7 @@ class RequestMadeEventSubscriber
     public function handleRequestMade(EwiiRequestMade|EloverblikRequestMade $event)
     {
         $query = ['count' => \DB::raw('count + 1')];
-        RequestStatistic::updateOrCreate(['verb'=>$event->getVerb(),'endpoint'=>$event->getEndpoint()],$query);
+        RequestStatistic::updateOrCreate(['verb'=>$event->getVerb(), 'endpoint'=>$event->getEndpoint()], $query);
     }
 
     /**
@@ -35,23 +35,23 @@ class RequestMadeEventSubscriber
         $code = $event->getCode();
         $key = 'hasColumn ' . $code;
         $hasColumn = cache($key);
-        if(null === $hasColumn) {
+        if (null === $hasColumn) {
             // @phpstan-ignore-next-line The name of the columns on "request_statistics" IS integers (400, 500, 503 etc..)
             $hasColumn = Schema::hasColumn('request_statistics', $code);
             cache([$key => $hasColumn]);
         }
 
-        if ($hasColumn){
+        if ($hasColumn) {
             $defaultDatabaseConnectionName = config('database.default');
             $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
-            $query = 'Update '.$databaseName.'.request_statistics set `' . $code . '`=' . '`' . $code . '`' . ' +1 where `verb`=\''.$event->getVerb().'\' and `endpoint`=\''.$event->getEndpoint().'\'';
+            $query = 'Update ' . $databaseName . '.request_statistics set `' . $code . '`=' . '`' . $code . '`' . ' +1 where `verb`=\'' . $event->getVerb() . '\' and `endpoint`=\'' . $event->getEndpoint() . '\'';
             DB::statement($query);
+
             return;
         }
 
         //Haven't returned, must be an error
-        logger()->error('Error-code ' .  $code . ' is not available in table request_statistics');
-
+        logger()->error('Error-code ' . $code . ' is not available in table request_statistics');
     }
 
     /**

@@ -23,9 +23,9 @@ class EwiiApiServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register() {
+    public function register()
+    {
         $this->app->bind(EwiiApiInterface::class, function ($app, $params) {
-
             $email = isset($params['email']) ? $params['email'] : null;
             $password = isset($params['password']) ? $params['password'] : null;
 

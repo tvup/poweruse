@@ -17,6 +17,7 @@ use Tvup\ElOverblikApi\ElOverblikApiException;
 class ChargeController extends Controller
 {
     private GetMeteringData $meteringDataService;
+
     private bool $userIsLoggedIn;
 
     public function __construct(GetMeteringData $meteringDataService)
@@ -29,7 +30,6 @@ class ChargeController extends Controller
 
         $this->meteringDataService = $meteringDataService;
     }
-
 
     /**
      * isplay a listing of the resource.
@@ -55,6 +55,7 @@ class ChargeController extends Controller
                         $data = [$firstQuery->get(), $secondQuery->get(), $thirdQuery->get(), [['metering_point_id' => $meteringPointId]], [['metering_point_gsrn' => $meteringPoint->metering_point_id]]];
                         $data = collect($data);
                         $data = PaginationHelper::paginate($data, 10);
+
                         return response()->json($data);
                     }
                     $refresh_token = auth('api')->user()->refresh_token;
@@ -76,6 +77,7 @@ class ChargeController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for charges data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return response()->json(['error' => $message]);
                 case 401:
                     return response()->json(['error' => 'Failed - cannot login with token']);
@@ -87,6 +89,7 @@ class ChargeController extends Controller
         array_push($data, [['metering_point_gsrn' => $meteringPoint ? $meteringPoint->metering_point_id : '']]);
         $data = collect($data);
         $data = PaginationHelper::paginate($data, 10);
+
         return response()->json($data);
     }
 
@@ -109,7 +112,7 @@ class ChargeController extends Controller
             'period_type' => $request['period_type'],
             'price' => $request['price'],
             'quantity' => $request['quantity'],
-            'metering_point_id' => $request['metering_point_id']
+            'metering_point_id' => $request['metering_point_id'],
         ]);
 
         if ($request['prices']) {
@@ -161,7 +164,7 @@ class ChargeController extends Controller
         foreach ($charge->chargePrices as $price) {
             $price->delete();
         }
-        if($request['prices']) {
+        if ($request['prices']) {
             foreach ($request['prices'] as $price) {
                 $chargePrice = app()->make(ChargePrice::class);
                 $chargePrice->position = $price['position'];
@@ -204,7 +207,6 @@ class ChargeController extends Controller
             ChargePrice::whereChargeId($charge->id)->delete();
         }
         $chargesQuery->delete();
-
 
         return response()->json($charges);
     }

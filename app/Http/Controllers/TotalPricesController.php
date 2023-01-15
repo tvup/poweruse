@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class TotalPricesController extends Controller
 {
-
-
     /**
      * Handle the incoming request.
      *
@@ -20,7 +18,7 @@ class TotalPricesController extends Controller
     {
         $data = session('data');
         $chart = session('chart');
-        $results = DB::connection('mysql')->select( DB::raw("
+        $results = DB::connection('mysql')->select(DB::raw("
             SELECT GLN_Number, concat(concat(ChargeOwner, ' '), Note) as tariff, Note, ChargeOwner
             FROM datahub_price_lists
             WHERE GLN_Number IN (SELECT SUBSTRING(grid_operator_gln,
@@ -457,12 +455,13 @@ class TotalPricesController extends Controller
                                'Nettarif rabat - B2+B1',
                                'Nettarif overliggende net'
                 )
-            group by ChargeOwner, Note, GLN_Number") );
+            group by ChargeOwner, Note, GLN_Number"));
         $companies = array_map(function ($record) {
-            $key= $record->ChargeOwner . '//' . $record->Note;
+            $key = $record->ChargeOwner . '//' . $record->Note;
+
             return [$key => $record->tariff];
         }, $results);
 
-        return view('totalprices')->with('data', $data ? : null)->with('chart', $chart ? : null)->with('companies', $companies);
+        return view('totalprices')->with('data', $data ?: null)->with('chart', $chart ?: null)->with('companies', $companies);
     }
 }

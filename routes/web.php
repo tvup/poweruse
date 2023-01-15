@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\LocaleMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,13 +22,11 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware('locale')->group(function () {
-
     // Routes that requires auth
     Route::middleware('protected.routes')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
     });
 
     // Routes that does NOT require auth
@@ -55,6 +52,5 @@ Route::middleware('locale')->group(function () {
     Route::post('getConsumption', 'ElController@getConsumption');
     Route::post('getTotalPrices', 'ElController@getTotalPrices');
     Route::post('processcustom', 'ElController@processCustom');
-
 });
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

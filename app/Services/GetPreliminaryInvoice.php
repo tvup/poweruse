@@ -16,7 +16,8 @@ use Tvup\ElOverblikApi\ElOverblikApiException;
  */
 class GetPreliminaryInvoice
 {
-    const ALL_TARIFFS = 'Alle Tariffer';
+    public const ALL_TARIFFS = 'Alle Tariffer';
+
     /**
      * @var GetMeteringData
      */
@@ -79,13 +80,13 @@ class GetPreliminaryInvoice
                 $key = $ewiiCredentials['ewiiEmail'] . ' ' . $start_date . ' ' . $end_date;
                 break;
             case 'DATAHUB':
-            case null;
-                if (!$refreshToken) {
-                    throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
-                }
-                $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
-                $source = 'DATAHUB';
-                break;
+            case null:
+            if (!$refreshToken) {
+                throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
+            }
+            $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
+            $source = 'DATAHUB';
+            break;
             default:
                 throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
         }
@@ -127,7 +128,6 @@ class GetPreliminaryInvoice
                 $key = $start_date . ' ' . Carbon::now('Europe/Copenhagen')->addDay()->toDateString() . ' ' . $price_area;
             }
 
-
             $prices = cache($key);
             if (!$prices) {
                 $price_end_date = Carbon::parse($end_date)->addDay()->toDateString();
@@ -162,13 +162,12 @@ class GetPreliminaryInvoice
                 cache([$key => $charges], $expiresAt);
             }
             list($subscriptions, $tariffs) = $charges;
-
         } catch (ElOverblikApiException $e) {
             logger()->warning('Call to elOverblikApi failed with code ' . $e->getCode());
             throw $e;
         }
 
-        $bill = array();
+        $bill = [];
 
         $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
         if ($smartMeCredentials) {
@@ -186,16 +185,17 @@ class GetPreliminaryInvoice
         foreach ($meterData as $hour => $consumption) {
             foreach ($tariffs as $tariff) {
                 $datahubPriceListsQuery = $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'], $to_date, $start_date);
-                $key = $tariff['owner'] . $tariff['name']. $tariff['description'] . $to_date . $start_date;
+                $key = $tariff['owner'] . $tariff['name'] . $tariff['description'] . $to_date . $start_date;
                 $datahubPriceLists = cache()->remember($key, 2592000, function () use ($datahubPriceListsQuery) {
                     return $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
                 });
                 $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
                     $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo ?? '2030-01-01', 'Europe/Copenhagen'));
+
                     return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
                 });
                 $datahubPriceList = $datahubPriceLists->first();
-                if(!$datahubPriceList) {
+                if (!$datahubPriceList) {
                     throw new InvalidArgumentException('Price element for tariff ' . $tariff['name'] . ' by operator ' . $tariff['owner'] . ' with validity period from: ' . $start_date . ' to: ' . $to_date . ' not found');
                 }
                 $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
@@ -250,7 +250,6 @@ class GetPreliminaryInvoice
             }
         }
 
-
         $months = $this->getAllMonthsInRange($start_date, $end_date);
 
         $countOfAllDaysInMonhtsInvolved = 0;
@@ -263,9 +262,8 @@ class GetPreliminaryInvoice
         }
 
         if (is_string($subscription_at_elsupplier)) {
-            $subscription_at_elsupplier = (float)str_replace(',', '.', $subscription_at_elsupplier);
+            $subscription_at_elsupplier = (float) str_replace(',', '.', $subscription_at_elsupplier);
         }
-
 
         $supplierSubscriptionDisplayText = 'Elabonnement (forholdsvis antal dage pr. måned, månedspris: ' . $subscription_at_elsupplier . ')';
         $bill[$supplierSubscriptionDisplayText] = count($months) * $subscription_at_elsupplier * ($bill['meta']['Interval']['antal dage'] / $countOfAllDaysInMonhtsInvolved);
@@ -335,13 +333,12 @@ class GetPreliminaryInvoice
                 cache([$key => $charges], $expiresAt);
             }
             list($subscriptions, $tariffs) = $charges;
-
         } catch (ElOverblikApiException $e) {
             logger()->warning('Call to elOverblikApi failed with code ' . $e->getCode());
             throw $e;
         }
 
-        $bill = array();
+        $bill = [];
 
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $end_date, 'antal dage' => 1]];
 
@@ -401,7 +398,6 @@ class GetPreliminaryInvoice
             }
         }
 
-
         $bill['Moms'] = 0;
         foreach ($bill as $key => $value) {
             if ($key == self::ALL_TARIFFS) {
@@ -435,7 +431,6 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-
     /**
      * @param string $start_date
      * @param string $end_date
@@ -447,21 +442,23 @@ class GetPreliminaryInvoice
         $end_month = Carbon::parse($end_date)->subDay()->toDateString();
         $result = CarbonPeriod::create($start_month, $end_month);
         $months = array_values(collect($result)->map(function (Carbon $date) {
-            return $date->format("m");
+            return $date->format('m');
         })->unique()->toArray());
+
         return $months;
     }
 
     private function getGridOperatorTariffPrices(DatahubPriceList $datahubPriceList): array
     {
         $collection = collect($datahubPriceList);
-        $gridOperatorTariffPrices = array();
+        $gridOperatorTariffPrices = [];
         $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
             if (Str::contains($key, 'Price')) {
-                $key = ((int)Str::replace('Price', '', $key)) - 1;
+                $key = ((int) Str::replace('Price', '', $key)) - 1;
                 $gridOperatorTariffPrices[$key] = $item;
             }
         });
+
         return $gridOperatorTariffPrices;
     }
 }

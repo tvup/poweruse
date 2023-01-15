@@ -8,7 +8,7 @@ trait OutputApiExceptionMessages
      * @param array<string, string>|string $errors
      * @param string $text
      */
-    function logExceptionApiMessages(array|string $errors, string $text): void
+    public function logExceptionApiMessages(array|string $errors, string $text): void
     {
         logger()->error($text);
         switch (gettype($errors)) {
@@ -20,7 +20,6 @@ trait OutputApiExceptionMessages
                 break;
             default:
                 $this->error('Exception didn\'t return useful error messages either');
-
         }
     }
 }
