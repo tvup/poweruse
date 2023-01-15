@@ -63,6 +63,13 @@ Run the static analysis locally inside the docker container through `sail`
 sail shell ./bin/phpstan
 ```
 
+## PSR
+Run the psr fixer locally inside the docker container through `sail`
+
+```bash
+sail shell ./bin/style
+```
+
 ## Test with code-coverage
 You can generate a test coverage report using **XDebug**, which is already preinstalled,
 simply by adding `XDEBUG_MODE=coverage` as environment varible.
