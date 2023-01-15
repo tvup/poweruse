@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon $valid_from
  * @property Carbon $valid_to
  * @property string $period_type
- * @property numeric $price
+ * @property double $price
  * @property integer $quantity
  * @property Carbon $created_at
  * @property Carbon $updated_at
