@@ -94,6 +94,7 @@
               <pagination :data="charges" @pagination-change-page="getCharges"
                           :pageCount="last_page"></pagination>
             </nav>
+            <button type="button" class="btn btn-primary" @click.prevent="saveCharges()">Save all charges to DB</button>
           </div>
         </div>
       </div>
@@ -298,7 +299,7 @@ export default {
       });
     },
     // /editCharge() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
-    saveCharge(charge) {
+    saveCharge(charge, sweetAlert=true) {
       // request post
       let formData = new FormData();
 
@@ -366,18 +367,29 @@ export default {
       axios.defaults.headers.post['Content-Type'] = 'application/json';
 
       axios.post('api/charge', formData).then(() => {
-
-        //sweet alert 2
-        swal.fire({
-          icon: 'success',
-          title: 'Charge saved successfully'
-        })
+        if(sweetAlert) {
+          //sweet alert 2
+          swal.fire({
+            icon: 'success',
+            title: 'Charge saved successfully'
+          })
+        }
 
         this.getCharges();
 
       }).catch(() => {
         console.log('transaction fail');
       });
+    },
+    saveCharges() {
+      let _this = this;
+      this.charges.forEach(function (charge) {
+        _this.saveCharge(charge, false);
+      });
+      swal.fire({
+        icon: 'success',
+        title: 'All charges saved successfully'
+      })
     },
     // /editCharge() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
     editCharge(charge) {
