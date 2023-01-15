@@ -68,13 +68,6 @@ class ElController extends Controller
         return view('el')->with('data', $data ? $data->original : null);
     }
 
-    public function indexCharges() : View
-    {
-        $data = session('data');
-
-        return view('el-charges')->with('data', $data ? : null);
-    }
-
     public function indexSpotprices() : View
     {
         $data = session('data');

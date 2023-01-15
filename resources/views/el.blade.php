@@ -19,11 +19,11 @@
     @endif
     <div class="card">
         <div class="card-header text-center font-weight-bold">
-            Beregning af energi-data
+            {{ __('Calculation of energy data') }}
         </div>
         <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
         <div class="card-body">
-            <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('processdata')}}">
+            <form name="get-preliminary-invoice-form" id="get-preliminary-invoice-form" method="post" action="{{url('processdata')}}">
                 {{ csrf_field() }}
                 Datahub
                 <label class="switch">
