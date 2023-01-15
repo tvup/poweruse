@@ -8,17 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class Authenticate extends IlluminateAuthenticate
 {
-    /**
-     * Handle an incoming request.
-     * @return mixed
-     */
-    public function handle($request, Closure $next, ...$guards)
+    public function handle($request, Closure $next, ...$guards): mixed
     {
 
         if (!Auth::check()) {
             return redirect('/');
         }
 
+        // @phpstan-ignore-next-line
         return parent::handle($request, $next, ...$guards);
     }
 }
