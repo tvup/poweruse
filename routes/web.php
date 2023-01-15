@@ -23,6 +23,16 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware('locale')->group(function () {
+
+    // Routes that requires auth
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    });
+
+    // Routes that does NOT require auth
     Route::get(
         '/totalprices',
         App\Http\Controllers\TotalPricesController::class
@@ -32,10 +42,6 @@ Route::middleware('locale')->group(function () {
         'totalprices',
         App\Http\Controllers\TotalPrices\ProcessController::class,
     )->name('totalprices.process');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('el/', 'ElController@index')->name('el');
     Route::get('el-meteringpoint/', 'ElController@indexMeteringPoint')->name('el-meteringpoint');
