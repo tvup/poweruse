@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon $updated_at
  * @property MeteringPoint[] $children
  * @property User $user
+ * @property Charge[] $charges
  *
  */
 class MeteringPoint extends BaseModel

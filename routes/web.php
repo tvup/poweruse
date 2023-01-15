@@ -39,7 +39,7 @@ Route::middleware('locale')->group(function () {
 
     Route::get('el/', 'ElController@index')->name('el');
     Route::get('el-meteringpoint/', 'MeteringPointController@index')->name('el-meteringpoint');
-    Route::get('el-charges/', 'ElController@indexCharges')->name('el-charges');
+    Route::get('el-charges/', 'ChargeController@index')->name('el-charges');
     Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
     Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
     Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
