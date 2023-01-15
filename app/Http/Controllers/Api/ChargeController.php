@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreChargeRequest;
 use App\Http\Requests\UpdateChargeRequest;
 use App\Models\Charge;
+use App\Models\ChargePrice;
 use App\Services\GetMeteringData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -71,11 +72,11 @@ class ChargeController extends Controller
                 'period_type' => 'required|string|max:5',
                 'price' => 'nullable|string',
                 'quantity' => 'nullable|string|max:4',
-                'prices' => 'nullable|string|max:40',
+                //'prices' => 'nullable|string|max:40',
             ]
         );
-
-        return response()->json(Charge::create([
+        /** @var Charge $charge */
+        $charge = Charge::create([
             'type' => $request['type'],
             'name' => $request['name'],
             'description' => $request['description'],
@@ -85,9 +86,21 @@ class ChargeController extends Controller
             'period_type' => $request['period_type'],
             'price' => $request['price'],
             'quantity' => $request['quantity'],
-            //'prices' => $request['prices'],
             'metering_point_id' => $request['metering_point_id']
-        ]));
+        ]);
+
+        if($request['prices']) {
+            foreach ($request['prices'] as $price) {
+                /** @var ChargePrice $chargePrice */
+                $chargePrice = app()->make(ChargePrice::class);
+                $chargePrice->position = $price['position'];
+                $chargePrice->price = $price['price'];
+                $chargePrice->charge_id = $charge->id;
+                $chargePrice->save();
+            }
+        }
+
+        return response()->json($charge);
     }
 
     /**

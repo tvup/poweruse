@@ -20,4 +20,8 @@ use Illuminate\Database\Eloquent\Model;
 class ChargePrice extends Model
 {
     use HasFactory;
+
+    public function charge() {
+        return $this->belongsTo(Charge::class);
+    }
 }

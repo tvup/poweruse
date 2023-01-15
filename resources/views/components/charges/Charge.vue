@@ -288,8 +288,12 @@ export default {
 
       let keys = Object.keys(charge);
       let values = Object.values(charge);
+      let myo2 = {};
+      let arr = [];
       for (let i = 0; i < Object.keys(charge).length; i++) {
+        arr = [];
         let key = keys[i];
+
         switch(keys[i]) {
           case 'validFromDate':
             key = 'valid_from';
@@ -300,17 +304,47 @@ export default {
           case 'periodType':
             key = 'period_type';
             break;
+          case 'prices':
+            let prices = values[i];
+            for (let j = 0; j < Object.keys(prices).length; j++) {
+              myo2 = {};
+              let price_key = Object.keys(prices[j]);
+              let price_value = Object.values(prices[j]);
+
+              for (let k = 0; k < Object.keys(price_key).length; k++) {
+                myo2 = Object.defineProperty(myo2, price_key[k],  {value: price_value[k]});
+              }
+              arr.push(myo2);
+            }
+            break;
           default:
             key = keys[i];
         }
-        let value = values[i];
-        if (values[i]==null) {
-          value = '';
+        if (arr.length != 0) {
+          let n = 0;
+          arr.forEach(function (item) {
+            for (let m = 0; m < Object.getOwnPropertyNames(item).length; m++) {
+              switch (m) {
+                case 0:
+                  formData.append("prices."+n+".position", item.position);
+                  break;
+                case 1:
+                  formData.append("prices."+n+".price", item.price);
+                  break;
+                default:
+              }
+            }
+            n = n+1;
+          });
+
+        } else {
+          if (values[i] == null) {
+            values[i] = '';
+          }
+          formData.append(key, values[i]);
         }
-        formData.append(key, value);
       }
       formData.append('metering_point_id', '571313174112923291');
-
 
       axios.defaults.headers.post['Content-Type'] = 'application/json';
 

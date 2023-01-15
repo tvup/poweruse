@@ -19,10 +19,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property integer $metering_point_id
- * @property Price[] $prices
+ * @property ChargePrice[] $chargePrices
  * @property MeteringPoint $meteringPoint
  */
 class Charge extends BaseModel
 {
     use HasFactory;
+
+    public function chargePrices() {
+        return $this->hasMany(ChargePrice::class);
+    }
 }
