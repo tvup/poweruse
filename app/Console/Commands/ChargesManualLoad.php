@@ -45,7 +45,7 @@ class ChargesManualLoad extends Command
                 'validToDate' => null,
                 'prices' => [[
                     'position' => '1',
-                    'price' => 0.049]
+                    'price' => 0.049],
                 ],
             ], [
                 'name' => 'Systemtarif',
@@ -56,7 +56,7 @@ class ChargesManualLoad extends Command
                 'validToDate' => null,
                 'prices' => [[
                     'position' => '1',
-                    'price' => 0.061]
+                    'price' => 0.061],
                 ],
             ], [
                 'name' => 'Balancetarif for forbrug',
@@ -67,7 +67,7 @@ class ChargesManualLoad extends Command
                 'validToDate' => null,
                 'prices' => [[
                     'position' => '1',
-                    'price' => 0.00229]
+                    'price' => 0.00229],
                 ],
             ], [
                 'name' => 'Elafgift',
@@ -78,7 +78,7 @@ class ChargesManualLoad extends Command
                 'validToDate' => null,
                 'prices' => [[
                     'position' => '1',
-                    'price' => 0.723]
+                    'price' => 0.723],
                 ],
             ], [
                 'name' => 'Nettarif C time',
@@ -90,84 +90,85 @@ class ChargesManualLoad extends Command
                 'prices' => [
                     [
                         'position' => '1',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '2',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '3',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '4',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '5',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '6',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '7',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '8',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '9',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '10',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '11',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '12',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '13',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '14',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '15',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '16',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '17',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '18',
-                        'price' => 0.7885
+                        'price' => 0.7885,
                     ], [
                         'position' => '19',
-                        'price' => 0.7885
+                        'price' => 0.7885,
                     ], [
                         'position' => '20',
-                        'price' => 0.7885
+                        'price' => 0.7885,
                     ], [
                         'position' => '21',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '22',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '23',
-                        'price' => 0.3028
+                        'price' => 0.3028,
                     ], [
                         'position' => '24',
-                        'price' => 0.3028
-                    ]
+                        'price' => 0.3028,
+                    ],
 
                 ],
-            ]
+            ],
             ]];
         $expiresAt = Carbon::now()->addDay()->startOfDay();
         $key = 'charges ' . 'info@butikkenvedhojen.dk';
         cache([$key => $charges], $expiresAt);
+
         return Command::SUCCESS;
     }
 }

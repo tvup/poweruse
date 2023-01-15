@@ -29,5 +29,4 @@ class Operator extends BaseModel
         'Radius Elnet A/S' => 'DK2',
         'Cerius A/S' => 'DK2',
     ];
-
 }

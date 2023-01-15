@@ -9,12 +9,13 @@ class RetrieveSpotPrices
 {
     public function handle(string $area, Carbon $from = null) : array
     {
-        if(!$from) {
+        if (!$from) {
             $from = Carbon::now('Europe/Copenhagen')->startOfDay();
         }
         $startDate = $from->toDateString();
         $endDate = $from->addDay()->toDateString();
         $service = app()->make(GetSpotPrices::class);
+
         return array_values($service->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
     }
 }

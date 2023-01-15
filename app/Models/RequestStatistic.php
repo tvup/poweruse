@@ -3,8 +3,7 @@
 namespace App\Models;
 
 /**
- * Class RequestStatistic
- * @package App\Models
+ * Class RequestStatistic.
  *
  * @property string $verb
  * @property string $endpoint
@@ -12,5 +11,4 @@ namespace App\Models;
  */
 class RequestStatistic extends BaseModel
 {
-
 }

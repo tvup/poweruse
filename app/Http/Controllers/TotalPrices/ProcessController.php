@@ -43,6 +43,7 @@ class ProcessController extends Controller
         //Check if spot prices were received
         if (count($spotPrices) == 0) {
             $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
+
             return redirect('totalprices')->with('error', $message)->withInput($request->all());
         }
 
@@ -61,8 +62,7 @@ class ProcessController extends Controller
         $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
-
-        $totalPrice = array();
+        $totalPrice = [];
         $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
         $limit = $includeTomorrow ? 47 : 23;
         for ($i = 0; $i <= $limit; $i++) {
@@ -81,7 +81,6 @@ class ProcessController extends Controller
 
         return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
-
 
     /**
      * @param string $operator
@@ -177,11 +176,11 @@ class ProcessController extends Controller
      */
     private function makeColors(array $array): array
     {
-        $min = (float)min($array);
-        $max = (float)max($array);
+        $min = (float) min($array);
+        $max = (float) max($array);
         $colours = [];
         foreach ($array as $value) {
-            $value = (float)$value;
+            $value = (float) $value;
             $percentage = ($value - $min) / ($max - $min);
             $percentage = $percentage * 100.0;
 
@@ -196,12 +195,13 @@ class ProcessController extends Controller
                 $G = 255 - (5.1 * $percentage);
             }
 
-            $dechex_r = dechex((int)$R) === '0' ? '00' : dechex((int)$R);
-            $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
-            $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
+            $dechex_r = dechex((int) $R) === '0' ? '00' : dechex((int) $R);
+            $dechex_g = dechex((int) $G) === '0' ? '00' : dechex((int) $G);
+            $dechex_b = dechex((int) $B) === '0' ? '00' : dechex((int) $B);
 
             $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;
         }
+
         return $colours;
     }
 
@@ -212,15 +212,16 @@ class ProcessController extends Controller
     private function getGridOperatorTariffPrices(array $array): array
     {
         $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
-        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\''. $toDay .'\' between ValidFrom and ValidTo')->firstOrFail();
+        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'' . $toDay . '\' between ValidFrom and ValidTo')->firstOrFail();
         $collection = collect($datahubPriceList);
-        $gridOperatorTariffPrices = array();
+        $gridOperatorTariffPrices = [];
         $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
             if (Str::contains($key, 'Price')) {
-                $key = ((int)Str::replace('Price', '', $key)) - 1;
+                $key = ((int) Str::replace('Price', '', $key)) - 1;
                 $gridOperatorTariffPrices[$key] = $item;
             }
         });
+
         return $gridOperatorTariffPrices;
     }
 }

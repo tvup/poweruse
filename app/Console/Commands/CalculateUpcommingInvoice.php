@@ -24,6 +24,7 @@ class CalculateUpcommingInvoice extends Command
      * @var string
      */
     protected $description = 'Calculate prelimiary invoice';
+
     /**
      * @var GetPreliminaryInvoice
      */
@@ -42,7 +43,7 @@ class CalculateUpcommingInvoice extends Command
 
     /**
      * Execute the console command.
-     *½
+     *½.
      * @return mixed
      */
     public function handle()
@@ -50,7 +51,7 @@ class CalculateUpcommingInvoice extends Command
         $dataSource = 'DATAHUB';
         $ewiiCredentials = [
             'ewiiEmail' => '',
-            'ewiiPassword' => ''
+            'ewiiPassword' => '',
         ];
 
         $validator = Validator::make([
@@ -60,8 +61,8 @@ class CalculateUpcommingInvoice extends Command
             'price-area' => $this->option('price-area'),
         ], [
             'refresh_token' => ['string'],
-            'start_date' => ['required','date_format:Y-m-d'],
-            'end_date' => ['required','date_format:Y-m-d','after:start_date'],
+            'start_date' => ['required', 'date_format:Y-m-d'],
+            'end_date' => ['required', 'date_format:Y-m-d', 'after:start_date'],
             'price-area' => ['string', 'required'],
         ]);
 
@@ -71,18 +72,19 @@ class CalculateUpcommingInvoice extends Command
             foreach ($validator->errors()->all() as $error) {
                 logger()->error($error);
             }
+
             return 1;
         }
 
         $safeValues = $validator->validated();
 
-        $refreshToken = $safeValues['refresh_token'];;
+        $refreshToken = $safeValues['refresh_token'];
         $start_date = $safeValues['start_date'];
         $end_date = $safeValues['end_date'];
         $price_area = $safeValues['price-area'];
 
         $smartMeCredentials = null;
-        if($this->option('smartme')) {
+        if ($this->option('smartme')) {
             $smartMeCredentials = [
                 config('services.smartme.id'),
                 config('services.smartme.username'),

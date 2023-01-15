@@ -42,7 +42,6 @@ class EnergiDataServiceLoadChargeGroups extends Command
      */
     public function handle()
     {
-
         $more = 1;
         $i = 0;
         while ($more) {
@@ -60,6 +59,7 @@ class EnergiDataServiceLoadChargeGroups extends Command
             $i = $i + 100;
             $more = count($records) != 0;
         }
+
         return Command::SUCCESS;
     }
 }

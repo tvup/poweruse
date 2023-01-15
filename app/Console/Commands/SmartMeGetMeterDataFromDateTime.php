@@ -49,7 +49,7 @@ class SmartMeGetMeterDataFromDateTime extends Command
 
         $rulesForShowCount = [
             'string' => 'in:ALL',
-            'numeric' => 'integer'
+            'numeric' => 'integer',
         ];
 
         $rules = [
@@ -68,6 +68,7 @@ class SmartMeGetMeterDataFromDateTime extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return 1;
         }
 
@@ -79,7 +80,6 @@ class SmartMeGetMeterDataFromDateTime extends Command
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour();
         }
 
-
         switch ($optionShowCount) {
             case is_numeric($optionShowCount):
                 break;
@@ -88,12 +88,13 @@ class SmartMeGetMeterDataFromDateTime extends Command
                 break;
             default:
                 $this->error('Show-count should either be a number or \'ALL\'');
+
                 return 1;
         }
 
         $getSmartMeMeterData = new GetSmartMeMeterData();
         $array = $getSmartMeMeterData->getInterval($start_date);
-        $returnArray = array();
+        $returnArray = [];
         if ($array) {
             foreach ($array as $key => $value) {
                 array_push($returnArray, [$key, $value]);
@@ -103,7 +104,6 @@ class SmartMeGetMeterDataFromDateTime extends Command
                 $this->info('(..) table output truncated');
             }
         }
-
     }
 
     private function getShowCountType(mixed $showCount): string

@@ -11,5 +11,5 @@ class BaseModel extends Model
 
     protected $guarded = [];
 
-    const SOURCE = 'Poweruse';
+    public const SOURCE = 'Poweruse';
 }

@@ -10,7 +10,6 @@ use App\Models\MeteringPoint;
 use App\Services\GetMeteringData;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
@@ -19,7 +18,6 @@ class MeteringPointController extends Controller
     private GetMeteringData $meteringDataService;
 
     private bool $userIsLoggedIn = false;
-
 
     public function __construct(GetMeteringData $meteringDataService)
     {
@@ -62,6 +60,7 @@ class MeteringPointController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering-point data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
                     return response()->json(['error' => $message]);
                 case 401:
                     return response()->json(['error' => 'Failed - cannot login with token']);
@@ -111,7 +110,7 @@ class MeteringPointController extends Controller
 
         return MeteringPoint::updateOrCreate(
             [
-                'metering_point_id' => $request['metering_point_id']
+                'metering_point_id' => $request['metering_point_id'],
             ],
             [
                 'parent_id' => Arr::get($validated, 'parent_id'),
@@ -136,7 +135,8 @@ class MeteringPointController extends Controller
                 'second_consumer_party_name' => Arr::get($validated, 'second_consumer_party_name'),
                 'hasRelation' => Arr::get($validated, 'hasRelation'),
                 'user_id' => auth('api')->user()->id,
-        ]);
+        ]
+        );
     }
 
     /**
