@@ -450,7 +450,7 @@ export default {
       });
     },
     // /deleteMeteringPoint() function. Function we use to delete metering point record by calling api/metering-points/{id} method DELETE.
-    deleteCharge(id) {
+    deleteCharge(metering_point_id) {
       // sweet alert confirmation
       swal.fire({
         title: 'Are you sure?',
@@ -464,11 +464,11 @@ export default {
         // confirm delete?
         if (result.value) {
           // request delete
-          this.form.delete('api/charge/' + id, {}).then(() => {
+          axios.delete('api/charge/' + metering_point_id, {}).then(() => {
             // sweet alert success
             swal.fire(
                 'Deleted!',
-                'Charge has been deleted.',
+                'Charges have been deleted.',
                 'success'
             )
 

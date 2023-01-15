@@ -22,7 +22,7 @@ class ChargeController extends Controller
 
     public function __construct(GetMeteringData $meteringDataService)
     {
-        if(auth('api')->check()) {
+        if (auth('api')->check()) {
             $this->userIsLoggedIn = true;
         } else {
             $this->userIsLoggedIn = false;
@@ -38,13 +38,13 @@ class ChargeController extends Controller
      * @param string|null $refresh_token
      * @return JsonResponse
      */
-    public function index(string $refresh_token = null) : JsonResponse
+    public function index(string $refresh_token = null): JsonResponse
     {
         $meteringPointId = '';
-        if($this->userIsLoggedIn) {
-            if(!$refresh_token) {
+        if ($this->userIsLoggedIn) {
+            if (!$refresh_token) {
                 $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
-                if($meteringPoint) {
+                if ($meteringPoint) {
                     $meteringPointId = $meteringPoint->metering_point_id;
                     $firstQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Abonnement');
                     $secondQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Tarif');
@@ -60,7 +60,7 @@ class ChargeController extends Controller
             }
         }
 
-        if(!$refresh_token) {
+        if (!$refresh_token) {
             return response()->json();
         }
 
@@ -90,10 +90,10 @@ class ChargeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreChargeRequest  $request
+     * @param \App\Http\Requests\StoreChargeRequest $request
      * @return JsonResponse
      */
-    public function store(StoreChargeRequest $request) : JsonResponse
+    public function store(StoreChargeRequest $request): JsonResponse
     {
         $this->validate($request, [
                 'type' => 'required|string',
@@ -113,15 +113,15 @@ class ChargeController extends Controller
             'name' => $request['name'],
             'description' => $request['description'],
             'owner' => $request['owner'],
-            'valid_from' => Carbon::parse($request['valid_from'],'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
-            'valid_to' => Carbon::parse($request['valid_to'],'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
+            'valid_from' => Carbon::parse($request['valid_from'], 'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
+            'valid_to' => Carbon::parse($request['valid_to'], 'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
             'period_type' => $request['period_type'],
             'price' => $request['price'],
             'quantity' => $request['quantity'],
             'metering_point_id' => $request['metering_point_id']
         ]);
 
-        if($request['prices']) {
+        if ($request['prices']) {
             foreach ($request['prices'] as $price) {
                 /** @var ChargePrice $chargePrice */
                 $chargePrice = app()->make(ChargePrice::class);
@@ -138,10 +138,10 @@ class ChargeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Charge  $charge
+     * @param \App\Models\Charge $charge
      * @return JsonResponse
      */
-    public function show(Charge $charge) : JsonResponse
+    public function show(Charge $charge): JsonResponse
     {
         return response()->json();
     }
@@ -149,11 +149,11 @@ class ChargeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateChargeRequest  $request
-     * @param  \App\Models\Charge  $charge
+     * @param \App\Http\Requests\UpdateChargeRequest $request
+     * @param \App\Models\Charge $charge
      * @return JsonResponse
      */
-    public function update(UpdateChargeRequest $request, Charge $charge) : JsonResponse
+    public function update(UpdateChargeRequest $request, Charge $charge): JsonResponse
     {
         return response()->json();
     }
@@ -161,12 +161,20 @@ class ChargeController extends Controller
     /**
      * Remove the specified resources from storage.
      *
-     * @param  \App\Models\MeteringPoint  $meteringPoint
+     * @param \App\Models\MeteringPoint $meteringPoint
      * @return JsonResponse
      */
-    public function destroy(MeteringPoint $meteringPoint) : JsonResponse
+    public function destroy(MeteringPoint $meteringPoint): JsonResponse
     {
-        Charge::whereMeteringPointId($meteringPoint->metering_point_id)->delete();
-        return response()->json();
+        if (!$meteringPoint) {
+            return response()->json();
+        } else {
+            $chargesQuery = Charge::whereMeteringPointId($meteringPoint->metering_point_id);
+            $charges = $chargesQuery->get();
+            $chargesQuery->delete();
+
+
+            return response()->json($charges);
+        }
     }
 }
