@@ -8,6 +8,7 @@ use App\Http\Requests\StoreChargeRequest;
 use App\Http\Requests\UpdateChargeRequest;
 use App\Models\Charge;
 use App\Services\GetMeteringData;
+use Illuminate\Support\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class ChargeController extends Controller
@@ -39,9 +40,9 @@ class ChargeController extends Controller
                     $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for charges data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-                    return redirect('el-charges')->with('error', $message)->withInput($request->all());
+                    return redirect('el-charges')->with('error', $message);
                 case 401:
-                    return redirect('el-charges')->with('error', 'Failed - cannot login with token')->withInput($request->all());
+                    return redirect('el-charges')->with('error', 'Failed - cannot login with token');
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
@@ -61,16 +62,16 @@ class ChargeController extends Controller
     public function store(StoreChargeRequest $request)
     {
         $this->validate($request, [
-                'type' => 'required|string|max:3',
-                'name' => 'required|string|max:3',
-                'description' => 'required|string|max:15',
-                'owner' => 'sometimes|nullable|max:10',
-                'valid_from' => 'sometimes|nullable|max:10',
-                'valid_to' => 'sometimes|date',
+                'type' => 'required|string',
+                'name' => 'required|string',
+                'description' => 'required|string',
+                'owner' => 'required',
+                'valid_from' => 'required|date',
+                'valid_to' => 'nullable|date',
                 'period_type' => 'required|string|max:5',
-                'price' => 'required|string',
-                'quantity' => 'required|string|max:4',
-                'prices' => 'required|string|max:40',
+                'price' => 'nullable|string',
+                'quantity' => 'nullable|string|max:4',
+                'prices' => 'nullable|string|max:40',
             ]
         );
 
@@ -79,13 +80,13 @@ class ChargeController extends Controller
             'name' => $request['name'],
             'description' => $request['description'],
             'owner' => $request['owner'],
-            'valid_from' => $request['valid_from'],
-            'valid_to' => $request['valid_to'],
+            'valid_from' => Carbon::parse($request['valid_from'],'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
+            'valid_to' => Carbon::parse($request['valid_to'],'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
             'period_type' => $request['period_type'],
-            'price' => Carbon::parse($request['price'],'UTC')->timezone('Europe/Copenhagen')->toDateString(),
+            'price' => $request['price'],
             'quantity' => $request['quantity'],
-            'prices' => $request['prices'],
-            'user_id' => auth('api')->user()->id,
+            //'prices' => $request['prices'],
+            'metering_point_id' => $request['metering_point_id']
         ]);
     }
 

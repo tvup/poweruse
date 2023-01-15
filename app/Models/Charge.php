@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Price[] $prices
  * @property MeteringPoint $meteringPoint
  */
-class Charge extends Model
+class Charge extends BaseModel
 {
     use HasFactory;
 }

@@ -66,6 +66,9 @@
                   <a href="" @click.prevent="deleteCharge(charge.id)">
                     <i class="fa fa-trash"></i>
                   </a>
+                  <a href="" @click.prevent="saveCharge(charge)">
+                    <i class="fa fa-save"></i>
+                  </a>
                 </td>
               </tr>
               </tbody>
@@ -278,6 +281,47 @@ export default {
       });
     },
     // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
+    saveCharge(charge) {
+      // request post
+      let formData = new FormData();
+
+
+      let keys = Object.keys(charge);
+      let values = Object.values(charge);
+      for (let i = 0; i < Object.keys(charge).length; i++) {
+        let key = keys[i];
+        switch(keys[i]) {
+          case 'validFromDate':
+            key = 'valid_from';
+            break;
+          case 'periodType':
+            key = 'period_type';
+            break;
+          default:
+            key = keys[i];
+        }
+        formData.append(key, values[i]);
+      }
+      formData.append('metering_point_id', '571313174112923291');
+
+
+      axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+      axios.post('api/charge', formData).then(() => {
+
+        //sweet alert 2
+        swal.fire({
+            icon: 'success',
+            title: 'Charge saved successfully'
+        })
+
+        this.getCharges();
+
+      }).catch(() => {
+        console.log('transaction fail');
+      });
+    },
+    // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
     editCharge(charge) {
       this.isFormCreateChargeMode = false;
       this.form.reset(); // v form reset inputs
@@ -297,7 +341,7 @@ export default {
             title: 'Charge updated successfully'
         })
 
-        this.getMeteringPoints();
+        this.getCharges();
       }).catch(() => {
         console.log('transaction fail');
       });
