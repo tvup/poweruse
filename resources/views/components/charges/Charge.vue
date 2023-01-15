@@ -259,6 +259,9 @@ export default {
               }
               if (type != "") {
                 value2.type = type;
+                value2.periodType = value2.periodType ?? value2.period_type;
+                value2.validFromDate = value2.validFromDate ?? value2.valid_from;
+                value2.validToDate = value2.validFToDate ?? value2.valid_to;
                 arr.push(value2);
               }
             });
@@ -304,7 +307,6 @@ export default {
           this.last_page = data.data.last_page;
           this.total = data.data.total;
           this.metering_point_id = data.data.data[3][0]['metering_point_id'];
-          console.log(data.data.data);
           this.metering_point_gsrn = data.data.data[4][0]['metering_point_gsrn'];
           if (this.total == 1) {
             this.form.fill(this.charges[0]);
