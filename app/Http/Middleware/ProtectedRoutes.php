@@ -10,7 +10,6 @@ class ProtectedRoutes extends IlluminateAuthenticate
 {
     public function handle($request, Closure $next, ...$guards): mixed
     {
-
         if (!Auth::check()) {
             return redirect('/');
         }

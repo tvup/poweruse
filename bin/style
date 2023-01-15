@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ROOT_DIR="$(cd $(dirname "$(dirname "${BASH_SOURCE[0]}")") &> /dev/null && pwd )"
+export PHP_CS_FIXER_IGNORE_ENV=1
+exec $ROOT_DIR/vendor/bin/php-cs-fixer $@ fix

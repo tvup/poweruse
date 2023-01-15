@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use Tvup\ElOverblikApi\ElOverblikApi;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
 use Tvup\EwiiApi\EwiiApiException;
@@ -11,11 +10,10 @@ use Tvup\EwiiApi\EwiiApiInterface;
 
 class GetMeteringData
 {
-
-
     private ElOverblikApiInterface|null $energiOverblikApi;
 
     private EwiiApiInterface|null $ewiiApi;
+
     private string $meteringPoint;
 
     /**
@@ -89,7 +87,6 @@ class GetMeteringData
                     unset($response[$key]);
                 }
             }
-
         } catch (EwiiApiException $e) {
             logger()->error('Call to get consumption data from ewiiApi failed');
             throw $e;
@@ -126,6 +123,7 @@ class GetMeteringData
 
             $this->meteringPoint = $response;
         }
+
         return $this->meteringPoint;
     }
 
@@ -152,8 +150,8 @@ class GetMeteringData
         } catch (ElOverblikApiException $e) {
             throw $e;
         }
-        return $response;
 
+        return $response;
     }
 
     public function getMeteringPointDataFromEwii(string $email = null, string $password = null): array
@@ -183,9 +181,8 @@ class GetMeteringData
         } catch (EwiiApiException $e) {
             throw $e;
         }
+
         return $responseCombined;
-
-
     }
 
     public function getCharges(string $refresh_token = null): array
@@ -212,7 +209,7 @@ class GetMeteringData
             switch (gettype($errors)) {
                 case 'array':
                     logger()->error('Got array of errors', [
-                        'errors' => $errors
+                        'errors' => $errors,
                     ]);
                     break;
                 case 'string':
@@ -220,23 +217,22 @@ class GetMeteringData
                     break;
                 default:
                     logger()->error('Exception didn\'t return useful error messages either');
-
             }
             throw $exception;
-
         }
         $fees = [];
 
-        return array($subscriptions, $tariffs, $fees);
+        return [$subscriptions, $tariffs, $fees];
     }
 
     private function getEloverblikApi(string $refreshToken = null) : ElOverblikApiInterface
     {
         if (!property_exists('GetMeteringData', 'energiOverblikApi') || !$this->energiOverblikApi) {
             $this->energiOverblikApi = app()->makeWith('Tvup\ElOverblikApi\ElOverblikApiInterface', [
-                'refreshToken' => $refreshToken
+                'refreshToken' => $refreshToken,
             ]);
         }
+
         return $this->energiOverblikApi;
     }
 
@@ -248,7 +244,7 @@ class GetMeteringData
                 'password' => $password,
             ]);
         }
+
         return $this->ewiiApi;
     }
-
 }

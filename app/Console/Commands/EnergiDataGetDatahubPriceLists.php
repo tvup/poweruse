@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 
 /**
- * Example: energidata:get-datahub-prices --operator="Radius Elnet A/S" --charge-type=D01 --charge-type-code=DA_A_F_01 --note="Netabo A0 forbrug" --start-date=2023-01-01
+ * Example: energidata:get-datahub-prices --operator="Radius Elnet A/S" --charge-type=D01 --charge-type-code=DA_A_F_01 --note="Netabo A0 forbrug" --start-date=2023-01-01.
  */
 class EnergiDataGetDatahubPriceLists extends Command
 {
@@ -50,12 +50,12 @@ class EnergiDataGetDatahubPriceLists extends Command
             'start_date' => $this->option('start-date'),
             'end_date' => $this->option('end-date'),
         ], [
-            'operator' => ['required','string'],
-            'charge-type' => ['required','in:D01,D02,D03'],
+            'operator' => ['required', 'string'],
+            'charge-type' => ['required', 'in:D01,D02,D03'],
             'charge-type-code' => ['required'],
             'note' => ['string', 'required'],
-            'start_date' => ['required','date_format:Y-m-d'],
-            'end_date' => ['nullable','date_format:Y-m-d','after:start_date'],
+            'start_date' => ['required', 'date_format:Y-m-d'],
+            'end_date' => ['nullable', 'date_format:Y-m-d', 'after:start_date'],
         ]);
 
         if ($validator->fails()) {
@@ -64,6 +64,7 @@ class EnergiDataGetDatahubPriceLists extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return 1;
         }
 
@@ -71,13 +72,12 @@ class EnergiDataGetDatahubPriceLists extends Command
 
         $safeValues = $validator->validated();
 
-        $operator = $safeValues['operator'];;
+        $operator = $safeValues['operator'];
         $chargeType = $safeValues['charge-type'];
         $chargeTypeCode = $safeValues['charge-type-code'];
         $note = $safeValues['note'];
         $startDate = $safeValues['start_date'];
         $endDate = $safeValues['end_date'];
-
 
         $records = $datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
         $this->table(array_keys($records[0]), array_values($records));
@@ -100,6 +100,7 @@ class EnergiDataGetDatahubPriceLists extends Command
                 }
             }
         }
+
         return $returnCode;
     }
 }

@@ -48,7 +48,7 @@ class EnergiDataGetPrices extends Command
 
         $rulesForShowCount = [
             'string' => 'in:ALL',
-            'numeric' => 'integer'
+            'numeric' => 'integer',
         ];
 
         $rules = [
@@ -71,6 +71,7 @@ class EnergiDataGetPrices extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return 1;
         }
 
@@ -89,6 +90,7 @@ class EnergiDataGetPrices extends Command
                 break;
             default:
                 $this->error('Show-count should either be a number or \'ALL\'');
+
                 return 1;
         }
 
@@ -96,9 +98,9 @@ class EnergiDataGetPrices extends Command
 
         //The return-type of this call is array because of the missing format-parameter.
         //Casted for the sake of phpstan
-        $array = (array)$new->getData($start_date, $end_date, $area);
+        $array = (array) $new->getData($start_date, $end_date, $area);
 
-        $returnArray = array();
+        $returnArray = [];
         if ($array) {
             foreach ($array as $key => $value) {
                 array_push($returnArray, [$key, $value]);

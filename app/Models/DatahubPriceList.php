@@ -27,7 +27,7 @@ class DatahubPriceList extends BaseModel
             'ValidTo'=>$this->getAttribute('ValidTo'),
         ])->first();
 
-        if($db_record) {
+        if ($db_record) {
             return $this->getAttribute('GLN_Number') == $db_record->GLN_Number
                 && $this->getAttribute('ChargeType') == $db_record->ChargeType
                 && $this->getAttribute('ChargeTypeCode') == $db_record->ChargeTypeCode
@@ -35,6 +35,7 @@ class DatahubPriceList extends BaseModel
                 && $this->getAttribute('ValidFrom') == $db_record->ValidFrom
                 && $this->getAttribute('ValidTo') == $db_record->ValidTo;
         }
+
         return false;
     }
 }

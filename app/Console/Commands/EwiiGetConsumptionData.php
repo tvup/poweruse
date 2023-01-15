@@ -31,6 +31,7 @@ class EwiiGetConsumptionData extends Command
      * @var EwiiApiInterface
      */
     private $ewiiApi;
+
     /**
      * @var bool
      */
@@ -58,7 +59,7 @@ class EwiiGetConsumptionData extends Command
 
         $rulesForShowCount = [
             'string' => 'in:ALL',
-            'numeric' => 'integer'
+            'numeric' => 'integer',
         ];
 
         $rules = [
@@ -75,6 +76,7 @@ class EwiiGetConsumptionData extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return 1;
         }
 
@@ -89,6 +91,7 @@ class EwiiGetConsumptionData extends Command
                 break;
             default:
                 $this->error('Show-count should either be a number or \'ALL\'');
+
                 return 1;
         }
 
@@ -97,7 +100,6 @@ class EwiiGetConsumptionData extends Command
         if ($this->getOutput()->isVerbose()) {
             $ewiiApi->setDebug(true);
         }
-
 
         $email = config('services.ewii.email');
         $password = config('services.ewii.password');
@@ -110,6 +112,7 @@ class EwiiGetConsumptionData extends Command
             $response = $ewiiApi->getConsumptionData('csv', $response);
         } catch (EwiiApiException $e) {
             $this->logExceptionApiMessages($e->getErrors(), 'Call to get consumption data from ewiiApi failed');
+
             return 1;
         }
 
@@ -121,7 +124,6 @@ class EwiiGetConsumptionData extends Command
             }
             $this->table(['Time', 'Value'], $this->showAll ? $outputTableArray : array_slice($outputTableArray, 0, $optionShowCount));
         }
-
     }
 
     private function getShowCountType(mixed $showCount): string
@@ -132,5 +134,4 @@ class EwiiGetConsumptionData extends Command
             return gettype($showCount);
         }
     }
-
 }

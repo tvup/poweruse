@@ -34,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'refresh_token',
-        'locale'
+        'locale',
     ];
 
     /**
@@ -59,7 +59,8 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * @return HasMany<MeteringPoint>
      */
-    public function meteringPoints() : HasMany {
+    public function meteringPoints() : HasMany
+    {
         return $this->hasMany(MeteringPoint::class);
     }
 }

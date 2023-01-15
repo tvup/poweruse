@@ -14,5 +14,4 @@ namespace App\Models;
  */
 class ChargeGroup extends BaseModel
 {
-
 }

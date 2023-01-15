@@ -18,8 +18,8 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name' => ['string', 'max:255'],
             'email' => ['email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-            'refresh_token' => ['nullable','string', 'max:4000'],
-            'locale' => ['nullable','string', 'min:5', 'max:5'],
+            'refresh_token' => ['nullable', 'string', 'max:4000'],
+            'locale' => ['nullable', 'string', 'min:5', 'max:5'],
         ];
     }
 }

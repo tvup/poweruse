@@ -31,4 +31,3 @@ Route::apiResource('meteringPoint', 'Api\MeteringPointController')->middleware('
 Route::get('charge/{refresh_token?}', 'Api\ChargeController@index');
 Route::delete('charges/{metering_point?}', 'Api\ChargeController@destroyAll');
 Route::apiResource('charge', 'Api\ChargeController')->middleware('auth:api')->except(['index']);
-

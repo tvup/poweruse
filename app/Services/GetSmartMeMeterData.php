@@ -7,7 +7,6 @@ use Carbon\CarbonTimeZone;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Support\Facades\Http;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class GetSmartMeMeterData
 {
@@ -23,8 +22,10 @@ class GetSmartMeMeterData
         }
         list($id, $username, $password) = $this->smartMeCredentials($smartMe);
         $response = Http::withBasicAuth($username, $password)->acceptJson()
-            ->get('https://smart-me.com/api/MeterValues/' . $id,
-                ['date' => $start_date]);
+            ->get(
+                'https://smart-me.com/api/MeterValues/' . $id,
+                ['date' => $start_date]
+            );
 
         return $response['CounterReading'];
     }
@@ -55,7 +56,6 @@ class GetSmartMeMeterData
         $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
         $nice_one = $late_transition_end_hour2->format('c');
 
-
         $to_date = Carbon::parse($to_date, 'Europe/Copenhagen');
 
         $oldResponse = $this->getFromDate($smartMe, $start_date_utc_formatted);
@@ -82,8 +82,8 @@ class GetSmartMeMeterData
                 $array[$nice_one] = round($newResponse - $oldResponse, 2);
             }
             $array[$rtn_start_date_formatted] = round($newResponse - $oldResponse, 2);
-
         }
+
         return $array;
     }
 
@@ -96,6 +96,7 @@ class GetSmartMeMeterData
         $id = ($smartMe && array_key_exists('id', $smartMe)) ? $smartMe['id'] : config('services.smartme.id');
         $username = ($smartMe && array_key_exists('username', $smartMe)) ? $smartMe['username'] : config('services.smartme.username');
         $password = ($smartMe && array_key_exists('password', $smartMe)) ? $smartMe['password'] : config('services.smartme.paasword');
-        return array($id, $username, $password);
+
+        return [$id, $username, $password];
     }
 }
