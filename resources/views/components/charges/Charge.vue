@@ -280,7 +280,7 @@ export default {
         console.log('transaction fail');
       });
     },
-    // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
+    // /editCharge() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
     saveCharge(charge) {
       // request post
       let formData = new FormData();
@@ -294,13 +294,20 @@ export default {
           case 'validFromDate':
             key = 'valid_from';
             break;
+          case 'validToDate':
+            key = 'valid_to';
+            break;
           case 'periodType':
             key = 'period_type';
             break;
           default:
             key = keys[i];
         }
-        formData.append(key, values[i]);
+        let value = values[i];
+        if (values[i]==null) {
+          value = '';
+        }
+        formData.append(key, value);
       }
       formData.append('metering_point_id', '571313174112923291');
 
@@ -321,7 +328,7 @@ export default {
         console.log('transaction fail');
       });
     },
-    // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
+    // /editCharge() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
     editCharge(charge) {
       this.isFormCreateChargeMode = false;
       this.form.reset(); // v form reset inputs
