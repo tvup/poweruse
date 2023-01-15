@@ -239,7 +239,7 @@ export default {
       charges: [{
         id: '',
         prices: [{
-          position: 0,
+          position: 1,
           price: ''
         }]
       }],
@@ -254,7 +254,7 @@ export default {
         period_type: '',
         price: '',
         quantity: '',
-        prices: [{position: 0, price: ''}],
+        prices: [{position: 1, price: ''}],
       }),
       isFormCreateChargeMode: true,
       last_page: 0,
@@ -268,7 +268,7 @@ export default {
   methods: {
     addMore() {
       this.form.prices.push({
-        position: this.form.prices.slice(-1)[0] ? this.form.prices.slice(-1)[0].position + 1 : 0,
+        position: this.form.prices.slice(-1)[0] ? this.form.prices.slice(-1)[0].position + 1 : 1,
         price: ''
       });
     },

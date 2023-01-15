@@ -157,8 +157,20 @@ class ChargeController extends Controller
             'price' => $request['price'],
             'quantity' => $request['quantity'],
         ];
-        //$request['prices']
         $charge->update($requestArray);
+        foreach ($charge->chargePrices as $price) {
+            $price->delete();
+        }
+        if($request['prices']) {
+            foreach ($request['prices'] as $price) {
+                $chargePrice = app()->make(ChargePrice::class);
+                $chargePrice->position = $price['position'];
+                $chargePrice->price = $price['price'];
+                $chargePrice->charge_id = $charge->id;
+                $chargePrice->save();
+            }
+        }
+
         return response()->json($charge);
     }
 
