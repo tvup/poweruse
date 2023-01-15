@@ -10,7 +10,6 @@ use App\Models\Charge;
 use App\Models\ChargePrice;
 use App\Models\MeteringPoint;
 use App\Services\GetMeteringData;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -41,11 +40,13 @@ class ChargeController extends Controller
     public function index(string $refresh_token = null): JsonResponse
     {
         $meteringPointId = '';
+
         if ($this->userIsLoggedIn) {
+            $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
+            $meteringPointId = $meteringPoint ? $meteringPoint->id : '';
             if (!$refresh_token) {
-                $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
                 if ($meteringPoint) {
-                    $meteringPointId = $meteringPoint->metering_point_id;
+                    $meteringPointId = $meteringPoint->id;
                     $firstQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Abonnement');
                     $secondQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Tarif');
                     $thirdQuery = Charge::with('prices')->whereMeteringPointId($meteringPointId)->orderBy('id', 'desc')->whereType('Gebyr');
@@ -169,8 +170,11 @@ class ChargeController extends Controller
         if (!$meteringPoint) {
             return response()->json();
         } else {
-            $chargesQuery = Charge::whereMeteringPointId($meteringPoint->metering_point_id);
+            $chargesQuery = Charge::whereMeteringPointId($meteringPoint->id);
             $charges = $chargesQuery->get();
+            foreach ($charges as $charge) {
+                ChargePrice::whereChargeId($charge->id)->delete();
+            }
             $chargesQuery->delete();
 
 

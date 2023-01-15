@@ -95,6 +95,7 @@
                           :pageCount="last_page"></pagination>
             </nav>
             <button type="button" class="btn btn-primary" @click.prevent="saveCharges()">Save all charges to DB</button>
+            <button type="button" class="btn btn-danger" @click.prevent="deleteCharges(metering_point_id)">Delete all charges in DB</button>
           </div>
         </div>
       </div>
@@ -450,7 +451,7 @@ export default {
       });
     },
     // /deleteMeteringPoint() function. Function we use to delete metering point record by calling api/metering-points/{id} method DELETE.
-    deleteCharge(metering_point_id) {
+    deleteCharges(metering_point_id) {
       // sweet alert confirmation
       swal.fire({
         title: 'Are you sure?',
@@ -472,7 +473,8 @@ export default {
                 'success'
             )
 
-            this.getCharges(); // reload table metering_points
+            this.charges = null;
+            this.getCharges();
           }).catch(() => {
             // sweet alert fail
             swal.fire({
@@ -483,8 +485,9 @@ export default {
             })
           });
         }
-      })
+      });
     }
+
   },
   created() {
     this.getCharges();
