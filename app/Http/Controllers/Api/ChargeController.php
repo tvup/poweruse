@@ -105,7 +105,7 @@ class ChargeController extends Controller
             'description' => $request['description'],
             'owner' => $request['owner'],
             'valid_from' => Carbon::parse($request['valid_from'], 'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
-            'valid_to' => Carbon::parse($request['valid_to'], 'UTC')->timezone('Europe/Copenhagen')->toDateTimeString(),
+            'valid_to' => $request['valid_to'] ? Carbon::parse($request['valid_to'], 'UTC')->timezone('Europe/Copenhagen')->toDateTimeString() : null,
             'period_type' => $request['period_type'],
             'price' => $request['price'],
             'quantity' => $request['quantity'],

@@ -7,6 +7,8 @@ import Alpine from 'alpinejs';
 window.Alpine = Alpine;
 Alpine.start();
 
+import { i18nVue } from 'laravel-vue-i18n';
+
 // Import /swal from /sweetalert2 first.
 import swal from 'sweetalert2';
 
@@ -25,6 +27,12 @@ import {
 } from 'vform/src/components/bootstrap5'
 
 const app = createApp({});
+app.use(i18nVue, {
+    resolve: async lang => {
+        const langs = import.meta.glob('../lang/*.json');
+        return await langs[`../lang/${lang}.json`]();
+    }
+});
 app.component('metering-point', MeteringPoint);
 app.component('charge', Charge);
 app.component('pagination', Paginate);

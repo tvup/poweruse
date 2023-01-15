@@ -3,23 +3,23 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Charges - {{ metering_point_gsrn }}</h3>
+          <h3 class="card-title"> {{ $t('Charges') }} - {{ metering_point_gsrn }}</h3>
           <div class="card-tools" v-if="authUser && authUser.refresh_token">
             <div class="input-group input-group-sm">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#chargeModal"
-                      @click.prevent="showModal"><i class="fas fa-bolt"></i> Add new charge
+                      @click.prevent="showModal"><i class="fas fa-bolt"></i> {{ $t('Add new charge') }}
               </button>
             </div>
           </div>
           <div class="card-tools" v-else>
             <div class="input-group input-group-sm">
               <form>
-                <label class="col-sm-3 control-label" for="token">Refresh token</label>
+                <label class="col-sm-3 control-label" for="token">{{ $t('Refresh token') }}</label>
                 <input class="form-control" id="token" type="text" v-model="token">
                 <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
                 <button type="submit" class="btn btn-primary"
-                        @click.prevent="getChargesFromToken()"><i class="fas fa-bolt"></i> Get charges
+                        @click.prevent="getChargesFromToken()"><i class="fas fa-bolt"></i>{{ $t('Get charges') }}
                 </button>
               </form>
             </div>
@@ -32,16 +32,16 @@
             <table class="table table-hover">
               <thead>
               <tr>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Owner</th>
-                <th>Valid from</th>
-                <th>Valid to</th>
-                <th>Period type</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Prices</th>
+                <th>{{ $t('Type') }}</th>
+                <th>{{ $t('Name') }}</th>
+                <th>{{ $t('Description') }}</th>
+                <th>{{ $t('Owner') }}</th>
+                <th>{{ $t('Valid from') }}</th>
+                <th>{{ $t('Valid to') }}</th>
+                <th>{{ $t('Period type') }}</th>
+                <th>{{ $t('Price') }}</th>
+                <th>{{ $t('Quantity') }}</th>
+                <th>{{ $t('Prices') }}</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -59,12 +59,12 @@
                 <td class="align-middle">{{ charge.price }}</td>
                 <td class="align-middle">{{ charge.quantity }}</td>
                 <td class="align-middle">
-                  <div v-if="charge.prices">
+                  <div v-if="charge.prices.length!=0">
                     <table class="table table-hover">
                       <thead>
                       <tr>
-                        <th>Position</th>
-                        <th>Price</th>
+                        <th>{{ $t('Position') }}</th>
+                        <th>{{ $t('Price') }}</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -91,15 +91,16 @@
             </table>
             <nav aria-label="Page navigation example" class="pagination-container">
               <pagination :data="charges" @pagination-change-page="getCharges"
-                          :pageCount="last_page"></pagination>
+                          :pageCount="last_page" :prev-text="$t('Prev')"
+                          :next-text="$t('Next')"></pagination>
             </nav>
             <button type="button" class="btn btn-primary"
                     v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') != 'Poweruse'"
-                    @click.prevent="saveCharges()">Save all charges to DB
+                    @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
             </button>
             <button type="button" class="btn btn-danger"
                     v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'Poweruse'"
-                    @click.prevent="deleteCharges(metering_point_id)">Delete all charges in DB
+                    @click.prevent="deleteCharges(metering_point_id)">{{ $t('Delete all charges in DB') }}
             </button>
           </div>
         </div>
@@ -113,8 +114,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <!-- Show/hide headings dynamically based on /isFormCreateMeteringPointMode value (true/false) -->
-            <h5 v-show="isFormCreateChargeMode" class="modal-title" id="chargeModalLabel">Add new charge</h5>
-            <h5 v-show="!isFormCreateChargeMode" class="modal-title" id="chargeModalLabel">Update charge</h5>
+            <h5 v-show="isFormCreateChargeMode" class="modal-title" id="chargeModalLabel">{{ $t('Add new charge') }}</h5>
+            <h5 v-show="!isFormCreateChargeMode" class="modal-title" id="chargeModalLabel"> {{ $t('Update charge') }}</h5>
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
@@ -124,53 +125,53 @@
             <div class="modal-body">
               <div class="form-group">
                 <input v-model="form.type" type="text" name="type"
-                       placeholder="Type of charge"
+                       :placeholder="$t('Type of charge')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
                 <has-error :form="form" field="type"></has-error>
               </div>
               <div class="form-group">
                 <input v-model="form.name" type="text" name="name"
-                       placeholder="Name"
+                       :placeholder="$t('Name')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                 <has-error :form="form" field="name"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.description" type="text" name="description" placeholder="Description"
+                <input v-model="form.description" type="text" name="description" :placeholder="$t('Description')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('description') }">
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
                 <input v-model="form.owner" type="text" name="owner"
-                       placeholder="Owner"
+                       :placeholder="$t('Owner')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('owner') }">
                 <has-error :form="form" field="owner"></has-error>
               </div>
               <div class="form-group">
                 <input v-model="form.valid_from" type="text" name="valid_from"
-                       placeholder="Valid from"
+                       :placeholder="$t('Valid from')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('valid_from') }">
                 <has-error :form="form" field="valid_from"></has-error>
               </div>
               <div class="form-group">
                 <input v-model="form.valid_to" type="text" name="valid_to"
-                       placeholder="Valid to"
+                       :placeholder="$t('Valid to')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('valid_to') }">
                 <has-error :form="form" field="valid_to"></has-error>
               </div>
               <div class="form-group">
                 <input v-model="form.period_type" type="text"
-                       name="period_type" placeholder="Period type"
+                       name="period_type" :placeholder="$t('Period type')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('period_type') }">
                 <has-error :form="form" field="period_type"></has-error>
               </div>
               <div class="form-group">
                 <input v-model="form.price" type="text" name="price"
-                       placeholder="Price"
+                       :placeholder="$t('Price')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('price') }">
                 <has-error :form="form" field="price"></has-error>
               </div>
               <div class="form-group">
-                <input v-model="form.quantity" type="text" name="quantity" placeholder="Quantity"
+                <input v-model="form.quantity" type="text" name="quantity" :placeholder="$t('Quantity')"
                        class="form-control" :class="{ 'is-invalid': form.errors.has('quantity') }">
                 <has-error :form="form" field="quantity"></has-error>
               </div>
@@ -179,20 +180,20 @@
                     type="button"
                     class="btn btn-primary"
                     @click="addMore()">
-                  Tilføj pris
+                  {{ $t('Add price') }}
                 </button>
                 <div v-for="(price, index) in form.prices" :key="index">
                   <div class="row-cols-2">
                     <div class="row">
                       <div class="form-group col-xs-4 col-md-4">
-                        <label for="position" class="control-label">Position</label>
+                        <label for="position" class="control-label">{{ $t('Position') }}</label>
                         <input
                             v-model="price.position" id="position"
                             placeholder="Position"
                             class="form-control"/>
                       </div>
                       <div class="form-group col-xs-4 col-md-4">
-                        <label for="price" class="control-label">Price</label>
+                        <label for="price" class="control-label">{{ $t('Price') }}</label>
                         <input
                             v-model="price.price" id="price"
                             placeholder="Price"
@@ -205,7 +206,7 @@
                         type="button"
                         class="btn btn-primary"
                         @click="remove(index)">
-                      Remove
+                      {{ $t('Remove') }}
                     </button>
                   </div>
                 </div>
@@ -213,9 +214,9 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary" v-show="isFormCreateChargeMode">Save changes</button>
-              <button type="submit" class="btn btn-primary" v-show="!isFormCreateChargeMode">Update</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ $t('Close') }}</button>
+              <button type="submit" class="btn btn-primary" v-show="isFormCreateChargeMode">{{ $t('Save changes') }}</button>
+              <button type="submit" class="btn btn-primary" v-show="!isFormCreateChargeMode">{{ $t('Update') }}</button>
             </div>
           </form>
         </div>
@@ -227,6 +228,7 @@
 <!-- We put our scripts inside script tag -->
 <script>
 import Form from "vform";
+import {trans} from 'laravel-vue-i18n';
 // Declare /metering-point-management component
 export default {
   props: {
@@ -376,7 +378,7 @@ export default {
         //sweet alert 2
         swal.fire({
           icon: 'success',
-          title: 'Charge saved successfully'
+          title: trans('Charge saved successfully')
         })
 
         this.getCharges();
@@ -458,7 +460,7 @@ export default {
           //sweet alert 2
           swal.fire({
             icon: 'success',
-            title: 'Charge saved successfully'
+            title: trans('Charge saved successfully')
           })
         }
 
@@ -475,7 +477,7 @@ export default {
       });
       swal.fire({
         icon: 'success',
-        title: 'All charges saved successfully'
+        title: trans('All charges saved successfully')
       })
     },
     // /editCharge() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
@@ -495,7 +497,7 @@ export default {
         //sweet alert 2
         swal.fire({
           icon: 'success',
-          title: 'Charge updated successfully'
+          title: trans('Charge updated successfully')
         })
 
         this.getCharges();
@@ -507,13 +509,14 @@ export default {
     deleteCharges(metering_point_id) {
       // sweet alert confirmation
       swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        title: trans('Are you sure?'),
+        text: trans("You won't be able to revert this!"),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonText: trans('Yes, delete them!'),
+        cancelButtonText: trans('Cancel')
       }).then((result) => {
         // confirm delete?
         if (result.value) {
@@ -521,8 +524,8 @@ export default {
           axios.delete('api/charges/' + metering_point_id, {}).then(() => {
             // sweet alert success
             swal.fire(
-                'Deleted!',
-                'Charges have been deleted.',
+                trans('Deleted!'),
+                trans('Charges have been deleted.'),
                 'success'
             )
 
@@ -532,9 +535,9 @@ export default {
             // sweet alert fail
             swal.fire({
               icon: 'error',
-              title: 'Oops...',
-              text: 'Something went wrong!',
-              footer: '<a href>Why do I have this issue?</a>'
+              title: trans('Oops...'),
+              text: trans('Something went wrong!'),
+              footer: '<a href>' + trans('Why do I have this issue?') + '</a>'
             })
           });
         }
@@ -544,13 +547,14 @@ export default {
     deleteCharge(id) {
       // sweet alert confirmation
       swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        title: trans('Are you sure?'),
+        text: trans("You won't be able to revert this!"),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonText: trans('Yes, delete it!'),
+        cancelButtonText: trans('Cancel')
       }).then((result) => {
         // confirm delete?
         if (result.value) {
@@ -558,8 +562,8 @@ export default {
           axios.delete('api/charge/' + id, {}).then(() => {
             // sweet alert success
             swal.fire(
-                'Deleted!',
-                'Charges have been deleted.',
+                trans('Deleted!'),
+                trans('Charges have been deleted.'),
                 'success'
             )
 
@@ -569,9 +573,9 @@ export default {
             // sweet alert fail
             swal.fire({
               icon: 'error',
-              title: 'Oops...',
-              text: 'Something went wrong!',
-              footer: '<a href>Why do I have this issue?</a>'
+              title: trans('Oops...'),
+              text: trans('Something went wrong!'),
+              footer: '<a href>' + trans('Why do I have this issue?') + '</a>'
             })
           });
         }
