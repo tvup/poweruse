@@ -23,7 +23,7 @@ class ChargePrice extends Model
     use HasFactory;
 
     /**
-     * @return BelongsTo<Charge>
+     * @return BelongsTo<Charge, ChargePrice>
      */
     public function charge() : BelongsTo {
         return $this->belongsTo(Charge::class);
