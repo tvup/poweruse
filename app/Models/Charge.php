@@ -28,7 +28,7 @@ class Charge extends BaseModel
     use HasFactory;
 
     /**
-     * @return HasMany
+     * @return HasMany<ChargePrice>
      */
     public function chargePrices() : HasMany {
         return $this->hasMany(ChargePrice::class);
