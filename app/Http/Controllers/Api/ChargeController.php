@@ -134,7 +134,7 @@ class ChargeController extends Controller
      */
     public function show(Charge $charge): JsonResponse
     {
-        return response()->json();
+        return response()->json($charge);
     }
 
     /**
