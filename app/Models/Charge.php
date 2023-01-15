@@ -27,6 +27,12 @@ class Charge extends BaseModel
 {
     use HasFactory;
 
+    protected $appends = ['source'];
+
+    public function getSourceAttribute(): string|null {
+        return $this->exists ? self::SOURCE : null;
+    }
+
     /**
      * @return HasMany<ChargePrice>
      */
