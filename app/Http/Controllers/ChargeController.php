@@ -18,8 +18,6 @@ class ChargeController extends Controller
     }
 
     public function index() : View {
-        $data = session('data');
-
-        return view('charges')->with('data', $data ? : null);
+        return view('charges')->with('data', session('data'));
     }
 }

@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMeteringPointRequest;
+use App\Http\Requests\UpdateMeteringPointRequest;
 use App\Models\MeteringPoint;
 use App\Services\GetMeteringData;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class MeteringPointController extends Controller
@@ -20,7 +23,7 @@ class MeteringPointController extends Controller
 
     public function __construct(GetMeteringData $meteringDataService)
     {
-        if(auth('api')->check()) {
+        if (auth('api')->check()) {
             $this->userIsLoggedIn = true;
         } else {
             $this->userIsLoggedIn = false;
@@ -35,8 +38,8 @@ class MeteringPointController extends Controller
      */
     public function index(string $refresh_token = null)
     {
-        if($this->userIsLoggedIn) {
-            if(!$refresh_token) {
+        if ($this->userIsLoggedIn) {
+            if (!$refresh_token) {
                 $data = MeteringPoint::whereUserId(auth('api')->user()->id)->orderBy('id', 'desc')->paginate(10);
                 if ($data->count() != 0) {
                     return response()->json($data);
@@ -45,7 +48,7 @@ class MeteringPointController extends Controller
             }
         }
 
-        if(!$refresh_token) {
+        if (!$refresh_token) {
             return response('', 200);
         }
 
@@ -99,70 +102,47 @@ class MeteringPointController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param StoreMeteringPointRequest $request
      * @return MeteringPoint
      */
-    public function store(Request $request)
+    public function store(StoreMeteringPointRequest $request)
     {
-        // use /validate method provided by Illuminate\Http\Request object to validate post data
-        // if validation fails JSON response will be sent for AJAX requests
-        $this->validate($request, [
-                'metering_point_id' => 'required|string|max:18',
-                'parent_id' => 'sometimes|nullable|max:18',
-                'type_of_mp' => 'required|string|max:3',
-                'settlement_method' => 'required|string|max:3',
-                'meter_number' => 'required|string|max:15',
-                'consumer_c_v_r' => 'sometimes|nullable|max:10',
-                'data_access_c_v_r' => 'sometimes|nullable|max:10',
-                'consumer_start_date' => 'sometimes|date',
-                'meter_reading_occurrence' => 'required|string|max:5',
-                'balance_supplier_name' => 'required|string',
-                'street_code' => 'required|string|max:4',
-                'street_name' => 'required|string|max:40',
-                'building_number' => 'required|string|max:6',
-                'floor_id' => 'sometimes|nullable|max:4',
-                'room_id' => 'sometimes|nullable|max:4',
-                'city_name' => 'required|string|max:25',
-                'city_sub_division_name' => 'sometimes|nullable|max:34',
-                'municipality_code' => 'required|string|max:3',
-                'location_description' => 'sometimes|nullable|max:132',
-                'first_consumer_party_name' => 'sometimes|nullable|max:132',
-                'second_consumer_party_name' => 'sometimes|nullable|max:132',
-                'hasRelation' => 'required|boolean',
-            ]
-        );
+        $validated = $request->validate($request->rules());
 
-        return MeteringPoint::create([
-            'metering_point_id' => $request['metering_point_id'],
-            'parent_id' => $request['parent_id'],
-            'type_of_mp' => $request['type_of_mp'],
-            'settlement_method' => $request['settlement_method'],
-            'meter_number' => $request['meter_number'],
-            'consumer_c_v_r' => $request['consumer_c_v_r'],
-            'data_access_c_v_r' => $request['data_access_c_v_r'],
-            'consumer_start_date' => Carbon::parse($request['consumer_start_date'],'UTC')->timezone('Europe/Copenhagen')->toDateString(),
-            'meter_reading_occurrence' => $request['meter_reading_occurrence'],
-            'balance_supplier_name' => $request['balance_supplier_name'],
-            'street_code' => $request['street_code'],
-            'street_name' => $request['street_name'],
-            'building_number' => $request['building_number'],
-            'floor_id' => $request['floor_id'],
-            'room_id' => $request['room_id'],
-            'city_name' => $request['city_name'],
-            'city_sub_division_name' => $request['city_sub_division_name'],
-            'municipality_code' => $request['municipality_code'],
-            'location_description' => $request['location_description'],
-            'first_consumer_party_name' => $request['first_consumer_party_name'],
-            'second_consumer_party_name' => $request['second_consumer_party_name'],
-            'hasRelation' => $request['hasRelation'],
-            'user_id' => auth('api')->user()->id,
+        return MeteringPoint::updateOrCreate(
+            [
+                'metering_point_id' => $request['metering_point_id']
+            ],
+            [
+                'parent_id' => Arr::get($validated, 'parent_id'),
+                'type_of_mp' => Arr::get($validated, 'type_of_mp'),
+                'settlement_method' => Arr::get($validated, 'settlement_method'),
+                'meter_number' => Arr::get($validated, 'meter_number'),
+                'consumer_c_v_r' => Arr::get($validated, 'consumer_c_v_r'),
+                'data_access_c_v_r' => Arr::get($validated, 'data_access_c_v_r'),
+                'consumer_start_date' => Carbon::parse($request['consumer_start_date'], 'UTC')->timezone('Europe/Copenhagen')->toDateString(),
+                'meter_reading_occurrence' => Arr::get($validated, 'meter_reading_occurrence'),
+                'balance_supplier_name' => Arr::get($validated, 'balance_supplier_name'),
+                'street_code' => Arr::get($validated, 'street_code'),
+                'street_name' => Arr::get($validated, 'street_name'),
+                'building_number' => Arr::get($validated, 'building_number'),
+                'floor_id' => Arr::get($validated, 'floor_id'),
+                'room_id' => Arr::get($validated, 'room_id'),
+                'city_name' => Arr::get($validated, 'city_name'),
+                'city_sub_division_name' => Arr::get($validated, 'city_sub_division_name'),
+                'municipality_code' => Arr::get($validated, 'municipality_code'),
+                'location_description' => Arr::get($validated, 'location_description'),
+                'first_consumer_party_name' => Arr::get($validated, 'first_consumer_party_name'),
+                'second_consumer_party_name' => Arr::get($validated, 'second_consumer_party_name'),
+                'hasRelation' => Arr::get($validated, 'hasRelation'),
+                'user_id' => auth('api')->user()->id,
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\MeteringPoint  $meteringPoint
+     * @param \App\Models\MeteringPoint $meteringPoint
      * @return \Illuminate\Http\Response
      */
     public function show(MeteringPoint $meteringPoint)
@@ -173,39 +153,15 @@ class MeteringPointController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\MeteringPoint  $meteringPoint
+     * @param UpdateMeteringPointRequest $request
+     * @param \App\Models\MeteringPoint $meteringPoint
      * @return MeteringPoint
      */
-    public function update(Request $request, MeteringPoint $meteringPoint) :MeteringPoint
+    public function update(UpdateMeteringPointRequest $request, MeteringPoint $meteringPoint): MeteringPoint
     {
-        $this->validate($request, [
-                'metering_point_id' => 'required|string|max:18',
-                'parent_id' => 'sometimes|nullable|max:18',
-                'type_of_mp' => 'required|string|max:3',
-                'settlement_method' => 'required|string|max:3',
-                'meter_number' => 'required|string|max:15',
-                'consumer_c_v_r' => 'sometimes|nullable|max:10',
-                'data_access_c_v_r' => 'sometimes|nullable|max:10',
-                'consumer_start_date' => 'sometimes|date',
-                'meter_reading_occurrence' => 'required|string|max:5',
-                'balance_supplier_name' => 'required|string',
-                'street_code' => 'required|string|max:4',
-                'street_name' => 'required|string|max:40',
-                'building_number' => 'required|string|max:6',
-                'floor_id' => 'sometimes|nullable|max:4',
-                'room_id' => 'sometimes|nullable|max:4',
-                'city_name' => 'required|string|max:25',
-                'city_sub_division_name' => 'sometimes|nullable|max:34',
-                'municipality_code' => 'required|string|max:3',
-                'location_description' => 'sometimes|nullable|max:132',
-                'first_consumer_party_name' => 'sometimes|nullable|max:132',
-                'second_consumer_party_name' => 'sometimes|nullable|max:132',
-                'hasRelation' => 'required|boolean',
-            ]
-        );
+        $validated = $request->validate($request->rules());
 
-        $meteringPoint->update($request->all());
+        $meteringPoint->update($validated);
 
         return $meteringPoint;
     }
@@ -213,10 +169,10 @@ class MeteringPointController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\MeteringPoint  $meteringPoint
+     * @param \App\Models\MeteringPoint $meteringPoint
      * @return MeteringPoint
      */
-    public function destroy(MeteringPoint $meteringPoint):MeteringPoint
+    public function destroy(MeteringPoint $meteringPoint): MeteringPoint
     {
         $meteringPoint->delete();
 
