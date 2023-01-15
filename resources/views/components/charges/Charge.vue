@@ -47,7 +47,7 @@
               </tr>
               </thead>
               <tbody>
-              <!-- Loop through each metering point record and display metering point details -->
+
               <tr v-for="charge in charges" :key="charge.id">
                 <td class="align-middle">{{ charge.type }}</td>
                 <td class="align-middle">{{ charge.name }}</td>
@@ -59,18 +59,22 @@
                 <td class="align-middle">{{ charge.price }}</td>
                 <td class="align-middle">{{ charge.quantity }}</td>
                 <td class="align-middle">
-                  <table class="table table-hover">
-                    <thead>
-                    <tr>Position</tr>
-                    <tr>Price</tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="chargePrice in charge.prices" :key="chargePrice.id">
-                      <td class="align-middle">{{ chargePrice.position }}</td>
-                      <td class="align-middle">{{ chargePrice.price }}</td>
-                    </tr>
-                    </tbody>
-                  </table>
+                  <div v-if="charge.prices">
+                    <table class="table table-hover">
+                      <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Price</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr v-for="chargePrice in charge.prices" :key="chargePrice.id">
+                        <td class="align-middle">{{ chargePrice.position }}</td>
+                        <td class="align-middle">{{ chargePrice.price }}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </td>
                 <td class="align-middle">
                   <a href="" @click.prevent="editCharge(charge)">
