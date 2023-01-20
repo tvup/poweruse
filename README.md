@@ -80,7 +80,7 @@ Populate with prices might be an idea - this also loads grid operators:
 ```bash
 sail artisan energidata:request-and-store-charge-groups
 ```
-#### Prices (may take a while)
+#### Prices (may take a while - expect >30min.)
 (tip, import csv database/fixtures/poweruse_datahub_price_lists.csv to table instead ("Remove problematic data" step won't be necessary if you do so))
 ```bash
 sail artisan energidata:request-and-store-datahub-prices
