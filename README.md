@@ -27,22 +27,25 @@ sail up -d
 ```
 [if you get "Docker is not running." this link might be helpful](https://docs.docker.com/engine/install/linux-postinstall/)
 
+if you get bind problems for e.g. tcp4 0.0.0.0:80 (http) or tcp4 0.0.0.0:3306 (mysql), you can change the forward ports in .env like these examples:
+```.dotenv
+APP_PORT=8001
+FORWARD_DB_PORT=3308
+```
+
 ## Generate a new App Key
 ```bash
 sail artisan key:generate
 ```
 
-Navigate to http://localhost/
+## Migrate
+```bash
+sail artisan migrate
+```
 
 ## Passport
 ```bash
 sail artisan passport:install
-```
-
-## Migrate
-
-```bash
-sail artisan migrate
 ```
 
 ## Build NPM & Vite components
@@ -50,6 +53,9 @@ sail artisan migrate
 ```bash
 sail npm run build 
 ```
+
+## Now is a good time to view all the nice stuff
+Navigate to http://localhost/ (if you set the APP_PORT, you should include this in link also, e.g.: http://localhost:8001 )
 
 ## Testing
 
