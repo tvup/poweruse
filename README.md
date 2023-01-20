@@ -51,11 +51,30 @@ sail artisan passport:install
 ## Build NPM & Vite components
 
 ```bash
+sail npm install
 sail npm run build 
 ```
 
 ## Now is a good time to view all the nice stuff
 Navigate to http://localhost/ (if you set the APP_PORT, you should include this in link also, e.g.: http://localhost:8001 )
+
+### Data
+Want some data to get things going?
+Populate with prices might be an idea - this also loads grid operators:
+#### Charge groups
+```bash
+sail artisan energidata:request-and-store-charge-groups
+```
+#### Prices (may take a while)
+(tip, import csv database/fixtures/poweruse_datahub_price_lists.csv to table instead ("Remove problematic data" step won't be necessary if you do so))
+```bash
+sail artisan energidata:request-and-store-datahub-prices
+```
+
+#### Remove problematic data
+```bash
+sail artisan datahubpricelist:remove-problematic-data
+```
 
 ## Testing
 
