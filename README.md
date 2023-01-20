@@ -19,16 +19,17 @@ composer install --ignore-platform-reqs
 cp .env.example .env
 ```
 
+## Start application
+
+### Docker (might take a while first time)
+```bash
+sail up -d
+```
+[if you get "Docker is not running." this link might be helpful](https://docs.docker.com/engine/install/linux-postinstall/)
+
 ## Generate a new App Key
 ```bash
 sail artisan key:generate
-```
-
-## Start application
-
-### Docker
-```bash
-sail up -d
 ```
 
 Navigate to http://localhost/
