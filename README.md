@@ -1,4 +1,19 @@
 # Introduction
+This project provides an application with tools to
+- calculate electricity bill before it's received from your vendor
+- get totalprices for next hours
+- calculate price for certain, inputted data today
+- get data about electriciy installation, charges, etc.
+
+Data is retrieved from multiple sources:
+- Eloverblik
+- EnergiDataService
+- Ewii
+- Smart-Me
+
+## Based on Laravel 9
+
+# Installation
 <p>It's strongly recommended that you add an alias to your bash/zsh config</p>
 <p>It will make it much easier to run the sail command</p>
 
