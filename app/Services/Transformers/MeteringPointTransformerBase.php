@@ -2,21 +2,22 @@
 
 namespace App\Services\Transformers;
 
+use App\Enums\SourceEnum;
 use App\Models\MeteringPoint;
 
 class MeteringPointTransformerBase
 {
-    public function transform(array|MeteringPoint $data, string $source): MeteringPoint
+    public function transform(array|MeteringPoint $data, SourceEnum $source): MeteringPoint
     {
         switch ($source) {
-            case 'DATAHUB':
+            case SourceEnum::DATAHUB:
                 return $this->transformDatahubData($data);
-            case 'EWII':
+            case SourceEnum::EWII:
                 return $this->transformEwiiData($data);
-            case 'POWERUSE':
+            case SourceEnum::POWERUSE:
                 return $this->transformPowerUseData($data);
             default:
-                throw new \InvalidArgumentException($source . ' is not a valid source for this transformation');
+                throw new \InvalidArgumentException($source->value . ' is not a valid source for this transformation');
         }
     }
 
@@ -61,7 +62,7 @@ class MeteringPointTransformerBase
         $meteringPoint->room_id = $data[0]['Address']['Side'];
         $meteringPoint->city_name = $data[0]['Address']['City'];
         $meteringPoint->municipality_code = $data[0]['Address']['MunicipalityCode'];
-        $meteringPoint->source = 'EWII';
+        $meteringPoint->source = SourceEnum::EWII;
 
         return $meteringPoint;
     }

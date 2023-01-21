@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SourceEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,7 +31,7 @@ class Charge extends BaseModel
 
     protected $appends = ['source'];
 
-    public function getSourceAttribute(): ?string
+    public function getSourceAttribute(): ?SourceEnum
     {
         return $this->exists ? self::SOURCE : null;
     }

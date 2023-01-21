@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SourceEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,5 +12,5 @@ class BaseModel extends Model
 
     protected $guarded = [];
 
-    public const SOURCE = 'POWERUSE';
+    public const SOURCE = SourceEnum::POWERUSE;
 }

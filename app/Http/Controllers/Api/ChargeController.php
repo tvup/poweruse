@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\SourceEnum;
 use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreChargeRequest;
@@ -73,7 +74,7 @@ class ChargeController extends Controller
         try {
             //If user isn't logged in, only possibility to get charges is through DATAHUB
             //And we can't get from DB if no meteringPointId is present
-            $source = ($this->userIsLoggedIn && $meteringPointId) ? null : 'DATAHUB';
+            $source = ($this->userIsLoggedIn && $meteringPointId) ? null : SourceEnum::DATAHUB;
             $data = $this->meteringDataService->getCharges($source, ['refresh_token' => $refresh_token], $user);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {

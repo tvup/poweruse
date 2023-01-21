@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SourceEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $hasRelation
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property string|null $source
+ * @property SourceEnum|null $source
  * @property MeteringPoint[] $children
  * @property User $user
  * @property Charge[] $charges
@@ -42,12 +43,16 @@ class MeteringPoint extends BaseModel
 
     protected $appends = ['source'];
 
-    public function getSourceAttribute(): ?string
+    protected $casts = [
+        'source' => SourceEnum::class,
+    ];
+
+    public function getSourceAttribute(): ?SourceEnum
     {
         return $this->exists ? self::SOURCE : (array_key_exists('source', $this->attributes) ? $this->attributes['source'] : null);
     }
 
-    public function setSourceAttribute(string $value): void
+    public function setSourceAttribute(SourceEnum $value): void
     {
         $this->attributes['source'] = $value;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SourceEnum;
 use App\Exceptions\DataUnavailableException;
 use App\Exceptions\MissingDataException;
 use App\Models\Elspotprices;
@@ -101,13 +102,13 @@ class ElController extends Controller
         try {
             switch ($request->de) {
                 case 'on':
-                    $dataSource = 'EWII';
+                    $dataSource = SourceEnum::EWII;
                     break;
                 default:
-                    $dataSource = 'DATAHUB';
+                    $dataSource = SourceEnum::DATAHUB;
             }
             $refreshToken = null;
-            if ($dataSource == 'DATAHUB' && !$request->token) {
+            if ($dataSource == SourceEnum::DATAHUB && !$request->token) {
                 if (auth()->check() && auth()->user()->refresh_token) {
                     $refreshToken = auth()->user()->refresh_token;
                 } else {
@@ -234,14 +235,14 @@ class ElController extends Controller
         try {
             switch ($request->de) {
                 case 'on':
-                    $dataSource = 'EWII';
+                    $dataSource = SourceEnum::EWII;
                     break;
                 default:
-                    $dataSource = 'DATAHUB';
+                    $dataSource = SourceEnum::DATAHUB;
             }
 
             $refreshToken = null;
-            if ($dataSource == 'DATAHUB' && !$request->token) {
+            if ($dataSource == SourceEnum::DATAHUB && !$request->token) {
                 if (auth()->check() && auth()->user()->refresh_token) {
                     $refreshToken = auth()->user()->refresh_token;
                 } else {
@@ -252,14 +253,14 @@ class ElController extends Controller
             }
 
             switch ($dataSource) {
-                case 'EWII':
+                case SourceEnum::EWII:
                     $data = $this->meteringDataService->getMeteringPointDataFromEwii($request->ewiiemail, $request->ewiipassword);
                     break;
-                case 'DATAHUB':
+                case SourceEnum::DATAHUB:
                     $data = $this->meteringDataService->getMeteringPointData($refreshToken);
                     break;
                 default:
-                    throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
+                    throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource->value);
             }
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
@@ -316,7 +317,7 @@ class ElController extends Controller
                 config('services.smartme.username'),
                 config('services.smartme.paasword')];
 
-            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', $smartMeCredentials);
+            return $this->getPreliminaryInvoice($refreshToken, null, SourceEnum::DATAHUB, $smartMeCredentials);
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if ($code == 503 || $code == 500) {
@@ -330,7 +331,7 @@ class ElController extends Controller
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
 
-                    return $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, 'EWII', $smartMeCredentials);
+                    return $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, SourceEnum::EWII, $smartMeCredentials);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
@@ -344,7 +345,7 @@ class ElController extends Controller
     public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
     {
         try {
-            return $this->getPreliminaryInvoice($refreshToken, null, 'DATAHUB', null, $start_date, $end_date, $price_area);
+            return $this->getPreliminaryInvoice($refreshToken, null, SourceEnum::DATAHUB, null, $start_date, $end_date, $price_area);
         } catch (ElOverblikApiException $e) {
             if ($e->getCode() == 400) {
                 $message = 'Request for mertering data at eloverblik failed' . PHP_EOL;
@@ -380,7 +381,7 @@ class ElController extends Controller
     /**
      * @param string $refreshToken
      * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
-     * @param string|null $dataSource
+     * @param SourceEnum|null $dataSource
      * @param array|null $smartMeCredentials
      * @param string|null $start_date
      * @param string|null $end_date
@@ -392,7 +393,7 @@ class ElController extends Controller
      * @throws ElOverblikApiException
      * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, string $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, SourceEnum $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -431,7 +432,7 @@ class ElController extends Controller
                 ->header('Content-Type', 'text/plain');
         }
 
-        list($subscriptions, $tariffs) = $this->meteringDataService->getCharges($refreshToken);
+        list($subscriptions, $tariffs) = $this->meteringDataService->getCharges(null, ['refresh_token'=>$refreshToken]);
 
         $list = [];
 
@@ -571,10 +572,10 @@ class ElController extends Controller
 
         try {
             switch ($dataSource) {
-                case 'EWII':
+                case SourceEnum::EWII:
                     $data = $this->meteringDataService->getDataFromEwii($request->start_date, $end_date, $request->ewiiEmail, $request->ewiiPassword);
                     break;
-                case 'DATAHUB':
+                case SourceEnum::DATAHUB:
                     if (!$request->token) {
                         if (auth()->check() && auth()->user()->refresh_token) {
                             $refreshToken = auth()->user()->refresh_token;

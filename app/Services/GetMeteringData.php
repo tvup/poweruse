@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\SourceEnum;
 use App\Models\Charge;
 use App\Models\MeteringPoint;
 use App\Models\User;
@@ -40,7 +41,7 @@ class GetMeteringData
             $energiOverblikApi->setDebug(true);
         }
 
-        $meteringPointId = $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refreshToken])->metering_point_id;
+        $meteringPointId = $this->getMeteringPointData(SourceEnum::DATAHUB, ['refresh_token' => $refreshToken])->metering_point_id;
 
         try {
             if (!$start_date) {
@@ -100,21 +101,21 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPointData(?string $source = null, array $credentials = [], User $user = null): ?MeteringPoint
+    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ?MeteringPoint
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
         $ewiiPassword = isset($credentials['ewii_password']) ? $credentials['ewii_password'] : null;
         $exception = null;
         switch ($source) {
-            case 'DATAHUB':
+            case SourceEnum::DATAHUB:
                 if (!$refresh_token) {
                     throw new \InvalidArgumentException('When retrieving data from Datahub, refresh token must be provided');
                 }
                 $key = 'meteringPointData ' . $refresh_token;
                 $meteringPoint = $this->getMeteringPointFromCache($key);
                 if ($meteringPoint) {
-                    return MeteringPointTransformer::transform($meteringPoint, 'DATAHUB');
+                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::DATAHUB);
                 }
                 $energiOverblikApi = $this->getEloverblikApi($refresh_token);
                 $response = null;
@@ -124,22 +125,22 @@ class GetMeteringData
                     $exception = $e;
                 }
                 if ($response) {
-                    $response['source'] = 'DATAHUB';
+                    $response['source'] = SourceEnum::DATAHUB;
                     $expiresAt = now()->addDay()->startOfDay();
                     cache([$key => $response], $expiresAt);
 
-                    return MeteringPointTransformer::transform($response, 'DATAHUB');
+                    return MeteringPointTransformer::transform($response, SourceEnum::DATAHUB);
                 }
-            case 'EWII':
+            case SourceEnum::EWII:
                 if (!$ewiiUserName || !$ewiiPassword) {
-                    if ($source == 'EWII') {
+                    if ($source == SourceEnum::EWII) {
                         throw new \InvalidArgumentException('When retrieving data from EWII, username and password must be provided');
                     }
                 } else {
                     $key = 'meteringPointData ' . $ewiiUserName;
                     $meteringPoint = $this->getMeteringPointFromCache($key);
                     if ($meteringPoint) {
-                        return MeteringPointTransformer::transform($meteringPoint, 'EWII');
+                        return MeteringPointTransformer::transform($meteringPoint, SourceEnum::EWII);
                     }
                     try {
                         $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
@@ -153,7 +154,7 @@ class GetMeteringData
                             $expiresAt = now()->addDay()->startOfDay();
                             cache([$key => $response1], $expiresAt);
 
-                            return MeteringPointTransformer::transform($response1, 'EWII');
+                            return MeteringPointTransformer::transform($response1, SourceEnum::EWII);
                         }
                     } catch (EwiiApiException $e) {
                         if (!$exception) {
@@ -162,10 +163,10 @@ class GetMeteringData
                     }
                 }
 
-            case 'POWERUSE':
+            case SourceEnum::POWERUSE:
             default:
                 if (!$user) {
-                    if ($source == 'POWERUSE') {
+                    if ($source == SourceEnum::POWERUSE) {
                         throw new \InvalidArgumentException('When retrieving data from POWERUSE, user must be provided');
                     } else {
                         break;
@@ -174,7 +175,7 @@ class GetMeteringData
                 $meteringPoint = MeteringPoint::whereUserId($user->id)->first();
 
                 if ($meteringPoint) {
-                    return MeteringPointTransformer::transform($meteringPoint, 'POWERUSE');
+                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::POWERUSE);
                 } else {
                     if (!$exception) {
                         $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, ['where user_id is ' . $user->id]);
@@ -220,7 +221,7 @@ class GetMeteringData
         return $responseCombined;
     }
 
-    public function getCharges(?string $source = 'DATAHUB', array $credentials = [], User $user = null): array
+    public function getCharges(?SourceEnum $source = SourceEnum::DATAHUB, array $credentials = [], User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);
@@ -232,10 +233,10 @@ class GetMeteringData
 
         //If no source is selected, we have a free choice
         //We'll start with Datahub in such case.
-        $dataSource = null !== $source ? $source : 'DATAHUB';
+        $dataSource = null !== $source ? $source : SourceEnum::DATAHUB;
 
         switch ($dataSource) {
-            case 'DATAHUB':
+            case SourceEnum::DATAHUB:
                 if ($refresh_token) {
                     try {
                         $energiOverblikApi = $this->getEloverblikApi($refresh_token);
@@ -266,12 +267,12 @@ class GetMeteringData
                         return [$subscriptions, $tariffs, $fees];
                     }
                 } else {
-                    if ($source == 'DATAHUB') {
+                    if ($source == SourceEnum::DATAHUB) {
                         //DATAHUB was explicit chosen as provider, but refresh token isn't provided
                         throw new \InvalidArgumentException('When querying Datahub a refresh token must be provided');
                     }
                 }
-            case 'POWERUSE':
+            case SourceEnum::POWERUSE:
             default:
                 $subscriptions = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Abonnement')->get();
                 $tariffs = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Tarif')->get();
