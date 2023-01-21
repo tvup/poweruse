@@ -44,7 +44,7 @@ class MeteringPointController extends Controller
         $credentials = [
             'refresh_token' => $refresh_token ?? $user?->refresh_token,
             'ewii_user_name' => request()->get('ewii_user_name') ?? null,
-            'ewii_password' => request()->get('ewii_password') ?? null
+            'ewii_password' => request()->get('ewii_password') ?? null,
         ];
 
         try {
@@ -82,7 +82,7 @@ class MeteringPointController extends Controller
                         ->header('Content-Type', 'text/plain');
             }
         }
-        if($data) {
+        if ($data) {
             $data = collect([$data]);
             $data = PaginationHelper::paginate($data, 10);
 
@@ -90,8 +90,6 @@ class MeteringPointController extends Controller
         } else {
             return response()->json();
         }
-
-
     }
 
     /**

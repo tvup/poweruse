@@ -19,9 +19,7 @@ class GetMeteringData
 
     public function __construct()
     {
-
     }
-
 
     /**
      * @param string $start_date
@@ -40,7 +38,7 @@ class GetMeteringData
             $energiOverblikApi->setDebug(true);
         }
 
-        $meteringPointId =  $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refreshToken])->metering_point_id;
+        $meteringPointId = $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refreshToken])->metering_point_id;
 
         try {
             if (!$start_date) {
@@ -128,6 +126,7 @@ class GetMeteringData
                     $response['source'] = 'DATAHUB';
                     $expiresAt = now()->addDay()->startOfDay();
                     cache([$key => $response], $expiresAt);
+
                     return $this->transform($response);
                 }
             case 'EWII':
@@ -150,10 +149,10 @@ class GetMeteringData
 //                    $response2 = $ewiiApi->getConsumptionMetersRaw();
 //                    $responseCombined = array_merge($response1, $response2);
 
-
                     if ($response1) {
                         $expiresAt = now()->addDay()->startOfDay();
                         cache([$key => $response1], $expiresAt);
+
                         return $this->transform1($response1);
                     }
                 } catch (EwiiApiException $e) {
@@ -223,7 +222,7 @@ class GetMeteringData
         $energiOverblikApi = $this->getEloverblikApi($refresh_token);
         $energiOverblikApi->token($refresh_token);
 
-        $meteringPointId = $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refresh_token])->metering_point_id;;
+        $meteringPointId = $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refresh_token])->metering_point_id;
 
         try {
             list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
@@ -260,6 +259,7 @@ class GetMeteringData
             $energiOverblikApi->token($refreshToken);
             $this->energiOverblikApi = $energiOverblikApi;
         }
+
         return $this->energiOverblikApi;
     }
 
@@ -280,7 +280,8 @@ class GetMeteringData
         return cache($key) ?? null;
     }
 
-    private function transform(array $data): MeteringPoint {
+    private function transform(array $data): MeteringPoint
+    {
         $meteringPoint = app()->make(MeteringPoint::class);
         $meteringPoint->metering_point_id = $data['meteringPointId'];
         $meteringPoint->type_of_mp = $data['typeOfMP'];
@@ -304,10 +305,12 @@ class GetMeteringData
         $meteringPoint->second_consumer_party_name = $data['secondConsumerPartyName'];
         $meteringPoint->hasRelation = $data['hasRelation'];
         $meteringPoint->source = $data['source'];
+
         return $meteringPoint;
     }
 
-    private function transform1(array $data): MeteringPoint {
+    private function transform1(array $data): MeteringPoint
+    {
         $meteringPoint = app()->make(MeteringPoint::class);
         //$meteringPoint->metering_point_id = $data['meteringPointId'];
         //$meteringPoint->type_of_mp = $data['typeOfMP'];
@@ -331,6 +334,7 @@ class GetMeteringData
         //$meteringPoint->second_consumer_party_name = $data['secondConsumerPartyName'];
         //$meteringPoint->hasRelation = $data['hasRelation'];
         $meteringPoint->source = 'EWII';
+
         return $meteringPoint;
     }
 }
