@@ -1,4 +1,19 @@
 # Introduction
+This project provides an application with tools to
+- calculate electricity bill before it's received from your vendor
+- get totalprices for next hours
+- calculate price for certain, inputted data today
+- get data about electriciy installation, charges, etc.
+
+Data is retrieved from multiple sources:
+- Eloverblik
+- EnergiDataService
+- Ewii
+- Smart-Me
+
+## Based on Laravel 9
+
+# Installation
 <p>It's strongly recommended that you add an alias to your bash/zsh config</p>
 <p>It will make it much easier to run the sail command</p>
 
@@ -19,35 +34,61 @@ composer install --ignore-platform-reqs
 cp .env.example .env
 ```
 
+## Start application
+
+### Docker (might take a while first time)
+```bash
+sail up -d
+```
+[if you get "Docker is not running." this link might be helpful](https://docs.docker.com/engine/install/linux-postinstall/)
+
+if you get bind problems for e.g. tcp4 0.0.0.0:80 (http) or tcp4 0.0.0.0:3306 (mysql), you can change the forward ports in .env like these examples:
+```.dotenv
+APP_PORT=8001
+FORWARD_DB_PORT=3308
+```
+
 ## Generate a new App Key
 ```bash
 sail artisan key:generate
 ```
 
-## Start application
-
-### Docker
+## Migrate
 ```bash
-sail up -d
+sail artisan migrate
 ```
-
-Navigate to http://localhost/
 
 ## Passport
 ```bash
 sail artisan passport:install
 ```
 
-## Migrate
-
-```bash
-sail artisan migrate
-```
-
 ## Build NPM & Vite components
 
 ```bash
+sail npm install
 sail npm run build 
+```
+
+## Now is a good time to view all the nice stuff
+Navigate to http://localhost/ (if you set the APP_PORT, you should include this in link also, e.g.: http://localhost:8001 )
+
+### Data
+Want some data to get things going?
+Populate with prices might be an idea - this also loads grid operators:
+#### Charge groups
+```bash
+sail artisan energidata:request-and-store-charge-groups
+```
+#### Prices (may take a while - expect ~75min.)
+(tip, import csv database/fixtures/poweruse_datahub_price_lists.csv to table instead ("Remove problematic data" step won't be necessary if you do so))
+```bash
+sail artisan energidata:request-and-store-datahub-prices
+```
+
+#### Remove problematic data
+```bash
+sail artisan datahubpricelist:remove-problematic-data
 ```
 
 ## Testing
