@@ -15,8 +15,18 @@
           <div class="card-tools" v-else>
             <div class="input-group input-group-sm">
               <form>
+                <input type="radio" id="source" name="source_datahub" value="DATAHUB" v-model="source">
+                <label for="source_datahub">Datahub</label><br>
+                <input type="radio" id="source" name="source_ewii" value="EWII" v-model="source">
+                <label for="source_ewii">EWII</label><br>
+                <input type="radio" id="source" name="source_poweruse" value="POWERUSE" v-model="source">
+                <label for="source_poweruse">POWERUSE</label><br>
                 <label class="col-sm-3 control-label" for="token">Refresh token</label>
                 <input class="form-control" id="token" type="text" v-model="token">
+                <label class="col-sm-3 control-label" for="ewii_user_name">Ewii user name</label>
+                <input class="form-control" id="ewii_user_name" type="text" v-model="ewii_user_name">
+                <label class="col-sm-3 control-label" for="ewii_password">Ewii password</label>
+                <input class="form-control" id="ewii_password" type="text" v-model="ewii_password">
                 <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
                 <button type="submit" class="btn btn-primary"
                         @click.prevent="getMeteringPointsFromToken()"><i class="fas fa-bolt"></i> Get metering points
@@ -157,6 +167,12 @@
                         <label class="col-sm-3 control-label" for="inputHasRelation">Has relation</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputHasRelation" type="text" v-model="form.hasRelation">
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-3 control-label" for="inputSource">Source</label>
+                        <div class="col-sm-10">
+                          <input class="form-control" id="inputSource" type="text" v-model="form.source">
                         </div>
                       </div>
                       <div class="form-group">
@@ -430,12 +446,16 @@ export default {
         location_description: '',
         first_consumer_party_name: '',
         second_consumer_party_name: '',
-        hasRelation: ''
+        hasRelation: '',
+        source: ''
       }),
       isFormCreateMeteringPointMode: true,
       last_page: 0,
       total: 0,
-      token: ''
+      token: '',
+      source: 'DATAHUB',
+      ewii_user_name: '',
+      ewii_password: ''
     }
   },
 
@@ -460,8 +480,7 @@ export default {
       });
     },
     getMeteringPointsFromToken() {
-
-      axios.get('api/meteringPoint/'+this.token).then(data => {
+      axios.get('api/meteringPoint/'+this.token+'?source=' + this.source + '&ewii_user_name=' + this.ewii_user_name + '&ewii_password=' + this.ewii_password).then(data => {
         this.metering_points = data.data.data;
         this.last_page = data.data.last_page;
         this.total = data.data.total;

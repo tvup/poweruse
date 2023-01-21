@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $hasRelation
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property string|null $source
  * @property MeteringPoint[] $children
  * @property User $user
  * @property Charge[] $charges
@@ -43,7 +44,12 @@ class MeteringPoint extends BaseModel
 
     public function getSourceAttribute(): string|null
     {
-        return $this->exists ? self::SOURCE : null;
+        return $this->exists ? self::SOURCE : $this->attributes['source'];
+    }
+
+    public function setSourceAttribute(string $value)
+    {
+        $this->attributes['source'] = $value;
     }
 
     /**

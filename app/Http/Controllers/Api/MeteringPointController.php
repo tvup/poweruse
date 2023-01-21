@@ -7,11 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMeteringPointRequest;
 use App\Http\Requests\UpdateMeteringPointRequest;
 use App\Models\MeteringPoint;
+use App\Models\User;
 use App\Services\GetMeteringData;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Tvup\ElOverblikApi\ElOverblikApiException;
+use Tvup\EwiiApi\EwiiApiException;
 
 class MeteringPointController extends Controller
 {
@@ -36,22 +38,17 @@ class MeteringPointController extends Controller
      */
     public function index(string $refresh_token = null)
     {
-        if ($this->userIsLoggedIn) {
-            if (!$refresh_token) {
-                $data = MeteringPoint::whereUserId(auth('api')->user()->id)->orderBy('id', 'desc')->paginate(10);
-                if ($data->count() != 0) {
-                    return response()->json($data);
-                }
-                $refresh_token = auth('api')->user()->refresh_token;
-            }
-        }
-
-        if (!$refresh_token) {
-            return response('', 200);
-        }
+        $source = request()->get('source') ?? null;
+        /** @var User $user */
+        $user = $this->userIsLoggedIn ? auth('api')->user() : null;
+        $credentials = [
+            'refresh_token' => $refresh_token ?? ($user?->refresh_token),
+            'ewii_user_name' => request()->get('ewii_user_name') ?? null,
+            'ewii_password' => request()->get('ewii_password') ?? null
+        ];
 
         try {
-            $data = $this->meteringDataService->getMeteringPointData($refresh_token);
+            $data = $this->meteringDataService->getMeteringPointData($source, $credentials, $user);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -68,34 +65,33 @@ class MeteringPointController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        } catch (EwiiApiException $e) {
+            switch ($e->getCode()) {
+                case 400:
+                case 503:
+                    $error = $e->getErrors();
+                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $message = '<strong>Request for mertering-point data at eloverblik failed</strong>' . '<br/>';
+                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+
+                    return response()->json(['error' => $message]);
+                case 401:
+                    return response()->json(['error' => 'Failed - cannot login with token']);
+                default:
+                    return response($e->getMessage(), $e->getCode())
+                        ->header('Content-Type', 'text/plain');
+            }
         }
-        $meteringPoint = app()->make(MeteringPoint::class);
-        $meteringPoint->metering_point_id = $data['meteringPointId'];
-        $meteringPoint->type_of_mp = $data['typeOfMP'];
-        $meteringPoint->settlement_method = $data['settlementMethod'];
-        $meteringPoint->meter_number = $data['meterNumber'];
-        $meteringPoint->consumer_c_v_r = $data['consumerCVR'];
-        $meteringPoint->data_access_c_v_r = $data['dataAccessCVR'];
-        $meteringPoint->consumer_start_date = $data['consumerStartDate'];
-        $meteringPoint->meter_reading_occurrence = $data['meterReadingOccurrence'];
-        $meteringPoint->balance_supplier_name = $data['balanceSupplierName'];
-        $meteringPoint->street_code = $data['streetCode'];
-        $meteringPoint->street_name = $data['streetName'];
-        $meteringPoint->building_number = $data['buildingNumber'];
-        $meteringPoint->floor_id = $data['floorId'];
-        $meteringPoint->room_id = $data['roomId'];
-        $meteringPoint->city_name = $data['cityName'];
-        $meteringPoint->city_sub_division_name = $data['citySubDivisionName'];
-        $meteringPoint->municipality_code = $data['municipalityCode'];
-        $meteringPoint->location_description = $data['locationDescription'];
-        $meteringPoint->first_consumer_party_name = $data['firstConsumerPartyName'];
-        $meteringPoint->second_consumer_party_name = $data['secondConsumerPartyName'];
-        $meteringPoint->hasRelation = $data['hasRelation'];
+        if($data) {
+            $data = collect([$data]);
+            $data = PaginationHelper::paginate($data, 10);
 
-        $data = collect([$meteringPoint]);
-        $data = PaginationHelper::paginate($data, 10);
+            return response()->json($data);
+        } else {
+            return response()->json();
+        }
 
-        return response()->json($data);
+
     }
 
     /**
@@ -135,7 +131,7 @@ class MeteringPointController extends Controller
                 'second_consumer_party_name' => Arr::get($validated, 'second_consumer_party_name'),
                 'hasRelation' => Arr::get($validated, 'hasRelation'),
                 'user_id' => auth('api')->user()->id,
-        ]
+            ]
         );
     }
 
