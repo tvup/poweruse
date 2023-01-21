@@ -115,7 +115,7 @@ class GetPreliminaryInvoice
             }
 
             if ($smartMeCredentials) {
-                $source = ($source ?: '') . ', Smart-Me';
+                $source = $source->value . ', Smart-Me';
                 $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->addDay()->startOfDay();
                 if (count($meterData) > 0) {

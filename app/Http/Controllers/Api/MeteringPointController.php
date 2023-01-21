@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\SourceEnum;
 use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMeteringPointRequest;
@@ -10,6 +11,7 @@ use App\Models\Charge;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
+use App\Services\Transformers\Facades\MeteringPointTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -40,7 +42,8 @@ class MeteringPointController extends Controller
      */
     public function index(?string $refresh_token = null)
     {
-        $source = request()->get('source') ?? null;
+        $source = request()->get('source') ?? SourceEnum::POWERUSE;
+        $source = is_string($source) ? SourceEnum::from($source) : $source;
         /** @var User|null $user */
         $user = $this->userIsLoggedIn ? auth('api')->user() : null;
         $credentials = [
@@ -87,6 +90,7 @@ class MeteringPointController extends Controller
             return response()->json(['error' => $e->getMessage()]);
         }
         if ($data) {
+            $data = MeteringPointTransformer::prepareForJson($data);
             $data = collect([$data]);
             $data = PaginationHelper::paginate($data, 10);
 
@@ -100,13 +104,13 @@ class MeteringPointController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreMeteringPointRequest $request
-     * @return MeteringPoint
+     * @return array
      */
-    public function store(StoreMeteringPointRequest $request)
+    public function store(StoreMeteringPointRequest $request):array
     {
         $validated = $request->validated();
 
-        return MeteringPoint::updateOrCreate(
+        return MeteringPointTransformer::prepareForJson(MeteringPoint::updateOrCreate(
             [
                 'metering_point_id' => $request['metering_point_id'],
             ],
@@ -134,7 +138,7 @@ class MeteringPointController extends Controller
                 'hasRelation' => Arr::get($validated, 'hasRelation'),
                 'user_id' => auth('api')->user()->id,
             ]
-        );
+        ));
     }
 
     /**

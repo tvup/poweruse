@@ -21,6 +21,35 @@ class MeteringPointTransformerBase
         }
     }
 
+    public function prepareForJson(array|MeteringPoint $data): array
+    {
+        $meteringPoint = [];
+        $meteringPoint['metering_point_id'] = $data->metering_point_id;
+        $meteringPoint['type_of_mp'] = $data->type_of_mp;
+        $meteringPoint['settlement_method'] = $data->settlement_method;
+        $meteringPoint['meter_number'] = $data->meter_number;
+        $meteringPoint['consumer_c_v_r'] = $data->consumer_c_v_r;
+        $meteringPoint['data_access_c_v_r'] = $data->data_access_c_v_r;
+        $meteringPoint['consumer_start_date'] = $data->consumer_start_date;
+        $meteringPoint['meter_reading_occurrence'] = $data->meter_reading_occurrence;
+        $meteringPoint['balance_supplier_name'] = $data->balance_supplier_name;
+        $meteringPoint['street_code'] = $data->street_code;
+        $meteringPoint['street_name'] = $data->street_name;
+        $meteringPoint['building_number'] = $data->building_number;
+        $meteringPoint['floor_id'] = $data->floor_id;
+        $meteringPoint['room_id'] = $data->room_id;
+        $meteringPoint['city_name'] = $data->city_name;
+        $meteringPoint['city_sub_division_name'] = $data->city_sub_division_name;
+        $meteringPoint['municipality_code'] = $data->municipality_code;
+        $meteringPoint['location_description'] = $data->location_description;
+        $meteringPoint['first_consumer_party_name'] = $data->first_consumer_party_name;
+        $meteringPoint['second_consumer_party_name ='] = $data->second_consumer_party_name;
+        $meteringPoint['hasRelation'] = $data->hasRelation;
+        $meteringPoint['source'] = SourceEnum::DATAHUB->value;
+
+        return $meteringPoint;
+    }
+
     private function transformDatahubData(array $data): MeteringPoint
     {
         $meteringPoint = app()->make(MeteringPoint::class);

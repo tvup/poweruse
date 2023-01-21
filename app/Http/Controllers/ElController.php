@@ -558,12 +558,12 @@ class ElController extends Controller
 
     public function getConsumption(Request $request) : Response|RedirectResponse
     {
-        $dataSource = $request->source;
+        $dataSource = SourceEnum::from($request->source);
         $addSmartMe = $request->smart_me === 'on';
         $end_date = $request->end_date;
 
         $smartMe = null;
-        if ($dataSource === 'SMART_ME' || $addSmartMe) {
+        if ($dataSource === SourceEnum::SMARTME || $addSmartMe) {
             $smartMe = [];
             $smartMe['username'] = $request->smartmeuser;
             $smartMe['password'] = $request->smartmepassword;
@@ -589,19 +589,19 @@ class ElController extends Controller
                     }
                     $data = $this->meteringDataService->getData($request->start_date, $end_date, $refreshToken);
                     break;
-                case 'SMART-ME':
+                case SourceEnum::SMARTME:
                     $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
                     break;
                 default:
-                    throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource);
+                    throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource->value);
             }
 
             if ($request->smart_me) {
-                $dataSource = ($dataSource ?: '') . ', Smart-Me';
+                $dataSource = $dataSource->value . ', Smart-Me';
                 $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
 
-                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date);
+                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date, $smartMe);
                 $data = array_merge($data, $smartMeIntervalFromDate);
             }
 
