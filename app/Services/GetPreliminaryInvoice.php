@@ -156,6 +156,10 @@ class GetPreliminaryInvoice
             $charges = cache($key);
             if (!$charges) {
                 //It's not possible to retrieve charges through ewii, see if they can be retrieved through POWERUSE
+                if($dataSource == 'EWII' && !$user) {
+                    $message = 'When EWII is queried, a metering point with charges has to be saved to POWERUSE beforehand';
+                    throw new MissingDataException($message);
+                }
                 $dataSource = $dataSource == 'EWII' ? 'POWERUSE' : $dataSource;
                 try {
                     $charges = $this->meteringDataService->getCharges($dataSource, ['refresh_token'=>$refreshToken], $user);
