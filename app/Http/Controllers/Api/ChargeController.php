@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\SourceEnum;
 use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreChargeRequest;
@@ -10,6 +11,7 @@ use App\Models\Charge;
 use App\Models\ChargePrice;
 use App\Models\MeteringPoint;
 use App\Services\GetMeteringData;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -42,8 +44,10 @@ class ChargeController extends Controller
         $meteringPointId = '';
         $meteringPoint = null;
 
+        $user = $this->userIsLoggedIn ? auth('api')->user() : null;
+
         if ($this->userIsLoggedIn) {
-            $meteringPoint = MeteringPoint::whereUserId(auth('api')->user()->id)->first();
+            $meteringPoint = MeteringPoint::whereUserId($user->id)->first();
             $meteringPointId = $meteringPoint ? $meteringPoint->id : '';
             if (!$refresh_token) {
                 if ($meteringPoint) {
@@ -58,7 +62,7 @@ class ChargeController extends Controller
 
                         return response()->json($data);
                     }
-                    $refresh_token = auth('api')->user()->refresh_token;
+                    $refresh_token = $user->refresh_token;
                 }
             }
         }
@@ -68,7 +72,10 @@ class ChargeController extends Controller
         }
 
         try {
-            $data = $this->meteringDataService->getCharges($refresh_token);
+            //If user isn't logged in, only possibility to get charges is through DATAHUB
+            //And we can't get from DB if no meteringPointId is present
+            $source = ($this->userIsLoggedIn && $meteringPointId) ? null : SourceEnum::DATAHUB;
+            $data = $this->meteringDataService->getCharges($source, ['refresh_token' => $refresh_token], $user);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -84,6 +91,8 @@ class ChargeController extends Controller
                 default:
                     return response()->json(['message' => $e->getMessage(), 'code' => $e->getCode()]);
             }
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()]);
         }
         array_push($data, [['metering_point_id' => $meteringPointId]]);
         array_push($data, [['metering_point_gsrn' => $meteringPoint ? $meteringPoint->metering_point_id : '']]);

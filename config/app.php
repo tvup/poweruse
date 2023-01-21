@@ -180,6 +180,7 @@ return [
 
         App\Providers\EwiiApiServiceProvider::class,
         App\Providers\ElOverblikApiServiceProvider::class,
+        App\Providers\MeteringPointServiceProvider::class,
 
     ],
 
@@ -217,6 +218,7 @@ return [
         'Lang' => Illuminate\Support\Facades\Lang::class,
         'Log' => Illuminate\Support\Facades\Log::class,
         'Mail' => Illuminate\Support\Facades\Mail::class,
+        'MeteringPointTransformer' => App\Services\Transformers\Facades\MeteringPointTransformer::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
         'Password' => Illuminate\Support\Facades\Password::class,
         'Queue' => Illuminate\Support\Facades\Queue::class,
