@@ -569,24 +569,22 @@ class ElController extends Controller
             $smartMe['id'] = $request->smartmeid;
         }
 
-        if (!$request->token) {
-            if (auth()->check() && auth()->user()->refresh_token) {
-                $refreshToken = auth()->user()->refresh_token;
-            } else {
-                $message = 'Request token should be provided either on input or saved on user';
-
-                return redirect('consumption')->with('error', $message)->withInput($request->all());
-            }
-        } else {
-            $refreshToken = $request->token;
-        }
-
         try {
             switch ($dataSource) {
                 case 'EWII':
                     $data = $this->meteringDataService->getDataFromEwii($request->start_date, $end_date, $request->ewiiEmail, $request->ewiiPassword);
                     break;
                 case 'DATAHUB':
+                    if (!$request->token) {
+                        if (auth()->check() && auth()->user()->refresh_token) {
+                            $refreshToken = auth()->user()->refresh_token;
+                        } else {
+                            $message = 'Request token should be provided either on input or saved on user';
+                            return redirect('consumption')->with('error', $message)->withInput($request->all());
+                        }
+                    } else {
+                        $refreshToken = $request->token;
+                    }
                     $data = $this->meteringDataService->getData($request->start_date, $end_date, $refreshToken);
                     break;
                 case 'SMART-ME':

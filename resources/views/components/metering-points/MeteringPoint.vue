@@ -177,9 +177,9 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary" v-if="authUser && metering_point.source != 'Poweruse'" @click="createMeteringPoint();">Save to poweruse</button>
-                          <button type="button" class="btn btn-info" v-if="authUser && metering_point.source == 'Poweruse'" @click.prevent="editMeteringPoint(metering_point);">Update</button>
-                          <button type="button" class="btn btn-secondary" v-if="authUser && metering_point.source == 'Poweruse'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
+                          <button type="button" class="btn btn-primary" v-if="authUser && metering_point.source != 'POWERUSE'" @click="createMeteringPoint();">Save to poweruse</button>
+                          <button type="button" class="btn btn-info" v-if="authUser && metering_point.source == 'POWERUSE'" @click.prevent="editMeteringPoint(metering_point);">Update</button>
+                          <button type="button" class="btn btn-secondary" v-if="authUser && metering_point.source == 'POWERUSE'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
                         </div>
                       </div>
                     </form>

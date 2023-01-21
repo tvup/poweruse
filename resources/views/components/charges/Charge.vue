@@ -77,11 +77,11 @@
                   </div>
                 </td>
                 <td class="align-middle">
-                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'"
+                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'POWERUSE'"
                      @click.prevent="editCharge(charge)">
                     <i class="fa fa-edit"></i>
                   </a>
-                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'Poweruse'"
+                  <a href="" v-if="authUser && (charges[0] ? charges[0].source : '') == 'POWERUSE'"
                      @click.prevent="deleteCharge(charge.id)">
                     <i class="fa fa-trash"></i>
                   </a>
@@ -95,11 +95,11 @@
                           :next-text="$t('Next')"></pagination>
             </nav>
             <button type="button" class="btn btn-primary"
-                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') != 'Poweruse'"
+                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
                     @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
             </button>
             <button type="button" class="btn btn-danger"
-                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'Poweruse'"
+                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'POWERUSE'"
                     @click.prevent="deleteCharges(metering_point_id)">{{ $t('Delete all charges in DB') }}
             </button>
           </div>

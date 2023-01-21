@@ -6,10 +6,12 @@ use App\Helpers\PaginationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMeteringPointRequest;
 use App\Http\Requests\UpdateMeteringPointRequest;
+use App\Models\Charge;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -81,6 +83,8 @@ class MeteringPointController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()]);
         }
         if ($data) {
             $data = collect([$data]);
@@ -164,12 +168,24 @@ class MeteringPointController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\MeteringPoint $meteringPoint
-     * @return MeteringPoint
+     * @return JsonResponse
      */
-    public function destroy(MeteringPoint $meteringPoint): MeteringPoint
+    public function destroy(MeteringPoint $meteringPoint): JsonResponse
     {
+        $charges = $meteringPoint->charges;
+        $charges = $charges ?? [];
+
+        /** @var Charge $charge */
+        foreach ($charges as $charge) {
+            $chargePrices = $charge->chargePrices;
+            $chargePrices ?? [];
+            foreach ($chargePrices as $chargePrice) {
+                $chargePrice->delete();
+            }
+            $charge->delete();
+        }
         $meteringPoint->delete();
 
-        return $meteringPoint;
+        return response()->json();
     }
 }

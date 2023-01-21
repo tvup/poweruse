@@ -178,7 +178,8 @@ class GetMeteringData
                     return MeteringPointTransformer::transform($meteringPoint, 'POWERUSE');
                 } else {
                     if (!$exception) {
-                        $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, [$user->id => User::class]);
+                        /** @var ModelNotFoundException $myex */
+                        $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, ['where user_id is ' . $user->id]);
                     }
                 }
         }
@@ -263,7 +264,7 @@ class GetMeteringData
                         $e = $exception;
                     }
                     $fees = [];
-                    if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
+                    if (count($subscriptions) > 0 && count($tariffs) > 0) {
                         return [$subscriptions, $tariffs, $fees];
                     }
                 } else {
