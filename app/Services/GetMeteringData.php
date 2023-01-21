@@ -15,9 +15,9 @@ use Tvup\EwiiApi\EwiiApiInterface;
 
 class GetMeteringData
 {
-    private ElOverblikApiInterface|null $energiOverblikApi = null;
+    private ?ElOverblikApiInterface $energiOverblikApi = null;
 
-    private EwiiApiInterface|null $ewiiApi;
+    private ?EwiiApiInterface $ewiiApi;
 
     public function __construct()
     {
@@ -100,7 +100,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPointData(string|null $source = null, array $credentials = [], User $user = null): MeteringPoint|null
+    public function getMeteringPointData(?string $source = null, array $credentials = [], User $user = null): ?MeteringPoint
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
@@ -220,7 +220,7 @@ class GetMeteringData
         return $responseCombined;
     }
 
-    public function getCharges(string|null $source = 'DATAHUB', array $credentials = [], User $user = null): array
+    public function getCharges(?string $source = 'DATAHUB', array $credentials = [], User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);
@@ -312,7 +312,7 @@ class GetMeteringData
         return $this->ewiiApi;
     }
 
-    private function getMeteringPointFromCache(string $key): array|null
+    private function getMeteringPointFromCache(string $key): ?array
     {
         return cache($key) ?? null;
     }

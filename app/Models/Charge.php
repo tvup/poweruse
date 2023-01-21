@@ -30,7 +30,7 @@ class Charge extends BaseModel
 
     protected $appends = ['source'];
 
-    public function getSourceAttribute(): string|null
+    public function getSourceAttribute(): ?string
     {
         return $this->exists ? self::SOURCE : null;
     }

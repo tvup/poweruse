@@ -38,7 +38,7 @@ class MeteringPointController extends Controller
      *
      * @return \Illuminate\Http\Response | JsonResponse
      */
-    public function index(string|null $refresh_token = null)
+    public function index(?string $refresh_token = null)
     {
         $source = request()->get('source') ?? null;
         /** @var User|null $user */
