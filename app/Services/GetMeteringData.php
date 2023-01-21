@@ -136,7 +136,6 @@ class GetMeteringData
                         throw new \InvalidArgumentException('When retrieving data from EWII, username and password must be provided');
                     }
                 } else {
-
                     $key = 'meteringPointData ' . $ewiiUserName;
                     $meteringPoint = $this->getMeteringPointFromCache($key);
                     if ($meteringPoint) {
@@ -238,7 +237,7 @@ class GetMeteringData
 
         switch ($dataSource) {
             case 'DATAHUB':
-                if($refresh_token) {
+                if ($refresh_token) {
                     try {
                         $energiOverblikApi = $this->getEloverblikApi($refresh_token);
                         list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);

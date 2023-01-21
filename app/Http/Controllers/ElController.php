@@ -580,6 +580,7 @@ class ElController extends Controller
                             $refreshToken = auth()->user()->refresh_token;
                         } else {
                             $message = 'Request token should be provided either on input or saved on user';
+
                             return redirect('consumption')->with('error', $message)->withInput($request->all());
                         }
                     } else {

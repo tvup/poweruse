@@ -13,14 +13,18 @@
             </div>
           </div>
           <div class="card-tools" v-else>
-            <div class="input-group input-group-sm">
-              <form>
-                <label class="col-sm-3 control-label" for="token">{{ $t('Refresh token') }}</label>
-                <input class="form-control" id="token" type="text" v-model="token">
-                <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-                <button type="submit" class="btn btn-primary"
-                        @click.prevent="getChargesFromToken()"><i class="fas fa-bolt"></i>{{ $t('Get charges') }}
-                </button>
+            <div class="input-group-sm">
+              <form class="form">
+                <div class="mb-3">
+                  <label class="col-sm-3 control-label" for="token">{{ $t('Refresh token') }}</label>
+                  <input class="col-lg-4 form-rounded" id="token" type="text" v-model="token">
+                </div>
+                <div class="mb-3">
+                  <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
+                  <button type="submit" class="btn btn-primary"
+                          @click.prevent="getChargesFromToken()"><i class="fas fa-bolt"></i>{{ $t('Get charges') }}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

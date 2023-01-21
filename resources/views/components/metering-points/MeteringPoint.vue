@@ -36,15 +36,15 @@
               </div>
               <div class="mb-3">
                   <label class="form-label form-control-lg" for="token" v-if="source=='DATAHUB'">Refresh token</label>
-                  <input class="col-xs-3" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
+                  <input class="col-xs-3 form-rounded" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
               </div>
               <div class="mb-3">
                   <label class="form-label form-control-lg" for="ewii_user_name" v-if="source=='EWII'">Ewii user name</label>
-                  <input class="col-xs-3" id="ewii_user_name" type="text" v-if="source=='EWII'" v-model="ewii_user_name">
+                  <input class="col-xs-3 form-rounded" id="ewii_user_name" type="text" v-if="source=='EWII'" v-model="ewii_user_name">
               </div>
               <div class="mb-3">
                   <label class="form-label form-control-lg" for="ewii_password" v-if="source=='EWII'">Ewii password</label>
-                  <input class="col-xs-3" id="ewii_password" type="text" v-if="source=='EWII'" v-model="ewii_password">
+                  <input class="col-xs-3 form-rounded" id="ewii_password" type="text" v-if="source=='EWII'" v-model="ewii_password">
               </div>
                 <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <div class="mb-3">
