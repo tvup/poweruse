@@ -56,6 +56,26 @@
   "Remove": "Fjern",
   "Update": "Opdater",
   "Save changes": "Gem ændringer",
-  "Calculation of energy data": "Beregning af energi-data"
-
+  "Calculation of energy data": "Beregning af energi-data",
+  "Add metering point manually": "Tilføj målepunkt manuelt",
+  "Get metering point from external source": "Hent målepunkt fra ekstern kilde",
+  "Source": "Kilde",
+  "Get metering points": "Hent målepunkter",
+  "Ewii user name": "Ewii brugernavn",
+  "Ewii password": "Ewii adgangskode",
+  "Metering point id": "Målepunktsid",
+  "Type of mp": "Målepunktstype",
+  "Type of MP": "Målepunktstype",
+  "Type of metering point": "Målepunktstype",
+  "Settlement method": "Afregningsform",
+  "Meter number": "Målernummer",
+  "Consumer CVR": "Forbruger CVR",
+  "Data access CVR": "Data access CVR",
+  "Balance supplier name": "Elleverandør",
+  "Street code": "Vejkode",
+  "Street name": "Vejnavn",
+  "Building number": "Bygningsnummer",
+  "Floor id": "Etage",
+  "Room id": "Værelse",
+  "City name": "Bynavn"
 }
