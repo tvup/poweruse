@@ -19,6 +19,7 @@
         "barryvdh/laravel-ide-helper": "^2.12",
         "fakerphp/faker": "^1.20",
         "friendsofphp/php-cs-fixer": "^3.13",
+        "knuckleswtf/scribe": "^4.12",
         "laravel/breeze": "^1.15",
         "laravel/homestead": "^13.0",
         "laravel/sail": "^1.16",
