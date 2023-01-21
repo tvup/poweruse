@@ -156,7 +156,7 @@ class GetPreliminaryInvoice
             $charges = cache($key);
             if (!$charges) {
                 //If we only have EWII as source and there's no user logged in, we're out of luck
-                if($dataSource == 'EWII' && !$user) {
+                if ($dataSource == 'EWII' && !$user) {
                     $message = 'When EWII is queried, a metering point with charges has to be saved to POWERUSE beforehand';
                     throw new MissingDataException($message);
                 }
