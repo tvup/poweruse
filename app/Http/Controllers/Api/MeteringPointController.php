@@ -36,13 +36,13 @@ class MeteringPointController extends Controller
      *
      * @return \Illuminate\Http\Response | JsonResponse
      */
-    public function index(string $refresh_token = null)
+    public function index(string|null $refresh_token = null)
     {
         $source = request()->get('source') ?? null;
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->userIsLoggedIn ? auth('api')->user() : null;
         $credentials = [
-            'refresh_token' => $refresh_token ?? ($user?->refresh_token),
+            'refresh_token' => $refresh_token ?? $user?->refresh_token,
             'ewii_user_name' => request()->get('ewii_user_name') ?? null,
             'ewii_password' => request()->get('ewii_password') ?? null
         ];

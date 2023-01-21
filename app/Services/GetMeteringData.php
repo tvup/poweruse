@@ -17,14 +17,9 @@ class GetMeteringData
 
     private EwiiApiInterface|null $ewiiApi;
 
-    private string $meteringPoint;
-
-    /**
-     * @param ElOverblikApiInterface|null $energiOverblikApi
-     * @param EwiiApiInterface|null $ewiiApi
-     */
     public function __construct()
     {
+
     }
 
 
@@ -280,12 +275,12 @@ class GetMeteringData
         return $this->ewiiApi;
     }
 
-    private function getMeteringPointFromCache(string $key)
+    private function getMeteringPointFromCache(string $key): array|null
     {
         return cache($key) ?? null;
     }
 
-    private function transform($data) {
+    private function transform(array $data): MeteringPoint {
         $meteringPoint = app()->make(MeteringPoint::class);
         $meteringPoint->metering_point_id = $data['meteringPointId'];
         $meteringPoint->type_of_mp = $data['typeOfMP'];
@@ -312,7 +307,7 @@ class GetMeteringData
         return $meteringPoint;
     }
 
-    private function transform1($data) {
+    private function transform1(array $data): MeteringPoint {
         $meteringPoint = app()->make(MeteringPoint::class);
         //$meteringPoint->metering_point_id = $data['meteringPointId'];
         //$meteringPoint->type_of_mp = $data['typeOfMP'];
