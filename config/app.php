@@ -180,6 +180,7 @@ return [
 
         App\Providers\EwiiApiServiceProvider::class,
         App\Providers\ElOverblikApiServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
     ],
 
