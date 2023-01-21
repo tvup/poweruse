@@ -13,26 +13,47 @@
             </div>
           </div>
           <div class="card-tools" v-else>
-            <div class="input-group input-group-sm">
-              <form>
-                <input type="radio" id="source" name="source_datahub" value="DATAHUB" v-model="source">
-                <label for="source_datahub">Datahub</label><br>
-                <input type="radio" id="source" name="source_ewii" value="EWII" v-model="source">
-                <label for="source_ewii">EWII</label><br>
-                <input type="radio" id="source" name="source_poweruse" value="POWERUSE" v-model="source">
-                <label for="source_poweruse">POWERUSE</label><br>
-                <label class="col-sm-3 control-label" for="token">Refresh token</label>
-                <input class="form-control" id="token" type="text" v-model="token">
-                <label class="col-sm-3 control-label" for="ewii_user_name">Ewii user name</label>
-                <input class="form-control" id="ewii_user_name" type="text" v-model="ewii_user_name">
-                <label class="col-sm-3 control-label" for="ewii_password">Ewii password</label>
-                <input class="form-control" id="ewii_password" type="text" v-model="ewii_password">
+            <form class="form">
+              <div class="mb-3">
+                <label class="form-check form-check-inline">Source: </label>
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label" for="source_datahub">
+                    Datahub
+                  </label>
+                  <input class="form-check-input" type="radio" id="source" name="source_datahub" value="DATAHUB" v-model="source">
+                </div>
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label" for="source_ewii">
+                    EWII
+                  </label>
+                  <input class="form-check-input" type="radio" id="source" name="source_ewii" value="EWII" v-model="source">
+                </div>
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label" for="source_poweruse"> POWERUSE
+                  </label>
+                  <input class="form-check-input" type="radio" id="source" name="source_poweruse" value="POWERUSE" v-model="source">
+                </div>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label form-control-lg" for="token" v-if="source=='DATAHUB'">Refresh token</label>
+                  <input class="col-xs-3" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label form-control-lg" for="ewii_user_name" v-if="source=='EWII'">Ewii user name</label>
+                  <input class="col-xs-3" id="ewii_user_name" type="text" v-if="source=='EWII'" v-model="ewii_user_name">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label form-control-lg" for="ewii_password" v-if="source=='EWII'">Ewii password</label>
+                  <input class="col-xs-3" id="ewii_password" type="text" v-if="source=='EWII'" v-model="ewii_password">
+              </div>
                 <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-                <button type="submit" class="btn btn-primary"
-                        @click.prevent="getMeteringPointsFromToken()"><i class="fas fa-bolt"></i> Get metering points
-                </button>
-              </form>
-            </div>
+              <div class="mb-3">
+                  <button type="submit" class="btn btn-primary"
+                          @click.prevent="getMeteringPointsFromToken()"><i class="fas fa-bolt"></i> Get metering points
+                  </button>
+              </div>
+
+            </form>
           </div>
         </div>
         <div v-if="total==1">
@@ -46,7 +67,8 @@
                       <div class="form-group">
                         <label class="col-sm-3 control-label" for="inputMeteringPointId">Metering point id</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputMeteringPointId" type="text" v-model="form.metering_point_id">
+                          <input class="form-control" id="inputMeteringPointId" type="text"
+                                 v-model="form.metering_point_id">
                         </div>
                       </div>
                       <div class="form-group">
@@ -58,7 +80,8 @@
                       <div class="form-group">
                         <label class="col-sm-3 control-label" for="inputSettlementMethod">Settlement method</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputSettlementMethod" type="text" v-model="form.settlement_method">
+                          <input class="form-control" id="inputSettlementMethod" type="text"
+                                 v-model="form.settlement_method">
                         </div>
                       </div>
                       <div class="form-group">
@@ -76,25 +99,31 @@
                       <div class="form-group">
                         <label class="col-sm-3 control-label" for="inputDataAccessCVR">Data access CVR</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputDataAccessCVR" type="text" v-model="form.data_access_c_v_r">
+                          <input class="form-control" id="inputDataAccessCVR" type="text"
+                                 v-model="form.data_access_c_v_r">
                         </div>
                       </div>
                       <div class="form-group">
                         <label class="col-sm-3 control-label" for="inputConsumerStartDate">Consumer start date</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputConsumerStartDate" type="text" v-model="form.consumer_start_date">
+                          <input class="form-control" id="inputConsumerStartDate" type="text"
+                                 v-model="form.consumer_start_date">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputMeterReadingOccurrence">Meter reading occurrence</label>
+                        <label class="col-sm-3 control-label" for="inputMeterReadingOccurrence">Meter reading
+                          occurrence</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputMeterReadingOccurrence" type="text" v-model="form.meter_reading_occurrence">
+                          <input class="form-control" id="inputMeterReadingOccurrence" type="text"
+                                 v-model="form.meter_reading_occurrence">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputBalanceSupplierName">Balance supplier name</label>
+                        <label class="col-sm-3 control-label" for="inputBalanceSupplierName">Balance supplier
+                          name</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputBalanceSupplierName" type="text" v-model="form.balance_supplier_name">
+                          <input class="form-control" id="inputBalanceSupplierName" type="text"
+                                 v-model="form.balance_supplier_name">
                         </div>
                       </div>
                       <div class="form-group">
@@ -112,7 +141,8 @@
                       <div class="form-group">
                         <label class="col-sm-3 control-label" for="inputBuildingNumber">Building number</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputBuildingNumber" type="text" v-model="form.building_number">
+                          <input class="form-control" id="inputBuildingNumber" type="text"
+                                 v-model="form.building_number">
                         </div>
                       </div>
                       <div class="form-group">
@@ -134,33 +164,42 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputCitySubDivisionName">City sub division name</label>
+                        <label class="col-sm-3 control-label" for="inputCitySubDivisionName">City sub division
+                          name</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputCitySubDivisionName" type="text" v-model="form.city_sub_division_name">
+                          <input class="form-control" id="inputCitySubDivisionName" type="text"
+                                 v-model="form.city_sub_division_name">
                         </div>
                       </div>
                       <div class="form-group">
                         <label class="col-sm-3 control-label" for="inputMunicipalityCode">Municipality code</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputMunicipalityCode" type="text" v-model="form.municipality_code">
+                          <input class="form-control" id="inputMunicipalityCode" type="text"
+                                 v-model="form.municipality_code">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputLocationDescription">Location description</label>
+                        <label class="col-sm-3 control-label" for="inputLocationDescription">Location
+                          description</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputLocationDescription" type="text" v-model="form.location_description">
+                          <input class="form-control" id="inputLocationDescription" type="text"
+                                 v-model="form.location_description">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputFirstConsumerPartyName">First consumer party name</label>
+                        <label class="col-sm-3 control-label" for="inputFirstConsumerPartyName">First consumer party
+                          name</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputFirstConsumerPartyName" type="text" v-model="form.first_consumer_party_name">
+                          <input class="form-control" id="inputFirstConsumerPartyName" type="text"
+                                 v-model="form.first_consumer_party_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputSecondConsumerPartyName">Second consumer party name</label>
+                        <label class="col-sm-3 control-label" for="inputSecondConsumerPartyName">Second consumer party
+                          name</label>
                         <div class="col-sm-10">
-                          <input class="form-control" id="inputSecondConsumerPartyName" type="text" v-model="form.second_consumer_party_name">
+                          <input class="form-control" id="inputSecondConsumerPartyName" type="text"
+                                 v-model="form.second_consumer_party_name">
                         </div>
                       </div>
                       <div class="form-group">
@@ -177,9 +216,18 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary" v-if="authUser && metering_point.source != 'POWERUSE'" @click="createMeteringPoint();">Save to poweruse</button>
-                          <button type="button" class="btn btn-info" v-if="authUser && metering_point.source == 'POWERUSE'" @click.prevent="editMeteringPoint(metering_point);">Update</button>
-                          <button type="button" class="btn btn-secondary" v-if="authUser && metering_point.source == 'POWERUSE'" @click="deleteMeteringPoint(metering_point.id)">Delete</button>
+                          <button type="button" class="btn btn-primary"
+                                  v-if="authUser && metering_point.source != 'POWERUSE'"
+                                  @click="createMeteringPoint();">Save to poweruse
+                          </button>
+                          <button type="button" class="btn btn-info"
+                                  v-if="authUser && metering_point.source == 'POWERUSE'"
+                                  @click.prevent="editMeteringPoint(metering_point);">Update
+                          </button>
+                          <button type="button" class="btn btn-secondary"
+                                  v-if="authUser && metering_point.source == 'POWERUSE'"
+                                  @click="deleteMeteringPoint(metering_point.id)">Delete
+                          </button>
                         </div>
                       </div>
                     </form>
@@ -265,14 +313,17 @@
     </div>
 
     <!-- Modal containing dynamic form for adding/updating metering point details. -->
-    <div class="modal fade" id="meteringPointModal" tabindex="-1" role="dialog" aria-labelledby="meteringPointModalLabel"
+    <div class="modal fade" id="meteringPointModal" tabindex="-1" role="dialog"
+         aria-labelledby="meteringPointModalLabel"
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <!-- Show/hide headings dynamically based on /isFormCreateMeteringPointMode value (true/false) -->
-            <h5 v-show="isFormCreateMeteringPointMode" class="modal-title" id="meteringPointModalLabel">Add new metering point</h5>
-            <h5 v-show="!isFormCreateMeteringPointMode" class="modal-title" id="meteringPointModalLabel">Update metering point</h5>
+            <h5 v-show="isFormCreateMeteringPointMode" class="modal-title" id="meteringPointModalLabel">Add new metering
+              point</h5>
+            <h5 v-show="!isFormCreateMeteringPointMode" class="modal-title" id="meteringPointModalLabel">Update metering
+              point</h5>
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
@@ -474,17 +525,17 @@ export default {
         this.metering_points = data.data.data;
         this.last_page = data.data.last_page ?? 0;
         this.total = data.data.total;
-        if(this.total==1) {
+        if (this.total == 1) {
           this.form.fill(this.metering_points[0]);
         }
       });
     },
     getMeteringPointsFromToken() {
-      axios.get('api/meteringPoint/'+this.token+'?source=' + this.source + '&ewii_user_name=' + this.ewii_user_name + '&ewii_password=' + this.ewii_password).then(data => {
+      axios.get('api/meteringPoint/' + this.token + '?source=' + this.source + '&ewii_user_name=' + this.ewii_user_name + '&ewii_password=' + this.ewii_password).then(data => {
         this.metering_points = data.data.data;
         this.last_page = data.data.last_page;
         this.total = data.data.total;
-        if(this.total==1) {
+        if (this.total == 1) {
           this.form.fill(this.metering_points[0]);
         }
       });
@@ -503,8 +554,8 @@ export default {
 
         //sweet alert 2
         swal.fire({
-            icon: 'success',
-            title: 'Metering Point created successfully'
+          icon: 'success',
+          title: 'Metering Point created successfully'
         })
 
         this.getMeteringPoints();
@@ -529,8 +580,8 @@ export default {
 
         //sweet alert 2
         swal.fire({
-            icon: 'success',
-            title: 'Metering point updated successfully'
+          icon: 'success',
+          title: 'Metering point updated successfully'
         })
 
         this.getMeteringPoints();
@@ -542,37 +593,36 @@ export default {
     deleteMeteringPoint(id) {
       // sweet alert confirmation
       swal.fire({
-          title: 'Are you sure?',
-          text: "You won't be able to revert this!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!'
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
-          // confirm delete?
-          if (result.value) {
-              // request delete
-              this.form.delete('api/meteringPoint/' + id, {
-              }).then(() => {
-                  // sweet alert success
-                  swal.fire(
-                      'Deleted!',
-                      'Metering point has been deleted.',
-                      'success'
-                  )
+        // confirm delete?
+        if (result.value) {
+          // request delete
+          this.form.delete('api/meteringPoint/' + id, {}).then(() => {
+            // sweet alert success
+            swal.fire(
+                'Deleted!',
+                'Metering point has been deleted.',
+                'success'
+            )
 
-                  this.getMeteringPoints(); // reload table metering_points
-              }).catch(() => {
-                  // sweet alert fail
-                  swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: 'Something went wrong!',
-                      footer: '<a href>Why do I have this issue?</a>'
-                  })
-              });
-          }
+            this.getMeteringPoints(); // reload table metering_points
+          }).catch(() => {
+            // sweet alert fail
+            swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+              footer: '<a href>Why do I have this issue?</a>'
+            })
+          });
+        }
       })
     }
   },
