@@ -392,7 +392,7 @@ class ElController extends Controller
      * @throws ElOverblikApiException
      * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, string $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, string $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();

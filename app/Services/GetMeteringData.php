@@ -177,7 +177,6 @@ class GetMeteringData
                     return MeteringPointTransformer::transform($meteringPoint, 'POWERUSE');
                 } else {
                     if (!$exception) {
-                        /** @var ModelNotFoundException $myex */
                         $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, ['where user_id is ' . $user->id]);
                     }
                 }

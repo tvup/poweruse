@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\DataUnavailableException;
 use App\Models\DatahubPriceList;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Str;
@@ -54,7 +55,7 @@ class GetPreliminaryInvoice
      * @throws ElOverblikApiException
      * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, $user = null): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
     {
         $overhead = str_replace(',', '.', $overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {

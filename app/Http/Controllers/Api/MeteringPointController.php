@@ -172,13 +172,11 @@ class MeteringPointController extends Controller
      */
     public function destroy(MeteringPoint $meteringPoint): JsonResponse
     {
-        $charges = $meteringPoint->charges;
-        $charges = $charges ?? [];
+        $charges = $meteringPoint->charges ?? [];
 
         /** @var Charge $charge */
         foreach ($charges as $charge) {
-            $chargePrices = $charge->chargePrices;
-            $chargePrices ?? [];
+            $chargePrices = $charge->chargePrices ?? [];
             foreach ($chargePrices as $chargePrice) {
                 $chargePrice->delete();
             }
