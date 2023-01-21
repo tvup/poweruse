@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\OutputApiExceptionMessages;
+use App\Enums\SourceEnum;
 use App\Services\GetPreliminaryInvoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
@@ -48,7 +49,7 @@ class CalculateUpcommingInvoice extends Command
      */
     public function handle()
     {
-        $dataSource = 'DATAHUB';
+        $dataSource = SourceEnum::DATAHUB;
         $ewiiCredentials = [
             'ewiiEmail' => '',
             'ewiiPassword' => '',

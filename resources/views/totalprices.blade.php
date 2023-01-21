@@ -1,16 +1,10 @@
 @extends("layouts.app")
 
 @section('content')
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Total prices') }}
-        </h2>
-    </x-slot>
-    <div class="py-12">
+    <div class="container mt-4">
         @if(@isset($chart))
-
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
-                <div class="bg-white  graph-output">
+                <div class="bg-white graph-output">
                     <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
                         <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
                             <div class="ml-4 mt-2">
@@ -20,21 +14,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-8">
-                        <canvas id="userChart" class="rounded shadow"></canvas>
-                    </div>
+                    <canvas id="userChart" class="rounded shadow"></canvas>
                 </div>
             </div>
         @endif
-
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <x-totalprices.form :companies="$companies"/>
+        <div class="card">
+            <div class="card-header font-weight-bold">
+                <h2 class="card-title text-lg leading-6 font-medium text-gray-900">
+                    {{ __('Get total prices for next hours') }}
+                </h2>
             </div>
+            <x-totalprices.form :companies="$companies"/>
         </div>
     </div>
 @endsection
-@if(@isset($chart))>
+@if(@isset($chart))
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <!-- CHARTS -->
     <script type="module">
@@ -98,7 +92,7 @@
     if ('serviceWorker' in navigator) {
         // Register a service worker hosted at the root of the
         // site using the default scope.
-        navigator.serviceWorker.register('{{ Vite::asset('resources/js/serviceworker.js') }}' ).then(function(registration) {
+        navigator.serviceWorker.register('{{ Vite::asset('resources/js/serviceworker.js') }}').then(function (registration) {
         });
     } else {
     }
