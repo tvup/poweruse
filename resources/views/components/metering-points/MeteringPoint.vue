@@ -3,16 +3,20 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Metering point</h3>
-          <div class="card-tools" v-if="authUser && authUser.refresh_token">
-            <div class="input-group input-group-sm">
+          <h2 class="card-title">Metering point</h2>
+          <hr v-if="authUser && authUser!='no'" />
+          <h4 class="card-title" v-if="authUser && authUser!='no'">Add metering point manually</h4>
+          <div class="card-tools" v-if="authUser && authUser!='no'">
+            <div class="mb-3">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
                       @click.prevent="showModal"><i class="fas fa-bolt"></i> Add new metering point
               </button>
             </div>
           </div>
-          <div class="card-tools" v-else>
+          <hr />
+          <h4 class="card-title">Get metering point from external source</h4>
+          <div class="card-tools">
             <form class="form">
               <div class="mb-3">
                 <label class="form-check form-check-inline">Source: </label>
@@ -28,13 +32,13 @@
                   </label>
                   <input class="form-check-input" type="radio" id="source" name="source_ewii" value="EWII" v-model="source">
                 </div>
-                <div class="form-check form-check-inline">
+                <div class="form-check form-check-inline" v-if="authUser && authUser!='no'">
                   <label class="form-check-label" for="source_poweruse"> POWERUSE
                   </label>
                   <input class="form-check-input" type="radio" id="source" name="source_poweruse" value="POWERUSE" v-model="source">
                 </div>
               </div>
-              <div class="mb-3">
+              <div class="mb-3" v-if="authUser.refresh_token==null || !authUser || authUser=='no'">
                   <label class="form-label form-control-lg" for="token" v-if="source=='DATAHUB'">Refresh token</label>
                   <input class="col-xs-3 form-rounded" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
               </div>
@@ -217,7 +221,7 @@
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                           <button type="button" class="btn btn-primary"
-                                  v-if="authUser && metering_point.source != 'POWERUSE'"
+                                  v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
                                   @click="createMeteringPoint();">Save to poweruse
                           </button>
                           <button type="button" class="btn btn-info"

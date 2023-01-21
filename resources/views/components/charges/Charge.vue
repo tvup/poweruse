@@ -4,7 +4,7 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title"> {{ $t('Charges') }} - {{ metering_point_gsrn }}</h3>
-          <div class="card-tools" v-if="authUser && authUser.refresh_token">
+          <div class="card-tools" v-if="authUser && authUser!='no'">
             <div class="input-group input-group-sm">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#chargeModal"
@@ -12,10 +12,11 @@
               </button>
             </div>
           </div>
-          <div class="card-tools" v-else>
+          <hr />
+          <div class="card-tools">
             <div class="input-group-sm">
               <form class="form">
-                <div class="mb-3">
+                <div class="mb-3" v-if="!authUser.refresh_token">
                   <label class="col-sm-3 control-label" for="token">{{ $t('Refresh token') }}</label>
                   <input class="col-lg-4 form-rounded" id="token" type="text" v-model="token">
                 </div>
@@ -99,7 +100,7 @@
                           :next-text="$t('Next')"></pagination>
             </nav>
             <button type="button" class="btn btn-primary"
-                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
+                    v-if="authUser && authUser!='no' && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
                     @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
             </button>
             <button type="button" class="btn btn-danger"
