@@ -1,20 +1,12 @@
 @props(['companies'])
 
-<div>
-    <div x-data="{ open: true }" class="overflow-hidden">
-        <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
-            <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
-                <div class="ml-4 mt-2">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        {{ __('Grid area options') }}
-                    </h3>
-                </div>
-            </div>
-        </div>
-
-        <div x-show="open" x-cloak class="divide-y divide-gray-200 py-4 px-4">
-            <div class="pt-8">
-
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    {{ __('Grid area options') }}
+                </h3>
                 <form name="add-blog-post-form" id="add-blog-post-form" method="post"
                       action="{{route('totalprices.process')}}">
                     {{ csrf_field() }}
@@ -41,14 +33,17 @@
                     </div>
 
 
-
                     <button type="submit" class="btn btn-primary">
                         {{ __('Get')}}
                     </button>
                 </form>
             </div>
+
+            <div>
+                <div class="card-body table-responsive p-0">
+
+                </div>
+            </div>
         </div>
     </div>
-
-
 </div>

@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
+use App\Enums\SourceEnum;
 use App\Exceptions\DataUnavailableException;
+use App\Exceptions\MissingDataException;
 use App\Models\DatahubPriceList;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -44,7 +48,7 @@ class GetPreliminaryInvoice
      * @param string $end_date
      * @param string $price_area
      * @param array|null $smartMeCredentials
-     * @param string|null $dataSource
+     * @param SourceEnum|null $dataSource
      * @param string|null $refreshToken
      * @param array|null $ewiiCredentials
      * @param float|string $subscription_at_elsupplier
@@ -54,7 +58,7 @@ class GetPreliminaryInvoice
      * @throws ElOverblikApiException
      * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
     {
         $overhead = str_replace(',', '.', $overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
@@ -73,37 +77,37 @@ class GetPreliminaryInvoice
         $source = $dataSource;
 
         switch ($dataSource) {
-            case 'EWII':
+            case SourceEnum::EWII:
                 if (!$ewiiCredentials || (!array_key_exists('ewiiEmail', $ewiiCredentials) && !array_key_exists('ewiiPassword', $ewiiCredentials))) {
                     throw new \InvalidArgumentException('EWII was selected as provider, but email and password for EWII-account wasn\'t given');
                 }
                 $key = $ewiiCredentials['ewiiEmail'] . ' ' . $start_date . ' ' . $end_date;
                 break;
-            case 'DATAHUB':
+            case SourceEnum::DATAHUB:
             case null:
                 if (!$refreshToken) {
                     throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
                 }
                 $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
-                $source = 'DATAHUB';
+                $source = SourceEnum::DATAHUB;
                 break;
             default:
-                throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
+                throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource->value);
         }
         $meterData = cache($key);
 
         try {
             if (!$meterData) {
                 switch ($dataSource) {
-                    case 'EWII':
+                    case SourceEnum::EWII:
                         $meterData = $this->meteringDataService->getDataFromEwii($start_date, $end_date, $ewiiCredentials['ewiiEmail'], $ewiiCredentials['ewiiPassword']);
                         break;
-                    case 'DATAHUB':
+                    case SourceEnum::DATAHUB:
                     case null:
                         $meterData = $this->meteringDataService->getData($start_date, $end_date, $refreshToken);
                         break;
                     default:
-                        throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
+                        throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource->value);
                 }
 
                 $expiresAt = Carbon::now()->addDay()->startOfDay();
@@ -111,7 +115,7 @@ class GetPreliminaryInvoice
             }
 
             if ($smartMeCredentials) {
-                $source = ($source ?: '') . ', Smart-Me';
+                $source = $source->value . ', Smart-Me';
                 $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->addDay()->startOfDay();
                 if (count($meterData) > 0) {
@@ -141,23 +145,32 @@ class GetPreliminaryInvoice
             }
 
             switch ($dataSource) {
-                case 'EWII':
-                    $key = 'charges ' . $ewiiCredentials['ewiiEmail'];
-                    break;
-                case 'DATAHUB':
+                case SourceEnum::EWII:
+                case SourceEnum::DATAHUB:
                 case null:
-                    $key = 'charges ' . $refreshToken;
+                    $key = $refreshToken ? 'charges ' . $refreshToken : null;
                     break;
                 default:
-                    throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
+                    throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource->value);
             }
 
             $charges = cache($key);
             if (!$charges) {
-                if ($dataSource == 'EWII') {
-                    throw new DataUnavailableException('When querying Ewii, charges from datahub needs to be present at server. Unfortunately we don\'t have them yet', 1);
+                //If we only have EWII as source and there's no user logged in, we're out of luck
+                if ($dataSource == SourceEnum::EWII && !$user) {
+                    $message = 'When EWII is queried, a metering point with charges has to be saved to POWERUSE beforehand';
+                    throw new MissingDataException($message);
                 }
-                $charges = $this->meteringDataService->getCharges($refreshToken);
+
+                //It's not possible to retrieve charges through ewii, see if they can be retrieved through POWERUSE
+                $dataSource = $dataSource == SourceEnum::EWII ? SourceEnum::POWERUSE : $dataSource;
+                try {
+                    $charges = $this->meteringDataService->getCharges($dataSource, ['refresh_token'=>$refreshToken], $user);
+                } catch (ModelNotFoundException $e) {
+                    $message = 'When EWII is queried, a metering point has to be saved to POWERUSE beforehand';
+                    $message = $message . PHP_EOL . $e->getMessage();
+                    throw new MissingDataException($message, $e->getCode(), $e->getPrevious());
+                }
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
             }
@@ -328,7 +341,7 @@ class GetPreliminaryInvoice
             $key = 'charges ' . $refreshToken;
             $charges = cache($key);
             if (!$charges) {
-                $charges = $this->meteringDataService->getCharges($refreshToken);
+                $charges = $this->meteringDataService->getCharges(null, ['refresh_token' => $refreshToken]);
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
             }

@@ -2,7 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\SourceEnum;
+use App\Models\Charge;
+use App\Models\MeteringPoint;
+use App\Models\User;
+use App\Services\Transformers\Facades\MeteringPointTransformer;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
 use Tvup\EwiiApi\EwiiApiException;
@@ -10,11 +16,13 @@ use Tvup\EwiiApi\EwiiApiInterface;
 
 class GetMeteringData
 {
-    private ElOverblikApiInterface|null $energiOverblikApi;
+    private ?ElOverblikApiInterface $energiOverblikApi = null;
 
-    private EwiiApiInterface|null $ewiiApi;
+    private ?EwiiApiInterface $ewiiApi;
 
-    private string $meteringPoint;
+    public function __construct()
+    {
+    }
 
     /**
      * @param string $start_date
@@ -24,7 +32,7 @@ class GetMeteringData
      * @return array<string, string>
      * @throws ElOverblikApiException
      */
-    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false) : array
+    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false): array
     {
         logger('Accessing EloverblikApi. MD5 of refresh token: ' . md5($refreshToken));
         $energiOverblikApi = $this->getEloverblikApi($refreshToken);
@@ -33,9 +41,7 @@ class GetMeteringData
             $energiOverblikApi->setDebug(true);
         }
 
-        $energiOverblikApi->token($refreshToken);
-
-        $meteringPointId = $this->getMeteringPoint($refreshToken, $debug);
+        $meteringPointId = $this->getMeteringPointData(SourceEnum::DATAHUB, ['refresh_token' => $refreshToken])->metering_point_id;
 
         try {
             if (!$start_date) {
@@ -95,63 +101,93 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPoint(string $refresh_token = null, bool $debug = false): string
+    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ?MeteringPoint
     {
-        $key = 'meteringpoint ' . $refresh_token;
-        $meteringPoint = cache($key);
-        if ($meteringPoint) {
-            return $meteringPoint;
+        $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
+        $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
+        $ewiiPassword = isset($credentials['ewii_password']) ? $credentials['ewii_password'] : null;
+        $exception = null;
+        switch ($source) {
+            case SourceEnum::DATAHUB:
+                if (!$refresh_token) {
+                    throw new \InvalidArgumentException('When retrieving data from Datahub, refresh token must be provided');
+                }
+                $key = 'meteringPointData ' . $refresh_token;
+                $meteringPoint = $this->getMeteringPointFromCache($key);
+                if ($meteringPoint) {
+                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::DATAHUB);
+                }
+                $energiOverblikApi = $this->getEloverblikApi($refresh_token);
+                $response = null;
+                try {
+                    $response = $energiOverblikApi->getMeteringPointData();
+                } catch (ElOverblikApiException $e) {
+                    $exception = $e;
+                }
+                if ($response) {
+                    $response['source'] = SourceEnum::DATAHUB;
+                    $expiresAt = now()->addDay()->startOfDay();
+                    cache([$key => $response], $expiresAt);
+
+                    return MeteringPointTransformer::transform($response, SourceEnum::DATAHUB);
+                }
+            case SourceEnum::EWII:
+                if (!$ewiiUserName || !$ewiiPassword) {
+                    if ($source == SourceEnum::EWII) {
+                        throw new \InvalidArgumentException('When retrieving data from EWII, username and password must be provided');
+                    }
+                } else {
+                    $key = 'meteringPointData ' . $ewiiUserName;
+                    $meteringPoint = $this->getMeteringPointFromCache($key);
+                    if ($meteringPoint) {
+                        return MeteringPointTransformer::transform($meteringPoint, SourceEnum::EWII);
+                    }
+                    try {
+                        $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
+                        $ewiiApi->login($ewiiUserName, $ewiiPassword);
+                        $response1 = $ewiiApi->getAddressPickerViewModel();
+//                    $ewiiApi->setSelectedAddressPickerElement($response1);
+//                    $response2 = $ewiiApi->getConsumptionMetersRaw();
+//                    $responseCombined = array_merge($response1, $response2);
+
+                        if ($response1) {
+                            $expiresAt = now()->addDay()->startOfDay();
+                            cache([$key => $response1], $expiresAt);
+
+                            return MeteringPointTransformer::transform($response1, SourceEnum::EWII);
+                        }
+                    } catch (EwiiApiException $e) {
+                        if (!$exception) {
+                            $exception = $e;
+                        }
+                    }
+                }
+
+            case SourceEnum::POWERUSE:
+            default:
+                if (!$user) {
+                    if ($source == SourceEnum::POWERUSE) {
+                        throw new \InvalidArgumentException('When retrieving data from POWERUSE, user must be provided');
+                    } else {
+                        break;
+                    }
+                }
+                $meteringPoint = MeteringPoint::whereUserId($user->id)->first();
+
+                if ($meteringPoint) {
+                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::POWERUSE);
+                } else {
+                    if (!$exception) {
+                        $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, ['where user_id is ' . $user->id]);
+                    }
+                }
         }
-        if (!property_exists('GetMeteringData', 'meteringPoint') || !$this->meteringPoint) {
-            if (!$refresh_token) {
-                $refresh_token = config('services.energioverblik.refresh_token');
-            }
 
-            $energiOverblikApi = $this->getEloverblikApi($refresh_token);
-
-            $energiOverblikApi->setDebug($debug);
-
-            $energiOverblikApi->token($refresh_token);
-
-            try {
-                $response = $energiOverblikApi->getFirstMeteringPoint($refresh_token);
-            } catch (ElOverblikApiException $e) {
-                throw $e;
-            }
-            $expiresAt = Carbon::now()->addDays(10)->startOfDay();
-            cache([$key => $response], $expiresAt);
-
-            $this->meteringPoint = $response;
+        if ($exception) {
+            throw $exception;
         }
 
-        return $this->meteringPoint;
-    }
-
-    public function getMeteringPointData(string $refresh_token = null): array
-    {
-        $key = 'meteringPointData ' . $refresh_token;
-
-        $meteringPointData = cache($key);
-        if ($meteringPointData) {
-            return $meteringPointData;
-        }
-
-        if (!$refresh_token) {
-            $refresh_token = config('services.energioverblik.refresh_token');
-        }
-
-        $energiOverblikApi = $this->getEloverblikApi($refresh_token);
-
-        $energiOverblikApi->token($refresh_token);
-        try {
-            $response = $energiOverblikApi->getMeteringPointData();
-            $expiresAt = now()->addDay()->startOfDay();
-            cache([$key => $response], $expiresAt);
-        } catch (ElOverblikApiException $e) {
-            throw $e;
-        }
-
-        return $response;
+        return null;
     }
 
     public function getMeteringPointDataFromEwii(string $email = null, string $password = null): array
@@ -185,58 +221,87 @@ class GetMeteringData
         return $responseCombined;
     }
 
-    public function getCharges(string $refresh_token = null): array
+    public function getCharges(?SourceEnum $source = SourceEnum::DATAHUB, array $credentials = [], User $user = null): array
     {
-        $energiOverblikApi = $this->getEloverblikApi($refresh_token);
+        $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
+        $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);
+        $meteringPointId = $meteringPoint->metering_point_id;
 
-        if (!$refresh_token) {
-            $refresh_token = config('services.energioverblik.refresh_token');
+        $e = null;
+        $subscriptions = collect();
+        $tariffs = collect();
+
+        //If no source is selected, we have a free choice
+        //We'll start with Datahub in such case.
+        $dataSource = null !== $source ? $source : SourceEnum::DATAHUB;
+
+        switch ($dataSource) {
+            case SourceEnum::DATAHUB:
+                if ($refresh_token) {
+                    try {
+                        $energiOverblikApi = $this->getEloverblikApi($refresh_token);
+                        list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
+                    } catch (ElOverblikApiException $exception) {
+                        if ($exception->getCode() == 503) {
+                            logger()->error('Datahub not available for getCharges (503)');
+                            $e = $exception;
+                        }
+                        logger()->error('Datahub returned error for getCharges for metering point ' . $meteringPointId);
+                        $errors = $exception->getErrors();
+                        switch (gettype($errors)) {
+                            case 'array':
+                                logger()->error('Got array of errors', [
+                                    'errors' => $errors,
+                                ]);
+                                break;
+                            case 'string':
+                                logger()->error($errors);
+                                break;
+                            default:
+                                logger()->error('Exception didn\'t return useful error messages either');
+                        }
+                        $e = $exception;
+                    }
+                    $fees = [];
+                    if (count($subscriptions) > 0 && count($tariffs) > 0) {
+                        return [$subscriptions, $tariffs, $fees];
+                    }
+                } else {
+                    if ($source == SourceEnum::DATAHUB) {
+                        //DATAHUB was explicit chosen as provider, but refresh token isn't provided
+                        throw new \InvalidArgumentException('When querying Datahub a refresh token must be provided');
+                    }
+                }
+            case SourceEnum::POWERUSE:
+            default:
+                $subscriptions = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Abonnement')->get();
+                $tariffs = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Tarif')->get();
+                $fees = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Gebyr')->get();
+
+                if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
+                    return [$subscriptions, $tariffs, $fees];
+                }
+                break;
         }
-
-        $energiOverblikApi->token($refresh_token);
-
-        $meteringPointId = $this->getMeteringPoint($refresh_token);
-
-        try {
-            list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
-        } catch (ElOverblikApiException $exception) {
-            if ($exception->getCode() == 503) {
-                logger()->error('Datahub not available for getCharges (503)');
-                throw $exception;
-            }
-            logger()->error('Datahub returned error for getCharges for metering point ' . $meteringPointId);
-            $errors = $exception->getErrors();
-            switch (gettype($errors)) {
-                case 'array':
-                    logger()->error('Got array of errors', [
-                        'errors' => $errors,
-                    ]);
-                    break;
-                case 'string':
-                    logger()->error($errors);
-                    break;
-                default:
-                    logger()->error('Exception didn\'t return useful error messages either');
-            }
-            throw $exception;
+        if ($e) {
+            throw $e;
+        } else {
+            return [[], [], []];
         }
-        $fees = [];
-
-        return [$subscriptions, $tariffs, $fees];
     }
 
-    private function getEloverblikApi(string $refreshToken = null) : ElOverblikApiInterface
+    private function getEloverblikApi(string $refreshToken): ElOverblikApiInterface
     {
-        if (!property_exists('GetMeteringData', 'energiOverblikApi') || !$this->energiOverblikApi) {
-            $this->energiOverblikApi = app()->makeWith('Tvup\ElOverblikApi\ElOverblikApiInterface', [
-                'refreshToken' => $refreshToken,
-            ]);
+        if (!$this->energiOverblikApi) {
+            $energiOverblikApi = app()->make('Tvup\ElOverblikApi\ElOverblikApiInterface');
+            $energiOverblikApi->token($refreshToken);
+            $this->energiOverblikApi = $energiOverblikApi;
         }
 
         return $this->energiOverblikApi;
     }
 
-    private function getEwiiApi(string $email = null, string $password = null) : EwiiApiInterface
+    private function getEwiiApi(string $email = null, string $password = null): EwiiApiInterface
     {
         if (!property_exists('GetMeteringData', 'ewiiApi') || !$this->ewiiApi) {
             $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [
@@ -246,5 +311,10 @@ class GetMeteringData
         }
 
         return $this->ewiiApi;
+    }
+
+    private function getMeteringPointFromCache(string $key): ?array
+    {
+        return cache($key) ?? null;
     }
 }

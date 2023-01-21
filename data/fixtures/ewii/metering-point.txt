@@ -1,0 +1,116 @@
+array(2) {
+  [0]=>
+  array(7) {
+    ["Id"]=>
+    int(0)
+    ["Active"]=>
+    bool(true)
+    ["Address"]=>
+    array(11) {
+      ["PostalCode"]=>
+      string(4) "2630"
+      ["City"]=>
+      string(8) "Taastrup"
+      ["Street"]=>
+      string(13) "Jernbane Alle"
+      ["StreetCode"]=>
+      string(4) "3546"
+      ["Number"]=>
+      string(2) "37"
+      ["Letter"]=>
+      string(0) ""
+      ["MunicipalityCode"]=>
+      string(3) "169"
+      ["Floor"]=>
+      string(0) ""
+      ["Side"]=>
+      string(0) ""
+      ["Location"]=>
+      NULL
+      ["Aftagenummer"]=>
+      NULL
+    }
+    ["Installations"]=>
+    array(1) {
+      [0]=>
+      array(13) {
+        ["InstallationNumber"]=>
+        string(7) "5153695"
+        ["ConsumerNumber"]=>
+        string(1) "1"
+        ["SubDebitorNumber"]=>
+        string(1) "1"
+        ["PaymentMethod"]=>
+        string(3) "FIK"
+        ["CompanyNumber"]=>
+        string(1) "1"
+        ["Address"]=>
+        array(11) {
+          ["PostalCode"]=>
+          string(4) "2630"
+          ["City"]=>
+          string(8) "Taastrup"
+          ["Street"]=>
+          string(13) "Jernbane Alle"
+          ["StreetCode"]=>
+          string(4) "3546"
+          ["Number"]=>
+          string(2) "37"
+          ["Letter"]=>
+          string(0) ""
+          ["MunicipalityCode"]=>
+          string(3) "169"
+          ["Floor"]=>
+          string(0) ""
+          ["Side"]=>
+          string(0) ""
+          ["Location"]=>
+          NULL
+          ["Aftagenummer"]=>
+          NULL
+        }
+        ["Active"]=>
+        bool(true)
+        ["SamleInstallation"]=>
+        bool(false)
+        ["SupplyTypes"]=>
+        array(1) {
+          [0]=>
+          int(0)
+        }
+        ["MoveInDate"]=>
+        string(19) "2022-02-28T00:00:00"
+        ["HasAgreement"]=>
+        bool(false)
+        ["AgreementType"]=>
+        NULL
+        ["AlternatePayer"]=>
+        bool(false)
+      }
+    }
+    ["IsDummyHistoricElement"]=>
+    bool(false)
+    ["UniqueAddress"]=>
+    bool(true)
+    ["DisplayString"]=>
+    string(31) "Jernbane Alle 37, 2630 Taastrup"
+  }
+  [1]=>
+  array(7) {
+    ["Id"]=>
+    int(1)
+    ["Active"]=>
+    bool(false)
+    ["Address"]=>
+    NULL
+    ["Installations"]=>
+    NULL
+    ["IsDummyHistoricElement"]=>
+    bool(true)
+    ["UniqueAddress"]=>
+    bool(false)
+    ["DisplayString"]=>
+    string(33) "Se forbrug for tidligere adresser"
+  }
+}
+

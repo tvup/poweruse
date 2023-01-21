@@ -2,6 +2,7 @@
 
 namespace Tests\Services;
 
+use App\Enums\SourceEnum;
 use App\Models\DatahubPriceList;
 use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
@@ -150,7 +151,7 @@ class GetPreliminaryInvoiceTest extends TestCase
                             'antal timer i intervallet' => 24,
                         ],
                     'Forbrug' => '33.68 kWh',
-                    'Kilde for forbrugsdata' => 'DATAHUB',
+                    'Kilde for forbrugsdata' => SourceEnum::DATAHUB,
                 ],
             'Transmissions nettarif' => 1.65,
             'Systemtarif' => 2.04,

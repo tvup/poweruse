@@ -27,7 +27,7 @@
                     <label for="exampleInputEmail1">Kilde:</label>
                     DATAHUB {{ Form::radio('source', 'DATAHUB' , (old('source') && old('source')=='DATAHUB') ? old('source') : true) }}
                     EWII {{ Form::radio('source', 'EWII' , (old('source') && old('source')=='EWII') ? old('source') : false) }}
-                    SMART-ME {{ Form::radio('source', 'SMART-ME' , (old('source') && old('source')=='SMART-ME') ? old('source') : false) }}
+                    SMART_ME {{ Form::radio('source', 'SMART_ME' , (old('source') && old('source')=='SMART_ME') ? old('source') : false) }}
                     <div class="smart_me">Tilføj data fra SMART-ME?
                         <input name="smart_me" id="smart_me" type="checkbox" {{ old('smart_me') == 'on' ? 'checked' : ''}}>
                     </div>
@@ -92,7 +92,7 @@
                 let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
                 let isDatahubSelected = $('input[name=source][value=DATAHUB]').is(":checked");
                 let isEwiiSelected = $('input[name=source][value=EWII]').is(":checked");
-                let isSmartMeSelected = $('input[name=source][value=SMART-ME]').is(":checked");
+                let isSmartMeSelected = $('input[name=source][value=SMART_ME]').is(":checked");
                 let addSmartMeIsSelected = $( "#smart_me").is(':checked');
                 let smartMeIsInPlay = addSmartMeIsSelected || isSmartMeSelected;
                 let whoIsSelected = null;
@@ -102,7 +102,7 @@
                 } else if (isEwiiSelected) {
                     whoIsSelected = 'EWII';
                 } else if (isSmartMeSelected) {
-                    whoIsSelected = 'SMART-ME';
+                    whoIsSelected = 'SMART_ME';
                 }
 
                 updateSmartMeCheckBoxShow(isDatahubOrEwiiSelected);
@@ -153,14 +153,14 @@
                             $('.smartmedetails').hide();
                         }
                         break;
-                    case 'SMART-ME':
+                    case 'SMART_ME':
                         $('.smartmedetails').show();
                         $('.ewii').hide();
                         $('.datahub').hide();
                         break;
                 }
             }
-            let isSmartMeInPlay = {{ (old('smart_me') == 'on' || old('source') == 'SMART-ME') ? 'true' : 'false' }} ;
+            let isSmartMeInPlay = {{ (old('smart_me') == 'on' || old('source') == 'SMART_ME') ? 'true' : 'false' }} ;
             updateCredentialsFieldsShow({!! old('source') ? '\''.old('source'). '\'' : '\''. 'DATAHUB'.'\'' !!}, isSmartMeInPlay);
 
 
