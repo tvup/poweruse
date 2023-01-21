@@ -183,7 +183,6 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\MeteringPointServiceProvider::class,
 
-
     ],
 
     /*
