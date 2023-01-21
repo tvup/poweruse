@@ -52,6 +52,11 @@ class MeteringPointController extends Controller
             'ewii_password' => request()->get('ewii_password') ?? null,
         ];
 
+        //We cannot get data from datahub without refresh token
+        if (!$user && !$credentials['refresh_token']) {
+            return response()->json();
+        }
+
         try {
             $data = $this->meteringDataService->getMeteringPointData($source, $credentials, $user);
         } catch (ElOverblikApiException $e) {

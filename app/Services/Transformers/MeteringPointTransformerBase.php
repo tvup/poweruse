@@ -24,6 +24,7 @@ class MeteringPointTransformerBase
     public function prepareForJson(array|MeteringPoint $data): array
     {
         $meteringPoint = [];
+        $meteringPoint['id'] = $data->id;
         $meteringPoint['metering_point_id'] = $data->metering_point_id;
         $meteringPoint['type_of_mp'] = $data->type_of_mp;
         $meteringPoint['settlement_method'] = $data->settlement_method;
@@ -45,7 +46,7 @@ class MeteringPointTransformerBase
         $meteringPoint['first_consumer_party_name'] = $data->first_consumer_party_name;
         $meteringPoint['second_consumer_party_name ='] = $data->second_consumer_party_name;
         $meteringPoint['hasRelation'] = $data->hasRelation;
-        $meteringPoint['source'] = SourceEnum::DATAHUB->value;
+        $meteringPoint['source'] = $data->source ? $data->source->value : 'POWERUSE';
 
         return $meteringPoint;
     }
