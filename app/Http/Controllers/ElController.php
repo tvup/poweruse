@@ -6,6 +6,7 @@ use App\Exceptions\DataUnavailableException;
 use App\Models\Elspotprices;
 use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
+use App\Models\User;
 use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
@@ -93,6 +94,9 @@ class ElController extends Controller
 
     public function processData(Request $request) : RedirectResponse|Response
     {
+        /** @var User|null $user */
+        $user = auth()->check() ? auth()->user() : null;
+
         try {
             switch ($request->de) {
                 case 'on':
@@ -124,7 +128,7 @@ class ElController extends Controller
                 'ewiiPassword' => $request->ewiiPassword,
             ];
 
-            $data = $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead);
+            $data = $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead, $user);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -388,7 +392,7 @@ class ElController extends Controller
      * @throws ElOverblikApiException
      * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, string $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, string $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -400,7 +404,7 @@ class ElController extends Controller
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
                 ->header('Content-Type', 'text/plain');
         }
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead, $user);
 
         return response()->json($bill);
     }

@@ -54,7 +54,7 @@ class GetPreliminaryInvoice
      * @throws ElOverblikApiException
      * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, string $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, $user = null): array
     {
         $overhead = str_replace(',', '.', $overhead);
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
@@ -154,10 +154,7 @@ class GetPreliminaryInvoice
 
             $charges = cache($key);
             if (!$charges) {
-                if ($dataSource == 'EWII') {
-                    throw new DataUnavailableException('When querying Ewii, charges from datahub needs to be present at server. Unfortunately we don\'t have them yet', 1);
-                }
-                $charges = $this->meteringDataService->getCharges($refreshToken);
+                $charges = $this->meteringDataService->getCharges(null, [], $user);
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
             }

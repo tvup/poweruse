@@ -105,7 +105,6 @@ class GetMeteringData
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
         $ewiiPassword = isset($credentials['ewii_password']) ? $credentials['ewii_password'] : null;
-
         $exception = null;
         switch ($source) {
             case 'DATAHUB':
@@ -136,32 +135,34 @@ class GetMeteringData
                     if ($source == 'EWII') {
                         throw new \InvalidArgumentException('When retrieving data from EWII, username and password must be provided');
                     }
-                }
+                } else {
 
-                $key = 'meteringPointData ' . $ewiiUserName;
-                $meteringPoint = $this->getMeteringPointFromCache($key);
-                if ($meteringPoint) {
-                    return MeteringPointTransformer::transform($meteringPoint, 'EWII');
-                }
-                try {
-                    $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
-                    $ewiiApi->login($ewiiUserName, $ewiiPassword);
-                    $response1 = $ewiiApi->getAddressPickerViewModel();
+                    $key = 'meteringPointData ' . $ewiiUserName;
+                    $meteringPoint = $this->getMeteringPointFromCache($key);
+                    if ($meteringPoint) {
+                        return MeteringPointTransformer::transform($meteringPoint, 'EWII');
+                    }
+                    try {
+                        $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
+                        $ewiiApi->login($ewiiUserName, $ewiiPassword);
+                        $response1 = $ewiiApi->getAddressPickerViewModel();
 //                    $ewiiApi->setSelectedAddressPickerElement($response1);
 //                    $response2 = $ewiiApi->getConsumptionMetersRaw();
 //                    $responseCombined = array_merge($response1, $response2);
 
-                    if ($response1) {
-                        $expiresAt = now()->addDay()->startOfDay();
-                        cache([$key => $response1], $expiresAt);
+                        if ($response1) {
+                            $expiresAt = now()->addDay()->startOfDay();
+                            cache([$key => $response1], $expiresAt);
 
-                        return MeteringPointTransformer::transform($response1, 'EWII');
-                    }
-                } catch (EwiiApiException $e) {
-                    if (!$exception) {
-                        $exception = $e;
+                            return MeteringPointTransformer::transform($response1, 'EWII');
+                        }
+                    } catch (EwiiApiException $e) {
+                        if (!$exception) {
+                            $exception = $e;
+                        }
                     }
                 }
+
             case 'POWERUSE':
             default:
                 if (!$user) {
@@ -223,46 +224,59 @@ class GetMeteringData
     public function getCharges(string|null $source = 'DATAHUB', array $credentials = [], User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
-        $meteringPointId = $this->getMeteringPointData($source, $credentials, $user)->metering_point_id;
+        $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);
+        $meteringPointId = $meteringPoint->metering_point_id;
 
         $e = null;
         $subscriptions = collect();
         $tariffs = collect();
-        switch ($source) {
+
+        //If no source is selected, we have a free choice
+        //We'll start with Datahub in such case.
+        $dataSource = null !== $source ? $source : 'DATAHUB';
+
+        switch ($dataSource) {
             case 'DATAHUB':
-                try {
-                    $energiOverblikApi = $this->getEloverblikApi($refresh_token);
-                    list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
-                } catch (ElOverblikApiException $exception) {
-                    if ($exception->getCode() == 503) {
-                        logger()->error('Datahub not available for getCharges (503)');
+                if($refresh_token) {
+                    try {
+                        $energiOverblikApi = $this->getEloverblikApi($refresh_token);
+                        list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
+                    } catch (ElOverblikApiException $exception) {
+                        if ($exception->getCode() == 503) {
+                            logger()->error('Datahub not available for getCharges (503)');
+                            $e = $exception;
+                        }
+                        logger()->error('Datahub returned error for getCharges for metering point ' . $meteringPointId);
+                        $errors = $exception->getErrors();
+                        switch (gettype($errors)) {
+                            case 'array':
+                                logger()->error('Got array of errors', [
+                                    'errors' => $errors,
+                                ]);
+                                break;
+                            case 'string':
+                                logger()->error($errors);
+                                break;
+                            default:
+                                logger()->error('Exception didn\'t return useful error messages either');
+                        }
                         $e = $exception;
                     }
-                    logger()->error('Datahub returned error for getCharges for metering point ' . $meteringPointId);
-                    $errors = $exception->getErrors();
-                    switch (gettype($errors)) {
-                        case 'array':
-                            logger()->error('Got array of errors', [
-                                'errors' => $errors,
-                            ]);
-                            break;
-                        case 'string':
-                            logger()->error($errors);
-                            break;
-                        default:
-                            logger()->error('Exception didn\'t return useful error messages either');
+                    $fees = [];
+                    if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
+                        return [$subscriptions, $tariffs, $fees];
                     }
-                    $e = $exception;
-                }
-                $fees = [];
-                if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
-                    return [$subscriptions, $tariffs, $fees];
+                } else {
+                    if ($source == 'DATAHUB') {
+                        //DATAHUB was explicit chosen as provider, but refresh token isn't provided
+                        throw new \InvalidArgumentException('When querying Datahub a refresh token must be provided');
+                    }
                 }
             case 'POWERUSE':
             default:
-                $subscriptions = Charge::whereMeteringPointId($meteringPointId)->whereType('Abonnement')->get();
-                $tariffs = Charge::whereMeteringPointId($meteringPointId)->whereType('Tariff')->get();
-                $fees = Charge::whereMeteringPointId($meteringPointId)->whereType('Gebyr')->get();
+                $subscriptions = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Abonnement')->get();
+                $tariffs = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Tarif')->get();
+                $fees = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Gebyr')->get();
 
                 if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
                     return [$subscriptions, $tariffs, $fees];
