@@ -24,7 +24,7 @@
             @endif
         @endif
         <div class="card-body">
-            <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('getSpotprices')}}">
+            <form name="get-spot-prices-form" id="get-spot-prices-form" method="post" action="{{url('getSpotprices')}}">
                 {{ csrf_field() }}
 
                 <div class="form-group">

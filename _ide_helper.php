@@ -18187,6 +18187,37 @@
      
 }
 
+    namespace App\Services\Transformers\Facades { 
+            /**
+     * 
+     *
+     */ 
+        class MeteringPointTransformer {
+                    /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function transform($data, $source)
+        {
+                        /** @var \App\Services\Transformers\MeteringPointTransformerBase $instance */
+                        return $instance->transform($data, $source);
+        }
+                    /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function prepareForJson($data)
+        {
+                        /** @var \App\Services\Transformers\MeteringPointTransformerBase $instance */
+                        return $instance->prepareForJson($data);
+        }
+         
+    }
+     
+}
+
     namespace Spatie\LaravelIgnition\Facades { 
             /**
      * 
@@ -22475,6 +22506,7 @@ namespace  {
             class Lang extends \Illuminate\Support\Facades\Lang {}
             class Log extends \Illuminate\Support\Facades\Log {}
             class Mail extends \Illuminate\Support\Facades\Mail {}
+            class MeteringPointTransformer extends \App\Services\Transformers\Facades\MeteringPointTransformer {}
             class Notification extends \Illuminate\Support\Facades\Notification {}
             class Password extends \Illuminate\Support\Facades\Password {}
             class Queue extends \Illuminate\Support\Facades\Queue {}
