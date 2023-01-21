@@ -70,7 +70,7 @@ class ElController extends Controller
     {
         $data = session('data');
 
-        return view('el')->with('data', $data ? $data->original : null);
+        return view('el')->with('data', $data ? $data->original : null)->with('refresh_token',auth()->check() ? auth()->user()->refresh_token : null);
     }
 
     public function indexSpotprices() : View

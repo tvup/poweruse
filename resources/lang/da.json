@@ -77,5 +77,14 @@
   "Building number": "Bygningsnummer",
   "Floor id": "Etage",
   "Room id": "Værelse",
-  "City name": "Bynavn"
+  "City name": "Bynavn",
+  "Price area": "Prisområde",
+  "End date (ex.)": "Slutdato (eks.)",
+  "Start date": "Startdato",
+  "Smart-me password": "Smart-me adgangskode",
+  "Smart-me username": "Smart-me brugernavn",
+  "Password": "Adgangskode",
+  "Subscription price pr. month by balance supplier ex. VAT in DKK.": "Abonnementspris pr. måned hos elleverandør eks. moms i kr.",
+  "Overhead by balance supplier on spot price ex. VAT in DKK.": "Elleverandørens tillæg til spotprisen eks. moms i kr.",
+  "Submit": "Send"
 }
