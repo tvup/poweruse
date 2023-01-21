@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Exceptions\DataUnavailableException;
+use App\Exceptions\MissingDataException;
 use App\Models\DatahubPriceList;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Tvup\ElOverblikApi\ElOverblikApiException;
@@ -143,11 +145,9 @@ class GetPreliminaryInvoice
 
             switch ($dataSource) {
                 case 'EWII':
-                    $key = 'charges ' . $ewiiCredentials['ewiiEmail'];
-                    break;
                 case 'DATAHUB':
                 case null:
-                    $key = 'charges ' . $refreshToken;
+                    $key = $refreshToken ? 'charges ' . $refreshToken : null;
                     break;
                 default:
                     throw new \RuntimeException('Illegal provider for meteringdata given: ' . $dataSource);
@@ -155,7 +155,15 @@ class GetPreliminaryInvoice
 
             $charges = cache($key);
             if (!$charges) {
-                $charges = $this->meteringDataService->getCharges(null, [], $user);
+                //It's not possible to retrieve charges through ewii, see if they can be retrieved through POWERUSE
+                $dataSource = $dataSource == 'EWII' ? 'POWERUSE' : $dataSource;
+                try {
+                    $charges = $this->meteringDataService->getCharges($dataSource, ['refresh_token'=>$refreshToken], $user);
+                } catch (ModelNotFoundException $e) {
+                    $message = 'When EWII is queried, a metering point has to be saved to POWERUSE beforehand';
+                    $message = $message . PHP_EOL . $e->getMessage();
+                    throw new MissingDataException($message, $e->getCode(), $e->getPrevious());
+                }
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
             }

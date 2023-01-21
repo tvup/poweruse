@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\DataUnavailableException;
+use App\Exceptions\MissingDataException;
 use App\Models\Elspotprices;
 use App\Models\GridOperatorNettariffProperty;
 use App\Models\Operator;
@@ -127,7 +128,6 @@ class ElController extends Controller
                 'ewiiEmail' => $request->ewiiEmail,
                 'ewiiPassword' => $request->ewiiPassword,
             ];
-
             $data = $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, $dataSource, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead, $user);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
@@ -164,7 +164,7 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
-        } catch (DataUnavailableException $e) {
+        } catch (DataUnavailableException|MissingDataException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
 
