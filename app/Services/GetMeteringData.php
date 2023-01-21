@@ -45,9 +45,7 @@ class GetMeteringData
             $energiOverblikApi->setDebug(true);
         }
 
-        $energiOverblikApi->token($refreshToken);
-
-        $meteringPointId = $this->getMeteringPoint($refreshToken, $debug);
+        $meteringPointId =  $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refreshToken])->metering_point_id;
 
         try {
             if (!$start_date) {
@@ -107,39 +105,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPoint(string $refresh_token = null, bool $debug = false): string
-    {
-        $key = 'meteringpoint ' . $refresh_token;
-        $meteringPoint = cache($key);
-        if ($meteringPoint) {
-            return $meteringPoint;
-        }
-        if (!property_exists('GetMeteringData', 'meteringPoint') || !$this->meteringPoint) {
-            if (!$refresh_token) {
-                $refresh_token = config('services.energioverblik.refresh_token');
-            }
-
-            $energiOverblikApi = $this->getEloverblikApi($refresh_token);
-
-            $energiOverblikApi->setDebug($debug);
-
-            $energiOverblikApi->token($refresh_token);
-
-            try {
-                $response = $energiOverblikApi->getFirstMeteringPoint($refresh_token);
-            } catch (ElOverblikApiException $e) {
-                throw $e;
-            }
-            $expiresAt = Carbon::now()->addDays(10)->startOfDay();
-            cache([$key => $response], $expiresAt);
-
-            $this->meteringPoint = $response;
-        }
-
-        return $this->meteringPoint;
-    }
-
-    public function getMeteringPointData(string|null $source = null, array $credentials, User $user = null): MeteringPoint|null
+    public function getMeteringPointData(string|null $source = null, array $credentials = [], User $user = null): MeteringPoint|null
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
@@ -260,14 +226,9 @@ class GetMeteringData
     public function getCharges(string $refresh_token = null): array
     {
         $energiOverblikApi = $this->getEloverblikApi($refresh_token);
-
-        if (!$refresh_token) {
-            $refresh_token = config('services.energioverblik.refresh_token');
-        }
-
         $energiOverblikApi->token($refresh_token);
 
-        $meteringPointId = $this->getMeteringPoint($refresh_token);
+        $meteringPointId = $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refresh_token])->metering_point_id;;
 
         try {
             list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
