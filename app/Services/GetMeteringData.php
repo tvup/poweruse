@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Charge;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\Transformers\Facades\MeteringPointTransformer;
@@ -219,39 +220,60 @@ class GetMeteringData
         return $responseCombined;
     }
 
-    public function getCharges(string $refresh_token = null): array
+    public function getCharges(string|null $source = 'DATAHUB', array $credentials = [], User $user = null): array
     {
-        $energiOverblikApi = $this->getEloverblikApi($refresh_token);
-        $energiOverblikApi->token($refresh_token);
+        $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
+        $meteringPointId = $this->getMeteringPointData($source, $credentials, $user)->metering_point_id;
 
-        $meteringPointId = $this->getMeteringPointData('DATAHUB', ['refresh_token' => $refresh_token])->metering_point_id;
+        $e = null;
+        $subscriptions = collect();
+        $tariffs = collect();
+        switch ($source) {
+            case 'DATAHUB':
+                try {
+                    $energiOverblikApi = $this->getEloverblikApi($refresh_token);
+                    list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
+                } catch (ElOverblikApiException $exception) {
+                    if ($exception->getCode() == 503) {
+                        logger()->error('Datahub not available for getCharges (503)');
+                        $e = $exception;
+                    }
+                    logger()->error('Datahub returned error for getCharges for metering point ' . $meteringPointId);
+                    $errors = $exception->getErrors();
+                    switch (gettype($errors)) {
+                        case 'array':
+                            logger()->error('Got array of errors', [
+                                'errors' => $errors,
+                            ]);
+                            break;
+                        case 'string':
+                            logger()->error($errors);
+                            break;
+                        default:
+                            logger()->error('Exception didn\'t return useful error messages either');
+                    }
+                    $e = $exception;
+                }
+                $fees = [];
+                if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
+                    return [$subscriptions, $tariffs, $fees];
+                }
+            case 'POWERUSE':
+            default:
+                $subscriptions = Charge::whereMeteringPointId($meteringPointId)->whereType('Abonnement')->get();
+                $tariffs = Charge::whereMeteringPointId($meteringPointId)->whereType('Tariff')->get();
+                $fees = Charge::whereMeteringPointId($meteringPointId)->whereType('Gebyr')->get();
 
-        try {
-            list($subscriptions, $tariffs) = $energiOverblikApi->getCharges($meteringPointId);
-        } catch (ElOverblikApiException $exception) {
-            if ($exception->getCode() == 503) {
-                logger()->error('Datahub not available for getCharges (503)');
-                throw $exception;
-            }
-            logger()->error('Datahub returned error for getCharges for metering point ' . $meteringPointId);
-            $errors = $exception->getErrors();
-            switch (gettype($errors)) {
-                case 'array':
-                    logger()->error('Got array of errors', [
-                        'errors' => $errors,
-                    ]);
-                    break;
-                case 'string':
-                    logger()->error($errors);
-                    break;
-                default:
-                    logger()->error('Exception didn\'t return useful error messages either');
-            }
-            throw $exception;
+                if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
+                    return [$subscriptions, $tariffs, $fees];
+                }
+                break;
         }
-        $fees = [];
-
-        return [$subscriptions, $tariffs, $fees];
+        if ($e) {
+            throw $e;
+        } else {
+            return [[], [], []];
+        }
     }
 
     private function getEloverblikApi(string $refreshToken): ElOverblikApiInterface
