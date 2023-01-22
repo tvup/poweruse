@@ -10,7 +10,7 @@
             <div class="mb-3">
               <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
-                      @click.prevent="showModal"><i class="fas fa-bolt"></i> Add new metering point
+                      @click.prevent="showModal"><i class="fas fa-bolt"></i> {{ $t('Add new metering point') }}
               </button>
             </div>
           </div>
@@ -69,145 +69,145 @@
                   <div class="col-lg-8">
                     <form class="form-horizontal ng-pristine ng-valid">
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputMeteringPointId">{{ $t('Metering point id') }}</label>
+                        <label class="col-sm-6 control-label" for="inputMeteringPointId">{{ $t('Metering point id') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputMeteringPointId" type="text"
                                  v-model="form.metering_point_id">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputTypeOfMP">{{ $t('Type of MP') }}</label>
+                        <label class="col-sm-6 control-label" for="inputTypeOfMP">{{ $t('Type of MP') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputTypeOfMP" type="text" v-model="form.type_of_mp">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputSettlementMethod">{{ $t('Settlement method') }}</label>
+                        <label class="col-sm-6 control-label" for="inputSettlementMethod">{{ $t('Settlement method') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputSettlementMethod" type="text"
                                  v-model="form.settlement_method">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputMeterNumber">{{ $t('Meter number') }}</label>
+                        <label class="col-sm-6 control-label" for="inputMeterNumber">{{ $t('Meter number') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputMeterNumber" type="text" v-model="form.meter_number">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputConsumerCVR">{{ $t('Consumer CVR') }}</label>
+                        <label class="col-sm-6 control-label" for="inputConsumerCVR">{{ $t('Consumer CVR') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputConsumerCVR" type="text" v-model="form.consumer_c_v_r">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputDataAccessCVR">{{ $t('Data access CVR') }}</label>
+                        <label class="col-sm-6 control-label" for="inputDataAccessCVR">{{ $t('Data access CVR') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputDataAccessCVR" type="text"
                                  v-model="form.data_access_c_v_r">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputConsumerStartDate">{{ $t('Consumer start date') }}</label>
+                        <label class="col-sm-6 control-label" for="inputConsumerStartDate">{{ $t('Consumer start date') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputConsumerStartDate" type="text"
                                  v-model="form.consumer_start_date">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputMeterReadingOccurrence">{{ $t('Meter reading occurrence') }}</label>
+                        <label class="col-sm-6 control-label" for="inputMeterReadingOccurrence">{{ $t('Meter reading occurrence') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputMeterReadingOccurrence" type="text"
                                  v-model="form.meter_reading_occurrence">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputBalanceSupplierName">{{ $t('Balance supplier name') }}</label>
+                        <label class="col-sm-6 control-label" for="inputBalanceSupplierName">{{ $t('Balance supplier name') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputBalanceSupplierName" type="text"
                                  v-model="form.balance_supplier_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputStreetCode">{{ $t('Street code') }}</label>
+                        <label class="col-sm-6 control-label" for="inputStreetCode">{{ $t('Street code') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputStreetCode" type="text" v-model="form.street_code">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputStreetName">{{ $t('Street name') }}</label>
+                        <label class="col-sm-6 control-label" for="inputStreetName">{{ $t('Street name') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputStreetName" type="text" v-model="form.street_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputBuildingNumber">{{ $t('Building number') }}</label>
+                        <label class="col-sm-6 control-label" for="inputBuildingNumber">{{ $t('Building number') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputBuildingNumber" type="text"
                                  v-model="form.building_number">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputFloorId">{{ $t('Floor id') }}</label>
+                        <label class="col-sm-6 control-label" for="inputFloorId">{{ $t('Floor id') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputFloorId" type="text" v-model="form.floor_id">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputRoomId">{{ $t('Room id') }}</label>
+                        <label class="col-sm-6 control-label" for="inputRoomId">{{ $t('Room id') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputRoomId" type="text" v-model="form.room_id">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputCityName">{{ $t('City name') }}</label>
+                        <label class="col-sm-6 control-label" for="inputCityName">{{ $t('City name') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputCityName" type="text" v-model="form.city_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputCitySubDivisionName">{{ $t('City sub division name') }}</label>
+                        <label class="col-sm-6 control-label" for="inputCitySubDivisionName">{{ $t('City sub division name') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputCitySubDivisionName" type="text"
                                  v-model="form.city_sub_division_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputMunicipalityCode">{{ $t('Municipality code') }}</label>
+                        <label class="col-sm-6 control-label" for="inputMunicipalityCode">{{ $t('Municipality code') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputMunicipalityCode" type="text"
                                  v-model="form.municipality_code">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputLocationDescription">{{ $t('Location description') }}</label>
+                        <label class="col-sm-6 control-label" for="inputLocationDescription">{{ $t('Location description') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputLocationDescription" type="text"
                                  v-model="form.location_description">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputFirstConsumerPartyName">{{ $t('First consumer party name') }}</label>
+                        <label class="col-sm-6 control-label" for="inputFirstConsumerPartyName">{{ $t('First consumer party name') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputFirstConsumerPartyName" type="text"
                                  v-model="form.first_consumer_party_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputSecondConsumerPartyName">{{ $t('Second consumer party name') }}</label>
+                        <label class="col-sm-6 control-label" for="inputSecondConsumerPartyName">{{ $t('Second consumer party name') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputSecondConsumerPartyName" type="text"
                                  v-model="form.second_consumer_party_name">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputHasRelation">{{ $t('Has relation') }}</label>
+                        <label class="col-sm-6 control-label" for="inputHasRelation">{{ $t('Has relation') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputHasRelation" type="text" v-model="form.hasRelation">
                         </div>
                       </div>
                       <div class="form-group">
-                        <label class="col-sm-3 control-label" for="inputSource">{{ $t('Source') }}</label>
+                        <label class="col-sm-6 control-label" for="inputSource">{{ $t('Source') }}</label>
                         <div class="col-sm-10">
                           <input class="form-control" id="inputSource" type="text" v-model="form.source">
                         </div>
@@ -216,15 +216,15 @@
                         <div class="col-sm-offset-2 col-sm-10">
                           <button type="button" class="btn btn-primary"
                                   v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
-                                  @click="createMeteringPoint();">Save to poweruse
+                                  @click="createMeteringPoint();">{{ $t('Save to poweruse') }}
                           </button>
                           <button type="button" class="btn btn-info"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click.prevent="editMeteringPoint(metering_point);">Update
+                                  @click.prevent="editMeteringPoint(metering_point);">{{ $t('Update') }}
                           </button>
                           <button type="button" class="btn btn-secondary"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click="deleteMeteringPoint(metering_point.id)">Delete
+                                  @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
                           </button>
                         </div>
                       </div>
@@ -552,7 +552,7 @@ export default {
         //sweet alert 2
         swal.fire({
           icon: 'success',
-          title: 'Metering Point created successfully'
+          title: trans('Metering Point created successfully')
         })
 
         this.getMeteringPoints();
@@ -578,7 +578,7 @@ export default {
         //sweet alert 2
         swal.fire({
           icon: 'success',
-          title: 'Metering point updated successfully'
+          title: trans('Metering point updated successfully')
         })
 
         this.getMeteringPoints();
@@ -590,13 +590,13 @@ export default {
     deleteMeteringPoint(id) {
       // sweet alert confirmation
       swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        title: trans('Are you sure?'),
+        text: trans("You won't be able to revert this!"),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonText: trans('Yes, delete it!')
       }).then((result) => {
         // confirm delete?
         if (result.value) {
@@ -604,8 +604,8 @@ export default {
           this.form.delete('api/meteringPoint/' + id, {}).then(() => {
             // sweet alert success
             swal.fire(
-                'Deleted!',
-                'Metering point has been deleted.',
+                trans('Deleted!'),
+                trans('Metering point has been deleted.'),
                 'success'
             )
 
@@ -614,9 +614,9 @@ export default {
             // sweet alert fail
             swal.fire({
               icon: 'error',
-              title: 'Oops...',
-              text: 'Something went wrong!',
-              footer: '<a href>Why do I have this issue?</a>'
+              title: trans('Oops...'),
+              text: trans('Something went wrong!'),
+              footer: '<a href>' + trans('Why do I have this issue?') + '</a>'
             })
           });
         }

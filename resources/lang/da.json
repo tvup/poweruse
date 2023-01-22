@@ -86,5 +86,11 @@
   "Password": "Adgangskode",
   "Subscription price pr. month by balance supplier ex. VAT in DKK.": "Abonnementspris pr. måned hos elleverandør eks. moms i kr.",
   "Overhead by balance supplier on spot price ex. VAT in DKK.": "Elleverandørens tillæg til spotprisen eks. moms i kr.",
-  "Submit": "Send"
+  "Submit": "Send",
+  "Add new metering point": "Tilføj nyt målepunkt",
+  "Save to poweruse": "Gem i poweruse",
+  "Delete": "Slet",
+  "Metering Point created successfully": "Målepunkt blev gemt med success",
+  "Metering point updated successfully": "Målepunktet blev opdateret med success",
+  "Metering point has been deleted.": "Målepunktet blev slettet"
 }
