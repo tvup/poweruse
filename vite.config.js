@@ -11,12 +11,13 @@ export default defineConfig({
     },
     plugins: [
         VitePWA({
+            injectRegister: 'script',
             manifest: {
                 name: 'Poweruse - Total-prices',
                 short_name: 'PU - totalprices',
                 icons: [
                     {
-                        "src": "512x512.png",
+                        "src": "resources/images/favicon/512x512.png",
                         "type": "image/png",
                         "sizes": "512x512"
                     }
@@ -31,7 +32,6 @@ export default defineConfig({
             input: [
                 'resources/sass/app.scss',
                 'resources/js/app.js',
-                'resources/js/serviceworker.js',
                 'resources/js/custom.js',
             ],
             refresh: true,
