@@ -88,12 +88,3 @@
     </script>
 @endif
 
-<script type="module">
-    if ('serviceWorker' in navigator) {
-        // Register a service worker hosted at the root of the
-        // site using the default scope.
-        navigator.serviceWorker.register('{{ Vite::asset('resources/js/serviceworker.js') }}').then(function (registration) {
-        });
-    } else {
-    }
-</script>
