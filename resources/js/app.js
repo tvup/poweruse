@@ -41,7 +41,7 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 
 if ('serviceWorker' in navigator) {
 
-    const wb = new Workbox('/service-worker.js')
+    const wb = new Workbox('/sw.js')
 
     precacheAndRoute([
         { url: '/index.php', revision: '383676' }
