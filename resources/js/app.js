@@ -38,8 +38,21 @@ const date = __DATE__
 import { Workbox } from 'workbox-window'
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching'
 import { registerRoute, NavigationRoute } from 'workbox-routing'
+import { useRegisterSW } from 'virtual:pwa-register/vue'
+const {
+    offlineReady,
+    needRefresh,
+    updateServiceWorker,
+} = useRegisterSW({
+    onRegisteredSW(swUrl) {
+        // eslint-disable-next-line no-console
+        console.log(`Service Worker at: ${swUrl}`)
+    },
+})
+
 
 if ('serviceWorker' in navigator) {
+    console.log('serviceWorker is in navigator');
 
     const wb = new Workbox('/sw.js')
 
@@ -51,7 +64,9 @@ if ('serviceWorker' in navigator) {
     const navigationRoute = new NavigationRoute(handler)
     registerRoute(navigationRoute)
 
-    wb.register()
+    wb.register().then(data => {
+        console.log(data);
+    });
 }
 
 // eslint-disable-next-line no-console
@@ -72,26 +87,5 @@ app.component('has-error', HasError);
 app.component(AlertError.name, AlertError);
 app.component(AlertErrors.name, AlertErrors);
 app.component(AlertSuccess.name, AlertSuccess);
-app.innerHTML = `
-  <div>
-   <img src="/favicon.svg" alt="PWA Logo" width="60" height="60">
-    <h1>Vite + TypeScript</h1>
-    <p>Testing SW without <b>Injection Point (self.__WB_MANIFEST)</b></p>
-    <br/>
-    <p>${date}</p>
-    <br/>
-  </div>
-`
-app.mount('#app');
 
-registerSW({
-    immediate: true,
-    onNeedRefresh() {
-        // eslint-disable-next-line no-console
-        console.log('onNeedRefresh message should not appear')
-    },
-    onOfflineReady() {
-        // eslint-disable-next-line no-console
-        console.log('onOfflineReady message should not appear')
-    },
-})
+app.mount('#app');

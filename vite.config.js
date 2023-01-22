@@ -20,7 +20,7 @@ export default defineConfig({
             registerType: 'autoUpdate',
             strategies: 'generateSW',
             workbox: {
-                swDest: 'public/build/assets/sw.js',
+                swDest: 'public/sw.js',
                 additionalManifestEntries: [{url: 'index.php', revision: '1'}],
                 navigateFallback: 'index.php',
             },
@@ -28,6 +28,7 @@ export default defineConfig({
                 enabled: true,
                 type: 'module',
             },
+            base: '/',
             manifest: {
                 name: 'Poweruse - Total-prices',
                 short_name: 'PU - totalprices',
