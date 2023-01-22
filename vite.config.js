@@ -14,12 +14,11 @@ export default defineConfig({
     },
     plugins: [
         VitePWA({
-            mode: 'development',
             injectRegister: 'inline',
             registerType: 'autoUpdate',
             strategies: 'generateSW',
             workbox: {
-                swDest: 'build/assets/sw.js',
+                swDest: 'public/build/assets/sw.js',
                 additionalManifestEntries: [{url: 'index.php', revision: '1'}],
                 navigateFallback: 'index.php',
             },
