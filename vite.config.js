@@ -14,6 +14,8 @@ export default defineConfig({
     },
     plugins: [
         VitePWA({
+            mode: 'development',
+            outDir: 'public',
             injectRegister: 'inline',
             registerType: 'autoUpdate',
             strategies: 'generateSW',
