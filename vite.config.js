@@ -14,10 +14,12 @@ export default defineConfig({
     },
     plugins: [
         VitePWA({
+            mode: 'development',
             injectRegister: 'inline',
             registerType: 'autoUpdate',
             strategies: 'generateSW',
             workbox: {
+                swDest: 'build/assets/sw.js',
                 additionalManifestEntries: [{url: 'index.php', revision: '1'}],
                 navigateFallback: 'index.php',
             },
@@ -30,7 +32,7 @@ export default defineConfig({
                 short_name: 'PU - totalprices',
                 icons: [
                     {
-                        "src": "resources/images/favicon/512x512.png",
+                        "src": "build/assets/512x512.png",
                         "type": "image/png",
                         "sizes": "512x512"
                     }
