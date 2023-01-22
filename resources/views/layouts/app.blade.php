@@ -8,6 +8,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <meta name="description" content="My Awesome App description">
+
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/assets/images/icons/apple-touch-icon.png" sizes="180x180">
+    <link rel="mask-icon" href="/assets/images/icons/mask-icon.svg" color="#FFFFFF">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
