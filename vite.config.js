@@ -5,13 +5,26 @@ import i18n from 'laravel-vue-i18n/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+    define: {
+        __DATE__: `'${new Date().toISOString()}'`,
+    },
     build: {
         manifest: true,
         outDir: 'public/build/',
     },
     plugins: [
         VitePWA({
-            injectRegister: 'script',
+            injectRegister: 'inline',
+            registerType: 'autoUpdate',
+            strategies: 'generateSW',
+            workbox: {
+                additionalManifestEntries: [{url: 'index.php', revision: '1'}],
+                navigateFallback: 'index.php',
+            },
+            devOptions: {
+                enabled: true,
+                type: 'module',
+            },
             manifest: {
                 name: 'Poweruse - Total-prices',
                 short_name: 'PU - totalprices',
@@ -25,6 +38,7 @@ export default defineConfig({
                 start_url: '/totalprices',
                 theme_color: '#2196f3',
                 background_color: '#2196f3',
+                scope: '/',
                 description: 'My Awesome App that will make you fall in love with Laravel.'
             }
         }),

@@ -27,6 +27,9 @@
     "laravel-vue-i18n": "^2.3.2",
     "sweetalert2": "^11.7.0",
     "vform": "^2.1.2",
-    "vuejs-paginate-next": "^1.0.2"
+    "vuejs-paginate-next": "^1.0.2",
+    "workbox-precaching": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-window": "^6.5.4"
   }
 }
