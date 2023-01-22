@@ -15,10 +15,6 @@ import swal from 'sweetalert2';
 // Then, set /window.swal as /swal so we can instantiate /swal later within our component.
 window.swal = swal;
 
-import.meta.glob([
-    '../images/favicon/**',
-]);
-
 import MeteringPoint from "../views/components/metering-points/MeteringPoint.vue";
 import Charge from "../views/components/charges/Charge.vue";
 import Paginate from "vuejs-paginate-next";
@@ -31,24 +27,11 @@ import {
 } from 'vform/src/components/bootstrap5'
 
 import { pwaInfo } from 'virtual:pwa-info';
-import { registerSW } from 'virtual:pwa-register'
 
-const date = __DATE__
 
 import { Workbox } from 'workbox-window'
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching'
 import { registerRoute, NavigationRoute } from 'workbox-routing'
-import { useRegisterSW } from 'virtual:pwa-register/vue'
-const {
-    offlineReady,
-    needRefresh,
-    updateServiceWorker,
-} = useRegisterSW({
-    onRegisteredSW(swUrl) {
-        // eslint-disable-next-line no-console
-        console.log(`Service Worker at: ${swUrl}`)
-    },
-})
 
 
 if ('serviceWorker' in navigator) {
@@ -71,6 +54,10 @@ if ('serviceWorker' in navigator) {
 
 // eslint-disable-next-line no-console
 console.log(pwaInfo);
+
+import.meta.glob([
+    '../images/favicon/**'
+]);
 
 const app = createApp({});
 app.use(i18nVue, {
