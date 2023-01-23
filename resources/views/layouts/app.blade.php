@@ -29,7 +29,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-                    <img src="{{ Vite::asset('resources/images/favicon/512x512.png')}}" alt="" width="30" height="30">
+                    <img src="{{ Vite::asset('resources/images/icons/512x512.png')}}" alt="" width="30" height="30">
                     {{ config('app.name', 'Laravel') }}
                 </a>
 

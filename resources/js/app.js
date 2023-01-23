@@ -26,6 +26,11 @@ import {
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
 
+import logo1 from '../images/icons/pwa-192x192.png';
+import logo2 from '../images/icons/pwa-512x512.png';
+
+
+
 import { pwaInfo } from 'virtual:pwa-info';
 
 
@@ -33,30 +38,63 @@ import { Workbox } from 'workbox-window'
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching'
 import { registerRoute, NavigationRoute } from 'workbox-routing'
 
+//This is for prompt-update of PWA
+import { registerSW } from 'virtual:pwa-register'
+const intervalMS = 60 * 60 * 1000
+const updateSW = registerSW({
+    onRegisteredSW(swUrl, r) {
+        console.log('HER: ' + swUrl);
+        r && setInterval(async () => {
+            if (!(!r.installing && navigator))
+                return
 
-if ('serviceWorker' in navigator) {
-    console.log('serviceWorker is in navigator');
+            if (('connection' in navigator) && !navigator.onLine)
+                return
 
-    const wb = new Workbox('/sw.js')
+            const resp = await fetch(swUrl, {
+                cache: 'no-store',
+                headers: {
+                    'cache': 'no-store',
+                    'cache-control': 'no-cache',
+                },
+            })
 
-    precacheAndRoute([
-        { url: '/index.php', revision: '383676' }
-    ])
+            if (resp?.status === 200)
+                await r.update()
+        }, intervalMS)
+    },
+    immediate: true,
+    onNeedRefresh() {},
+    onOfflineReady() {},
+    onRegisterError(error) {
+        console.log('Der er desværre sket en fejl, så vi ikke kan registre service workeren: ' + error);
+    }
+})
 
-    const handler         = createHandlerBoundToURL('/index.php')
-    const navigationRoute = new NavigationRoute(handler)
-    registerRoute(navigationRoute)
 
-    wb.register().then(data => {
-        console.log(data);
-    });
-}
+// if ('serviceWorker' in navigator) {
+//     console.log('serviceWorker is in navigator');
+//
+//     const wb = new Workbox('/sw.js')
+//
+//     precacheAndRoute([
+//         { url: '/index.php', revision: '383676' }
+//     ])
+//
+//     const handler         = createHandlerBoundToURL('/index.php')
+//     const navigationRoute = new NavigationRoute(handler)
+//     registerRoute(navigationRoute)
+//
+//     wb.register().then(data => {
+//         console.log(data);
+//     });
+// }
 
 // eslint-disable-next-line no-console
 console.log(pwaInfo);
 
 import.meta.glob([
-    '../images/favicon/**'
+    '../images/icons/*.{ico,png,svg,jpg}'
 ]);
 
 const app = createApp({});
