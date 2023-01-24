@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6daa698f5bc11ea54d07c63f10d077fc",
+    "content-hash": "3df9976adda3e0d50148db52cc691004",
     "packages": [
         {
             "name": "brick/math",
@@ -6700,16 +6700,16 @@
         },
         {
             "name": "tvup/eloverblikapi",
-            "version": "v1.0.1",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tvup/eloverblikapi.git",
-                "reference": "25d91a490cc07fb435e5f25b07e4ed6e8c2a356f"
+                "reference": "8846879f6d22842c017554d9e42ea5bf4c68ba67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tvup/eloverblikapi/zipball/25d91a490cc07fb435e5f25b07e4ed6e8c2a356f",
-                "reference": "25d91a490cc07fb435e5f25b07e4ed6e8c2a356f",
+                "url": "https://api.github.com/repos/Tvup/eloverblikapi/zipball/8846879f6d22842c017554d9e42ea5bf4c68ba67",
+                "reference": "8846879f6d22842c017554d9e42ea5bf4c68ba67",
                 "shasum": ""
             },
             "require": {
@@ -6735,9 +6735,9 @@
             "description": "API for getting consumption data from energioverblik",
             "support": {
                 "issues": "https://github.com/Tvup/eloverblikapi/issues",
-                "source": "https://github.com/Tvup/eloverblikapi/tree/v1.0.1"
+                "source": "https://github.com/Tvup/eloverblikapi/tree/v2.0.0"
             },
-            "time": "2022-10-31T04:40:24+00:00"
+            "time": "2023-01-23T22:34:52+00:00"
         },
         {
             "name": "tvup/ewiiapi",
