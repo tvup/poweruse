@@ -11,8 +11,8 @@
     <meta name="description" content="My Awesome App description">
 
     <link rel="icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" href="/assets/images/icons/apple-touch-icon.png" sizes="180x180">
-    <link rel="mask-icon" href="/assets/images/icons/mask-icon.svg" color="#FFFFFF">
+    <link rel="apple-touch-icon" href="{{ Vite::asset('resources/images/icons/apple-touch-icon.png')}}" sizes="180x180">
+    <link rel="mask-icon" href="{{ Vite::asset('resources/images/icons/mask-icon.svg')}}" color="#FFFFFF">
     <meta name="theme-color" content="#ffffff">
 
     <!-- Fonts -->

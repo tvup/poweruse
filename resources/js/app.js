@@ -26,11 +26,6 @@ import {
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
 
-import logo1 from '../images/icons/pwa-192x192.png';
-import logo2 from '../images/icons/pwa-512x512.png';
-
-
-
 import { pwaInfo } from 'virtual:pwa-info';
 
 
@@ -40,16 +35,17 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 
 //This is for prompt-update of PWA
 import { registerSW } from 'virtual:pwa-register'
-const intervalMS = 60 * 60 * 1000
+const intervalMS = 30 * 1000
 const updateSW = registerSW({
     onRegisteredSW(swUrl, r) {
-        console.log('HER: ' + swUrl);
         r && setInterval(async () => {
-            if (!(!r.installing && navigator))
+            if (!(!r.installing && navigator)) {
                 return
+            }
 
-            if (('connection' in navigator) && !navigator.onLine)
+            if (('connection' in navigator) && !navigator.onLine) {
                 return
+            }
 
             const resp = await fetch(swUrl, {
                 cache: 'no-store',
@@ -59,8 +55,9 @@ const updateSW = registerSW({
                 },
             })
 
-            if (resp?.status === 200)
+            if (resp?.status === 200) {
                 await r.update()
+            }
         }, intervalMS)
     },
     immediate: true,
