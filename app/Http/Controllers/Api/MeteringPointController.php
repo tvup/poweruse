@@ -15,6 +15,7 @@ use App\Services\Transformers\Facades\MeteringPointTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\EwiiApi\EwiiApiException;
@@ -31,9 +32,8 @@ class MeteringPointController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response | JsonResponse
      */
-    public function index(?string $refresh_token = null) : JsonResponse
+    public function index(?string $refresh_token = null) : Response|JsonResponse
     {
         $source = request()->get('source') ?? SourceEnum::POWERUSE;
         $source = is_string($source) ? SourceEnum::from($source) : $source;
