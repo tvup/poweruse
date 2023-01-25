@@ -26,6 +26,17 @@ import {
 } from 'vform/src/components/bootstrap5'
 
 import flatpickr from "flatpickr";
+let appLocale = $('html').attr('lang');
+import {Danish} from "flatpickr/dist/l10n/da";
+import {english} from "flatpickr/dist/l10n/default";
+switch (appLocale) {
+    case 'da':
+        flatpickr.localize(Danish);
+        break;
+    case 'en':
+    default:
+        flatpickr.localize(english);
+}
 window.flatpickr = flatpickr;
 
 const app = createApp({});
