@@ -15,10 +15,6 @@ import swal from 'sweetalert2';
 // Then, set /window.swal as /swal so we can instantiate /swal later within our component.
 window.swal = swal;
 
-import.meta.glob([
-    '../images/**',
-]);
-
 import MeteringPoint from "../views/components/metering-points/MeteringPoint.vue";
 import Charge from "../views/components/charges/Charge.vue";
 import Paginate from "vuejs-paginate-next";
