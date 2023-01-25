@@ -24,7 +24,7 @@
             @endif
         @endif
         <div class="card-body">
-            <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('getSpotprices')}}">
+            <form name="get-spot-prices-form" id="get-spot-prices-form" method="post" action="{{url('getSpotprices')}}">
                 {{ csrf_field() }}
 
                 <div class="form-group">
@@ -35,12 +35,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Start dato</label>
-                    <input name="start_date" class="date form-control" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
+                    <label for="start_date">Start dato</label>
+                    <input name="start_date" class="date form-control start_date" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Slut dato (eks.)</label>
-                    <input name="end_date" class="date form-control" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
+                    <label for="end_date">Slut dato (eks.)</label>
+                    <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
 
                 <div class="form-group">
@@ -68,14 +68,8 @@
 
 <script type="module">
     window.onload = function () {
-        $('.date').datepicker({
-            format: 'yyyy-mm-dd'
-        });
-    }
-</script>
+        flatpickr('.start_date, .end_date');
 
-<script type="module">
-    window.onload = function () {
         $(function() {
             $(document).ready(function(){
                 $(".alert").slideDown(300).delay(10000).slideUp(300);

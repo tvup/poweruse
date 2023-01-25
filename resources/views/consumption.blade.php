@@ -59,11 +59,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Start dato</label>
+                    <label for="start_date">Start dato</label>
                     <input name="start_date" class="date form-control start_date" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Slut dato (eks.)</label>
+                    <label for="end_date">Slut dato (eks.)</label>
                     <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
 
@@ -168,19 +168,18 @@
                 const today = new Date();
                 let tomorrow = new Date();
                 tomorrow.setDate(today.getDate() + 1);
-                if($boolean) {
-                    $('.end_date').datepicker("setDate", tomorrow);
+                if ($boolean) {
+                    flatpickr('.end_date', {defaultDate: tomorrow});
                 } else {
-                    $('.end_date').datepicker("setDate", today);
+                    flatpickr('.end_date', {defaultDate: today});
                 }
 
             }
 
-            $('.start_date, .end_date').datepicker({
-                format: 'yyyy-mm-dd'
-            });
+            flatpickr('.start_date, .end_date');
+
             updateDatePicker({{ old('smart_me') == 'on' }});
-            $('.start_date').datepicker("setDate", "{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}");
+            flatpickr('.start_date', {defaultDate: "{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}"});
 
             $(document).ready(function(){
                 $(".alert").slideDown(300).delay(10000).slideUp(300);

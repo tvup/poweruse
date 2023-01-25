@@ -44,7 +44,7 @@ class MeteringPoint extends BaseModel
     protected $appends = ['source'];
 
     protected $casts = [
-        'source' => SourceEnum::class,
+        'source' => 'string',
     ];
 
     public function getSourceAttribute(): ?SourceEnum
