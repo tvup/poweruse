@@ -21,18 +21,11 @@ use Tvup\EwiiApi\EwiiApiException;
 
 class MeteringPointController extends Controller
 {
-    private GetMeteringData $meteringDataService;
+    private bool $userIsLoggedIn;
 
-    private bool $userIsLoggedIn = false;
-
-    public function __construct(GetMeteringData $meteringDataService)
+    public function __construct(private GetMeteringData $meteringDataService)
     {
-        if (auth('api')->check()) {
-            $this->userIsLoggedIn = true;
-        } else {
-            $this->userIsLoggedIn = false;
-        }
-        $this->meteringDataService = $meteringDataService;
+        $this->userIsLoggedIn = auth('api')->check();
     }
 
     /**
@@ -40,7 +33,7 @@ class MeteringPointController extends Controller
      *
      * @return \Illuminate\Http\Response | JsonResponse
      */
-    public function index(?string $refresh_token = null)
+    public function index(?string $refresh_token = null) : JsonResponse
     {
         $source = request()->get('source') ?? SourceEnum::POWERUSE;
         $source = is_string($source) ? SourceEnum::from($source) : $source;
@@ -100,9 +93,9 @@ class MeteringPointController extends Controller
             $data = PaginationHelper::paginate($data, 10);
 
             return response()->json($data);
-        } else {
-            return response()->json();
         }
+
+        return response()->json();
     }
 
     /**
@@ -150,11 +143,10 @@ class MeteringPointController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\MeteringPoint $meteringPoint
-     * @return \Illuminate\Http\Response
      */
-    public function show(MeteringPoint $meteringPoint)
+    public function show(MeteringPoint $meteringPoint): JsonResponse
     {
-        return response(MeteringPoint::first()); //TODO
+        return response()->json($meteringPoint);
     }
 
     /**
@@ -162,15 +154,14 @@ class MeteringPointController extends Controller
      *
      * @param UpdateMeteringPointRequest $request
      * @param \App\Models\MeteringPoint $meteringPoint
-     * @return MeteringPoint
      */
-    public function update(UpdateMeteringPointRequest $request, MeteringPoint $meteringPoint): MeteringPoint
+    public function update(UpdateMeteringPointRequest $request, MeteringPoint $meteringPoint): JsonResponse
     {
         $validated = $request->validate($request->rules());
 
         $meteringPoint->update($validated);
 
-        return $meteringPoint;
+        return response()->json($meteringPoint);
     }
 
     /**
@@ -193,6 +184,6 @@ class MeteringPointController extends Controller
         }
         $meteringPoint->delete();
 
-        return response()->json();
+        return response()->json(status: 204);
     }
 }
