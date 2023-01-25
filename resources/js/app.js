@@ -26,16 +26,9 @@ import {
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
 
-import { pwaInfo } from 'virtual:pwa-info';
-
-
-import { Workbox } from 'workbox-window'
-import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching'
-import { registerRoute, NavigationRoute } from 'workbox-routing'
-
 //This is for prompt-update of PWA
 import { registerSW } from 'virtual:pwa-register'
-const intervalMS = 30 * 1000
+const intervalMS = 60 * 60 * 1000
 const updateSW = registerSW({
     onRegisteredSW(swUrl, r) {
         r && setInterval(async () => {
@@ -68,27 +61,6 @@ const updateSW = registerSW({
     }
 })
 
-
-// if ('serviceWorker' in navigator) {
-//     console.log('serviceWorker is in navigator');
-//
-//     const wb = new Workbox('/sw.js')
-//
-//     precacheAndRoute([
-//         { url: '/index.php', revision: '383676' }
-//     ])
-//
-//     const handler         = createHandlerBoundToURL('/index.php')
-//     const navigationRoute = new NavigationRoute(handler)
-//     registerRoute(navigationRoute)
-//
-//     wb.register().then(data => {
-//         console.log(data);
-//     });
-// }
-
-// eslint-disable-next-line no-console
-console.log(pwaInfo);
 
 import.meta.glob([
     '../images/icons/*.{ico,png,svg,jpg}'
