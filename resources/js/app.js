@@ -1,5 +1,4 @@
 import './bootstrap';
-import './bootstrap-datepicker';
 
 import {createApp} from "vue";
 
@@ -25,6 +24,9 @@ import {
     AlertErrors,
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
+
+import flatpickr from "flatpickr";
+window.flatpickr = flatpickr;
 
 const app = createApp({});
 app.use(i18nVue, {

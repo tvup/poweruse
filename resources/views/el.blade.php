@@ -35,40 +35,40 @@
                     <input type="hidden" name="token" id="token" value="{{ $refresh_token }}">
                 @else
                     <div class="form-group datahub">
-                        <label for="exampleInputEmail1">{{ __('Refresh token') }}</label>
+                        <label for="token">{{ __('Refresh token') }}</label>
                         <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ?? (Cookie::get('refresh_token') ?? '') }}">
                     </div>
                 @endif
                 <div class="form-group ewii">
-                    <label for="exampleInputEmail1">{{ __('Email') }}</label>
+                    <label for="ewiiEmail">{{ __('Email') }}</label>
                     <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') }}">
                 </div>
                 <div class="form-group ewii">
-                    <label for="exampleInputEmail1">{{ __('Password') }}</label>
+                    <label for="ewiiPassword">{{ __('Password') }}</label>
                     <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiiPassword') }}">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Smart-me?</label>
+                    <label for="smart_me">Smart-me?</label>
                     <input name="smart_me" id="smart_me" type="checkbox" {{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : '')}}>
                 </div>
                 <div class="form-group smartmedetails">
-                    <label for="exampleInputEmail1">Smart-me id:</label>
+                    <label for="smartmeid">Smart-me id:</label>
                     <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') ?? (Cookie::get('smartmeid') ?? '') }}">
                 </div>
                 <div class="form-group smartmedetails">
-                    <label for="exampleInputEmail1">{{ __('Smart-me username') }}:</label>
+                    <label for="smartmeuser">{{ __('Smart-me username') }}:</label>
                     <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') ?? (Cookie::get('smartmeuser') ?? '')}}">
                 </div>
                 <div class="form-group smartmedetails">
-                    <label for="exampleInputEmail1">{{ __('Smart-me password') }}:</label>
+                    <label for="smartmepassword">{{ __('Smart-me password') }}:</label>
                     <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') ?? (Cookie::get('smartmepassword') ?? '')}}">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">{{ __('Start date') }}</label>
-                    <input name="start_date" class="date form-control" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
+                    <label for="start_date">{{ __('Start date') }}</label>
+                    <input name="start_date" class="date form-control start_date" type="text" value="{{ old('start_date') ? : \Carbon\Carbon::now()->startOfMonth()->toDateString() }}">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">{{ __('End date (ex.)') }}</label>
+                    <label for="end_date">{{ __('End date (ex.)') }}</label>
                     <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
                 <div class="form-group">
@@ -96,15 +96,6 @@
 
 
 @endsection
-
-<script type="module">
-    window.onload = function () {
-        $('.date').datepicker({
-            format: 'yyyy-mm-dd'
-        });
-    }
-</script>
-
 
 <script type="module">
     window.onload = function () {
@@ -148,13 +139,15 @@
                 const today = new Date();
                 let tomorrow = new Date();
                 tomorrow.setDate(today.getDate() + 1);
-                if($boolean) {
-                    $('.end_date').datepicker("setDate", tomorrow);
+                if ($boolean) {
+                    flatpickr('.end_date', {defaultDate: tomorrow});
                 } else {
-                    $('.end_date').datepicker("setDate", today);
+                    flatpickr('.end_date', {defaultDate: today});
                 }
 
             }
+
+            flatpickr('.start_date, .end_date', {});
 
             updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
