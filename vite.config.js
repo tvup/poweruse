@@ -7,7 +7,6 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
     publicDir: 'public',
     build: {
-        minify: false,
         manifest: true,
         emptyOutDir: false,
     },
@@ -42,7 +41,9 @@ export default defineConfig({
             workbox: {
                 additionalManifestEntries: [{url: '/index.php', revision: '1'}],
                 navigateFallback: '/index.php',
-                navigateFallbackDenylist: [/^\/assets\/images/]
+                navigateFallbackDenylist: [/^\/assets\/images/] //This is due to the manifest icons are in the public
+                                                                //folder and we don't want those to be versioned for the
+                                                                //time being.
             },
             devOptions: {
                 enabled: true,
