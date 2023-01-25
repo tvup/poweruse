@@ -62,7 +62,7 @@ class MeteringPointController extends Controller
 
                     return response()->json(['error' => $message]);
                 case 401:
-                    return response()->json(['error' => 'Failed - cannot login with token']);
+                    return response()->json(PaginationHelper::paginate(collect([['error' => 'Failed - cannot login with token']]), 10));
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
