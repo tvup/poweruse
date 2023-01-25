@@ -57,7 +57,7 @@ const updateSW = registerSW({
     onNeedRefresh() {},
     onOfflineReady() {},
     onRegisterError(error) {
-        console.log('Der er desværre sket en fejl, så vi ikke kan registre service workeren: ' + error);
+        console.log('Unfortunately an error has occurred so it wasn\'t possible to register the service worker: ' + error);
     }
 })
 
