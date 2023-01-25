@@ -31,7 +31,6 @@ class MeteringPointController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      */
     public function index(?string $refresh_token = null) : Response|JsonResponse
     {
