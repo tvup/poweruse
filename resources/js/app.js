@@ -81,5 +81,4 @@ app.component('has-error', HasError);
 app.component(AlertError.name, AlertError);
 app.component(AlertErrors.name, AlertErrors);
 app.component(AlertSuccess.name, AlertSuccess);
-
 app.mount('#app');
