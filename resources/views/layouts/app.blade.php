@@ -26,7 +26,6 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
-<script id="CookieDeclaration" src="https://consent.cookiebot.com/98f953d5-0a52-41ef-b173-e0218b36bb3d/cd.js" type="text/javascript" async></script>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
