@@ -97,7 +97,8 @@
 <script type="module">
     window.onload = function () {
         if (/Android|iPhone/i.test(navigator.userAgent)) {
-            var first_visit = false;
+            //first_visit inspired by https://stackoverflow.com/a/73461422
+            let first_visit = false;
             checkFirstVisit();
             function checkFirstVisit(){
                 if(localStorage.getItem('was_visited')){
