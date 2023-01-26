@@ -17,7 +17,7 @@
                     <p>{{ __('Here you\'ll find tools for calculation on electricity usage and tools to retrieve data from operators in the energy market') }}</p>
                     <p>{{ __('Below you can find a video on how to retrieve a refresh token from energioverblik which is used to retrieve consumption and static data for your metering point') }}</p>
                         <video width="340" height="250" controls autoplay loop name="media">
-                            <source src="assets/videos/opret_token.webm" type="video/webm">
+                            <source src="{{ Vite::asset('resources/videos/opret_token.webm') }}" type="video/webm">
                         </video>
                 </div>
             </div>

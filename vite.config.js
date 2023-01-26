@@ -7,6 +7,7 @@ import {VitePWA} from 'vite-plugin-pwa';
 export default defineConfig(({command, mode}) => {
     const env = loadEnv(mode, process.cwd(), '');
     return {
+        assetsInclude: ['**/*.webm'],
         publicDir: 'public',
         build: {
             manifest: true,
@@ -42,7 +43,8 @@ export default defineConfig(({command, mode}) => {
                 },
                 workbox: {
                     additionalManifestEntries: [{url: '/index.php', revision: '1'}],
-                    globPatterns: ['**/*.{js,ico,png,svg}'],
+                    globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
+                    maximumFileSizeToCacheInBytes: 2150000,
                     navigateFallback: '/index.php',
                     navigateFallbackDenylist: [/^\/assets\/images/] //This is due to the manifest icons are in the public
                                                                     //folder and we don't want those to be versioned for the

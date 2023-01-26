@@ -62,6 +62,7 @@ const updateSW = registerSW({
 
 
 import.meta.glob([
+    '../videos/*.webm',
     '../images/icons/*.{ico,png,svg,jpg}'
 ]);
 
