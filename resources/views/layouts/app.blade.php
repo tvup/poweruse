@@ -25,6 +25,7 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
+@include('components.nudge-pwa')
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -93,5 +94,25 @@
             @yield('content')
         </main>
     </div>
+<script type="module">
+    window.onload = function () {
+        if (/Android|iPhone/i.test(navigator.userAgent)) {
+            var first_visit = false;
+            checkFirstVisit();
+            function checkFirstVisit(){
+                if(localStorage.getItem('was_visited')){
+                    return;
+                }
+                first_visit = true;
+                localStorage.setItem('was_visited', 1);
+            }
+            if(first_visit) {
+                $('#pwaModal').modal('show');
+                $('.arrow').removeAttr("style");
+                $('.arrow').css("z-index", 1055);
+            }
+        }
+    }
+</script>
 </body>
 </html>
