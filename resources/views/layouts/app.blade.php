@@ -68,6 +68,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="function openPwaNudge() {
+                            $('.box').css('z-index', 1055);
+                            $('.box').css('display', 'block');
+                            $('#pwaModal').css('z-index', 1055);
+                            $('#pwaModal').modal('show');
+                            $('.arrow').removeAttr('style');
+                            $('.arrow').css('z-index', 1055); } openPwaNudge() ">{{ __('App') }}</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     @guest
