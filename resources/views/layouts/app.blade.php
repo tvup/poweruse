@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    @production @endproduction
+    @production
         <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="98f953d5-0a52-41ef-b173-e0218b36bb3d" data-blockingmode="auto" type="text/javascript"></script>
     @endproduction
     <meta charset="utf-8">
