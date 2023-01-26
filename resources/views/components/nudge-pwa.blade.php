@@ -2,19 +2,20 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <h5 class="modal-title" id="exampleModalLabel">
-                Installer PowerUse som en app, det giver den bedste brugeroplevelse.<br><br>Sådan gør du:
+                {{ __('Install PowerUse as an app - it provides the best experience.') }}
+                <br><br>{{ __('How to:') }}
             </h5>
             <div class="step">
                 <div>1</div>
-                Klik på din browsers menu ikon herover.
+                {{ __('Click at the menu icon of your browser above.') }}
             </div>
             <div class="step">
                 <div>2</div>
-                I menuen, vælg "Føj til startskærm".
+                {{ __('Choose "Install app" in the menu.') }}
             </div>
             <div class="step">
                 <div>3</div>
-                Luk denne fane og start applikationen fra din startskærm
+                {{ __('Close this tab and start the app from your home screen') }}
             </div>
             <br/>
             <div>
@@ -30,7 +31,7 @@
                             $('.arrow').removeAttr('style');
                             $('.arrow').css('display','none');
                         } closePwaModal();">
-                    Nej tak
+                    {{ __('No, thank you') }}
                 </button>
             </div>
         </div>

@@ -95,5 +95,11 @@
   "Metering point has been deleted.": "Målepunktet blev slettet",
   "These credentials do not match our records.": "Disse adgangsoplysninger stemmer ikke overens med noget, vi har.",
   "Too many login attempts. Please try again in :seconds seconds.": "Det var desværre for mange forkerte forsøg. Prøv venligst først igen om :seconds sekunder.",
-  "Get total prices for next hours": "Totalpriser for de næste timer"
+  "Get total prices for next hours": "Totalpriser for de næste timer",
+  "Install PowerUse as an app - it provides the best experience.": "Installer PowerUse som en app, det giver den bedste brugeroplevelse.",
+  "How to:": "Sådan gør du:",
+  "Click at the menu icon of your browser above.": "Klik på din browsers menuikon herover.",
+  "Choose \"Install app\" in the menu.": "Vælg \"Installer app\" i menuen.",
+  "Close this tab and start the app from your home screen": "Luk denne fane og start applikationen fra din startskærm",
+  "No, thank you": "Nej tak"
 }
