@@ -8,12 +8,12 @@ export default defineConfig({
     publicDir: 'public',
     build: {
         manifest: true,
-        emptyOutDir: false,
+        emptyOutDir: true,
     },
     plugins: [
         VitePWA({
             includeManifestIcons: false,
-            mode: 'development',
+            mode: 'production',
             strategies: 'generateSW',
             injectRegister: 'inline',
             registerType: 'prompt',
