@@ -143,7 +143,7 @@
                 localStorage.setItem('was_visited', 1);
             }
 
-            if (true) {
+            if (first_visit) {
                 $('#pwaModal').css("z-index", 1055);
                 $('#pwaModal').modal('show');
                 $('.arrow').removeAttr("style");
