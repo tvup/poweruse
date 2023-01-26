@@ -138,6 +138,8 @@
                 $('#pwaModal').modal('show');
                 $('.arrow').removeAttr("style");
                 $('.arrow').css("z-index", 1055);
+            } else {
+                $('#pwaModal').remove();
             }
         }
         @yield('javaScript')
