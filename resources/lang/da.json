@@ -101,5 +101,9 @@
   "Click at the menu icon of your browser above.": "Klik på din browsers menuikon herover.",
   "Choose \"Install app\" in the menu.": "Vælg \"Installer app\" i menuen.",
   "Close this tab and start the app from your home screen": "Luk denne fane og start applikationen fra din startskærm",
-  "No, thank you": "Nej tak"
+  "No, thank you": "Nej tak",
+  "Welcome to PowerUse": "Velkommen til PowerUse",
+  "You are logged in!": "Du er logget ind!",
+  "Here you'll find tools for calculation on electricity usage and tools to retrieve data from operators in the energy market": "Her kan du finde værktøjer til at at beregne elforbrug og få data fra operatører i energimarkedet",
+  "Below you can find a video on how to retrieve a refresh token from energioverblik which is used to retrieve consumption and static data for your metering point": "Herunder kan du se en video om, hvordan du får et \"forny-token\" til energioverblik, som bruges til at hente forbrug og statisk data om dit målepunkt"
 }
