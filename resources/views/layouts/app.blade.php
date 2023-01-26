@@ -2,7 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @production
-        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="98f953d5-0a52-41ef-b173-e0218b36bb3d" data-blockingmode="auto" type="text/javascript"></script>
+        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js"
+                data-cbid="98f953d5-0a52-41ef-b173-e0218b36bb3d" data-blockingmode="auto"
+                type="text/javascript"></script>
     @endproduction
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,13 +38,14 @@
                 <img src="{{ Vite::asset('resources/images/icons/512x512.png')}}" alt="" width="30" height="30">
                 {{ config('app.name', 'Laravel') }}
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="{{ __('Toggle navigation') }}">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item active">
                         <a class="nav-link" href="{{ route('el-meteringpoint') }}">{{__('Metering point') }}</a>
                     </li>
