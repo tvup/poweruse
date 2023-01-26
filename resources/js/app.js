@@ -65,6 +65,9 @@ import.meta.glob([
     '../images/icons/*.{ico,png,svg,jpg}'
 ]);
 
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
 import flatpickr from "flatpickr";
 let appLocale = $('html').attr('lang');
 import {Danish} from "flatpickr/dist/l10n/da";

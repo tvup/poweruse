@@ -113,6 +113,7 @@
                 $('.arrow').css("z-index", 1055);
             }
         }
+        @yield('javaScript')
     }
 </script>
 </body>

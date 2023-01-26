@@ -66,8 +66,7 @@
 
 @endsection
 
-<script type="module">
-    window.onload = function () {
+@section('javaScript')
         flatpickr('.start_date, .end_date');
 
         $(function() {
@@ -75,5 +74,4 @@
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
             });
         });
-    }
-</script>
+@endsection

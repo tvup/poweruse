@@ -28,11 +28,9 @@
         </div>
     </div>
 @endsection
+
 @if(@isset($chart))
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <!-- CHARTS -->
-    <script type="module">
-        window.onload = function () {
+    @section('javaScript')
             var ctx = document.getElementById('userChart').getContext('2d');
             var chart = new Chart(ctx, {
                 type: 'bar',
@@ -83,8 +81,6 @@
                     }
                 }
             });
-        }
-
-    </script>
+    @endsection
 @endif
 
