@@ -22,4 +22,14 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    /**
+     * Show the privacy policy.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function privacy()
+    {
+        return view('privacy');
+    }
 }

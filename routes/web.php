@@ -20,6 +20,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/privacy', [App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy');
 
 Route::middleware('locale')->group(function () {
     // Routes that requires auth
