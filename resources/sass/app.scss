@@ -84,7 +84,7 @@ input:checked + .slider:before {
 }
 
 .box {
-  z-index: 1055;
+  z-index: -1;
   position: fixed;
   top: 1.25em;
   right: 0.75em;

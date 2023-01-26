@@ -22,6 +22,7 @@
                 <button class="btn btn-secondary"
                         onclick="function closePwaModal() {
                             $('#pwaModal').fadeOut().promise().done(function() {
+                                $('#pwaModal').css('z-index', -1);
                                 $('.modal-backdrop').fadeOut().promise().done(function() {
                                     $('.modal-backdrop').remove();
                                 });

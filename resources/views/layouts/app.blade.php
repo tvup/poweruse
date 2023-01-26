@@ -134,12 +134,11 @@
                 localStorage.setItem('was_visited', 1);
             }
 
-            if (first_visit) {
+            if (true) {
+                $('#pwaModal').css("z-index", 1055);
                 $('#pwaModal').modal('show');
                 $('.arrow').removeAttr("style");
                 $('.arrow').css("z-index", 1055);
-            } else {
-                $('#pwaModal').remove();
             }
         }
         @yield('javaScript')
