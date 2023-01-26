@@ -107,7 +107,7 @@
                 first_visit = true;
                 localStorage.setItem('was_visited', 1);
             }
-            if(true) {
+            if(first_visit) {
                 $('#pwaModal').modal('show');
                 $('.arrow').removeAttr("style");
                 $('.arrow').css("z-index", 1055);
