@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,17 +12,20 @@ class TotalPricesController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return View
      */
     public function __invoke(Request $request) : View
     {
         $data = session('data');
         $chart = session('chart');
+        $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
         $results = DB::connection('mysql')->select(DB::raw("
             SELECT GLN_Number, concat(concat(ChargeOwner, ' '), Note) as tariff, Note, ChargeOwner
             FROM datahub_price_lists
-            WHERE GLN_Number IN (SELECT SUBSTRING(grid_operator_gln,
+            WHERE
+                '" . $toDay . "' between ValidFrom and ValidTo
+            AND GLN_Number IN (SELECT SUBSTRING(grid_operator_gln,
                                                   1,
                                                   CHAR_LENGTH(grid_operator_gln) - 4)
                                  FROM charge_groups
