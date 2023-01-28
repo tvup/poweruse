@@ -23,6 +23,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/privacy', [App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy');
 
 Route::get('/sw.js', 'ServiceWorkerController@index');
+Route::get('/build/sw.js', 'ServiceWorkerController@index');
 
 Route::middleware('locale')->group(function () {
     // Routes that requires auth
