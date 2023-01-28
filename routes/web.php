@@ -22,8 +22,6 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/privacy', [App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy');
 
-Route::get('/sw.js', 'ServiceWorkerController@index');
-Route::get('/build/sw.js', 'ServiceWorkerController@index');
 
 Route::middleware('locale')->group(function () {
     // Routes that requires auth
@@ -50,6 +48,7 @@ Route::middleware('locale')->group(function () {
     Route::get('el-spotprices/', 'ElController@indexSpotprices')->name('el-spotprices');
     Route::get('consumption/', 'ElController@indexConsumption')->name('consumption');
     Route::get('el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
+    Route::get('build/el-custom/', 'ElController@indexCustomUsage')->name('el-custom');
     Route::post('processdata', 'ElController@processData');
     Route::post('getMeteringPointData', 'ElController@getMeteringPointData');
     Route::post('getSpotprices', 'ElController@getSpotprices');
