@@ -11,12 +11,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <meta name="description" content="My Awesome App description">
+
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ Vite::asset('resources/images/icons/apple-touch-icon.png')}}" sizes="180x180">
+    <link rel="mask-icon" href="{{ Vite::asset('resources/images/icons/mask-icon.svg')}}" color="#FFFFFF">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/build/manifest.webmanifest" />
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -26,7 +32,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-                    <img src="{{asset('images/favicon/512x512.png')}}" alt="" width="30" height="30">
+                    <img src="{{ Vite::asset('resources/images/icons/512x512.png')}}" alt="" width="30" height="30">
                     {{ config('app.name', 'Laravel') }}
                 </a>
 
