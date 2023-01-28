@@ -52,14 +52,15 @@ const updateSW = registerSW({
             }
         }, intervalMS)
     },
-    immediate: true,
-    onNeedRefresh() {},
-    onOfflineReady() {},
+    onNeedRefresh() {
+        window.dispatchEvent(new CustomEvent('open-modal', {detail: 'confirm-update-page'}));
+    },
     onRegisterError(error) {
         console.log('Unfortunately an error has occurred so it wasn\'t possible to register the service worker: ' + error);
     }
 })
 
+window.updateSW = updateSW;
 
 import.meta.glob([
     '../videos/*.webm',
