@@ -41,7 +41,6 @@ export default defineConfig(({command, mode}) => {
                     ],
                     theme_color: '#2196f3',
                     background_color: '#2196f3',
-                    scope: '/',
                     description: 'My Awesome App that will make you fall in love with Laravel.'
                 },
                 workbox: {
