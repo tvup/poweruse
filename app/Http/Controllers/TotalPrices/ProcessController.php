@@ -72,14 +72,24 @@ class ProcessController extends Controller
         }
         $companies = Operator::$operatorName;
 
-        $colours = $this->makeColors(array_values($totalPrice));
+        $chart = null;
+        $data = null;
+        switch ($request->outputformat) {
+            case 'JSON':
+                $data = $totalPrice;
+                break;
+            case 'GRAF':
+                $colours = $this->makeColors(array_values($totalPrice));
 
-        $chart = new \stdClass();
-        $chart->labels = (array_keys($totalPrice));
-        $chart->dataset = (array_values($totalPrice));
-        $chart->colours = $colours;
+                $chart = new \stdClass();
+                $chart->labels = (array_keys($totalPrice));
+                $chart->dataset = (array_values($totalPrice));
+                $chart->colours = $colours;
+            default:
+                break;
+        }
 
-        return redirect('totalprices')->with('status', 'Alt data hentet')->with(['data' => $totalPrice])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
+        return redirect('totalprices')->with('status', __('All data collected'))->with(['data' => $data])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
 
     /**
