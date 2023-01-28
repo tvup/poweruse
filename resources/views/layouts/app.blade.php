@@ -128,7 +128,7 @@
         <div class="pwa-toast">
             {{ __('New content available, click on reload button to update.') }}
             <div class="message">
-                <button onclick="updateSW()">
+                <button onclick="updateServiceWorker()">
                     {{ __('Reload') }}
                 </button>
                 <button x-on:click="$dispatch('close')">
