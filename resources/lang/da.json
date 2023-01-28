@@ -95,5 +95,6 @@
   "Metering point has been deleted.": "Målepunktet blev slettet",
   "These credentials do not match our records.": "Disse adgangsoplysninger stemmer ikke overens med noget, vi har.",
   "Too many login attempts. Please try again in :seconds seconds.": "Det var desværre for mange forkerte forsøg. Prøv venligst først igen om :seconds sekunder.",
-  "Get total prices for next hours": "Totalpriser for de næste timer"
+  "Get total prices for next hours": "Totalpriser for de næste timer",
+  "All data collected": "Alt data hentet"
 }

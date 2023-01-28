@@ -18,6 +18,11 @@
                 </div>
             </div>
         @endif
+        @if(@isset($data))
+        <div class="card">
+            <pre class="json-output">{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        </div>
+        @endif
         <div class="card">
             <div class="card-header font-weight-bold">
                 <h2 class="card-title text-lg leading-6 font-medium text-gray-900">
