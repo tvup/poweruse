@@ -17,7 +17,6 @@ export default defineConfig(({command, mode}) => {
         },
         plugins: [
             VitePWA({
-                scope: '/',
                 minify: false,
                 includeManifestIcons: false,
                 mode: env.APP_ENV=='production' ? 'production' : 'development',
