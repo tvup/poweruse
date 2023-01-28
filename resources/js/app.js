@@ -62,8 +62,12 @@ const updateSW = registerSW({
 
 
 import.meta.glob([
+    '../videos/*.webm',
     '../images/icons/*.{ico,png,svg,jpg}'
 ]);
+
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
 
 import flatpickr from "flatpickr";
 let appLocale = $('html').attr('lang');
