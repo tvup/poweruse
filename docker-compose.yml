@@ -33,6 +33,7 @@ services:
             - sail
     mysql:
         image: 'mysql/mysql-server:8.0'
+        command: '--local-infile=ON'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
