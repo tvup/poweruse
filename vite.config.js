@@ -10,11 +10,15 @@ export default defineConfig(({command, mode}) => {
         assetsInclude: ['**/*.webm'],
         publicDir: 'public',
         build: {
+            sourcemap: true,
+            minify: false,
             manifest: true,
             emptyOutDir: true,
         },
         plugins: [
             VitePWA({
+                scope: '/',
+                minify: false,
                 includeManifestIcons: false,
                 mode: env.APP_ENV=='production' ? 'production' : 'development',
                 strategies: 'generateSW',
@@ -23,7 +27,7 @@ export default defineConfig(({command, mode}) => {
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
-                    start_url: '/totalprices',
+                    start_url: '/',
                     icons: [
                         {
                             src: '/assets/images/icons/pwa-192x192.png',
@@ -42,6 +46,7 @@ export default defineConfig(({command, mode}) => {
                     description: 'My Awesome App that will make you fall in love with Laravel.'
                 },
                 workbox: {
+                    skipWaiting: false,
                     additionalManifestEntries: [{url: '/index.php', revision: '1'}],
                     globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
                     maximumFileSizeToCacheInBytes: 2150000,

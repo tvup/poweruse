@@ -1,6 +1,6 @@
 import './bootstrap';
 
-import {createApp} from "vue";
+import {createApp, ref} from "vue";
 
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
@@ -27,40 +27,65 @@ import {
 
 //This is for prompt-update of PWA
 import { registerSW } from 'virtual:pwa-register'
-const intervalMS = 60 * 60 * 1000
-const updateSW = registerSW({
+
+const reloadSW = 'true'
+
+function useRegisterSW(options = {}) {
+    const {
+        immediate = true,
+        onNeedRefresh,
+        onOfflineReady,
+        onRegistered,
+        onRegisteredSW,
+        onRegisterError
+    } = options;
+    const needRefresh = ref(false);
+    const offlineReady = ref(false);
+    const updateServiceWorker = registerSW({
+        immediate,
+        onNeedRefresh() {
+            console.log('WE SHOULD BE HERE');
+            needRefresh.value = true;
+            window.dispatchEvent(new CustomEvent('open-modal', {detail: 'confirm-update-page'}));
+            onNeedRefresh == null ? void 0 : onNeedRefresh();
+        },
+        onOfflineReady() {
+            offlineReady.value = true;
+            onOfflineReady == null ? void 0 : onOfflineReady();
+        },
+        onRegistered,
+        onRegisteredSW,
+        onRegisterError
+    });
+    return {
+        updateServiceWorker,
+        offlineReady,
+        needRefresh
+    };
+}
+
+const {
+    offlineReady,
+    needRefresh,
+    updateServiceWorker,
+} = useRegisterSW({
+    immediate: true,
     onRegisteredSW(swUrl, r) {
+        // eslint-disable-next-line no-console
+        console.log(`Service Worker at: ${swUrl} ` + reloadSW)
         r && setInterval(async () => {
-            if (!(!r.installing && navigator)) {
-                return
-            }
-
-            if (('connection' in navigator) && !navigator.onLine) {
-                return
-            }
-
-            const resp = await fetch(swUrl, {
-                cache: 'no-store',
-                headers: {
-                    'cache': 'no-store',
-                    'cache-control': 'no-cache',
-                },
-            })
-
-            if (resp?.status === 200) {
-                await r.update()
-            }
-        }, intervalMS)
+            // eslint-disable-next-line no-console
+            console.log('Checking for sw update')
+            // eslint-disable-next-line no-console
+            console.log(navigator.serviceWorker.controller)
+            await r.update()
+        }, 10000 /* 20s for testing purposes */)
     },
-    onNeedRefresh() {
-        window.dispatchEvent(new CustomEvent('open-modal', {detail: 'confirm-update-page'}));
-    },
-    onRegisterError(error) {
-        console.log('Unfortunately an error has occurred so it wasn\'t possible to register the service worker: ' + error);
-    }
 })
+window.updateServiceWorker = updateServiceWorker;
+window.needRefresh = needRefresh;
 
-window.updateSW = updateSW;
+
 
 import.meta.glob([
     '../videos/*.webm',

@@ -22,6 +22,8 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/privacy', [App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy');
 
+Route::get('/sw.js', 'ServiceWorkerController@index');
+
 Route::middleware('locale')->group(function () {
     // Routes that requires auth
     Route::middleware('protected.routes')->group(function () {
