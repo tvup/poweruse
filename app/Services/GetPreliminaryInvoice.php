@@ -199,9 +199,14 @@ class GetPreliminaryInvoice
             foreach ($tariffs as $tariff) {
                 $datahubPriceListsQuery = $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'], $to_date, $start_date);
                 $key = $tariff['owner'] . $tariff['name'] . $tariff['description'] . $to_date . $start_date;
-                $datahubPriceLists = cache()->remember($key, 2592000, function () use ($datahubPriceListsQuery) {
-                    return $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
-                });
+                if (cache()->has($key)) {
+                    $datahubPriceLists = cache($key);
+                } else {
+                    $datahubPriceLists = $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
+                    if ($datahubPriceLists->count() > 0) {
+                        cache([$key => $datahubPriceLists], 2592000);
+                    }
+                }
                 $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
                     $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo ?? '2030-01-01', 'Europe/Copenhagen'));
 
