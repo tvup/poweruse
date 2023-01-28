@@ -33,17 +33,17 @@ class TotalPricesController extends Controller
                                      FROM charge_groups
                                      WHERE charge_group_2 = 'C')
                   AND ChargeType = 'D03'
-                  AND Note NOT IN ( " . list_of_tariffs_for_non_private_consumers() . "
+                  AND Note NOT IN ( " . list_of_tariffs_for_non_private_consumers() . '
                     )
                 group by ChargeOwner, Note, GLN_Number
-            "));
+            '));
+
             return array_map(function ($record) {
                 $key = $record->ChargeOwner . '//' . $record->Note;
 
                 return [$key => $record->tariff];
             }, $results);
         });
-
 
         return view('totalprices')->with('data', $data ?: null)->with('chart', $chart ?: null)->with('companies', $companies);
     }
