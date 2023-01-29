@@ -29,8 +29,8 @@ export default defineConfig(({command, mode}) => {
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
-                    id: '/',
-                    start_url: '/',
+                    id: '/totalprices',
+                    start_url: '/totalprices',
                     icons: [
                         {
                             src: '/assets/images/icons/pwa-192x192.png',
@@ -48,11 +48,26 @@ export default defineConfig(({command, mode}) => {
                     description: 'My Awesome App that will make you fall in love with Laravel.'
                 },
                 workbox: {
+                    modifyURLPrefix: {
+                        'build/': '/'
+                    },
                     skipWaiting: false,
-                    additionalManifestEntries: [{url: '/index.php', revision: '1'}],
+                    additionalManifestEntries: [
+                        {url: '/home', revision: '1'},
+                        {url: '/el-meteringpoint', revision: '1'},
+                        {url: '/el-charges', revision: '1'},
+                        {url: '/consumption', revision: '1'},
+                        {url: '/el-spotprices', revision: '1'},
+                        {url: '/el', revision: '1'},
+                        {url: '/el-custom', revision: '1'},
+                        {url: '/totalprices', revision: '1'},
+                        {url: '/login', revision: '1'},
+                        {url: '/register', revision: '1'},
+                        {url: '/privacy', revision: '1'}
+                    ],
                     globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
                     maximumFileSizeToCacheInBytes: 2150000,
-                    navigateFallback: '/index.php',
+                    navigateFallback: '/home',
                     navigateFallbackDenylist: [/^\/assets\/images/] //This is due to the manifest icons are in the public
                                                                     //folder and we don't want those to be versioned for the
                                                                     //time being.
@@ -70,6 +85,7 @@ export default defineConfig(({command, mode}) => {
                     'resources/js/custom.js',
                 ],
                 refresh: true,
+                buildDirectory: './'
             }),
             vue({
                 template: {
