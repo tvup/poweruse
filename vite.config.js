@@ -22,7 +22,7 @@ export default defineConfig(({command, mode}) => {
                 scope: '/',
                 outDir: './public',
                 includeManifestIcons: false,
-                mode: env.APP_ENV=='production' ? 'production' : 'development',
+                mode: mode === 'production' ? 'production' : 'development',
                 strategies: 'generateSW',
                 injectRegister: 'inline',
                 registerType: 'prompt',
@@ -70,7 +70,8 @@ export default defineConfig(({command, mode}) => {
                         /^\/totalprices/ ,
                         /^\/login/ ,
                         /^\/register/ ,
-                        /^\/privacy/
+                        /^\/privacy/,
+                        /^\/profile/
                     ] //This is due to the manifest icons are in the public
                       //folder and we don't want those to be versioned for the
                       //time being.
