@@ -28,8 +28,6 @@ import {
 //This is for prompt-update of PWA
 import { registerSW } from 'virtual:pwa-register'
 
-const reloadSW = 'true'
-
 function useRegisterSW(options = {}) {
     const {
         immediate = true,
