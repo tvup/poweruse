@@ -419,7 +419,7 @@ class ElController extends Controller
      * @return JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.015, User $user) : JsonResponse
+    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.015, User $user = null) : JsonResponse
     {
         $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead, $user);
 

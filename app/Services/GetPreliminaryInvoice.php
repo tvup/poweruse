@@ -321,7 +321,7 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015, User $user): array
+    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015, User $user = null): array
     {
         if (is_string($overhead)) {
             $overhead = str_replace(',', '.', $overhead);
