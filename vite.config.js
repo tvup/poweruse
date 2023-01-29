@@ -29,6 +29,7 @@ export default defineConfig(({command, mode}) => {
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
+                    id: '/',
                     start_url: '/',
                     icons: [
                         {
