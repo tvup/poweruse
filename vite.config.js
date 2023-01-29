@@ -13,7 +13,6 @@ export default defineConfig(({command, mode}) => {
         build: {
             outDir: './public',
             sourcemap: true,
-            minify: false,
             manifest: true,
             emptyOutDir: false,
         },
@@ -22,7 +21,6 @@ export default defineConfig(({command, mode}) => {
                 base: '/',
                 scope: '/',
                 outDir: './public',
-                minify: false,
                 includeManifestIcons: false,
                 mode: env.APP_ENV=='production' ? 'production' : 'development',
                 strategies: 'generateSW',
