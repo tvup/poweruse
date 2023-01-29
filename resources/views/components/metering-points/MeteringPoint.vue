@@ -597,6 +597,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
+        cancelButtonText: trans('Cancel'),
         confirmButtonText: trans('Yes, delete it!')
       }).then((result) => {
         // confirm delete?
