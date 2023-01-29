@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Foundation\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        app()->make(Vite::class)->withEntryPoints(['resources/sass/app.scss', 'resources/js/app.js'])->useBuildDirectory('');
     }
 
     /**
