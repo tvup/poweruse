@@ -1,1 +1,5 @@
+assets/*
 .env
+manifest.*
+sw.js*
+workbox*
