@@ -75,7 +75,7 @@ const {
             //console.log('Checking for sw update')
             // eslint-disable-next-line no-console
             await r.update()
-        }, 10000 /* 20s for testing purposes */)
+        }, 600000 /* Every 10 minutes */)
     },
 })
 window.updateServiceWorker = updateServiceWorker;
