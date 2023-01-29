@@ -24,7 +24,7 @@
                 {{ csrf_field() }}
 
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Kilde:</label>
+                    <label for="smart_me">{{ __('Source:') }}:</label>
                     DATAHUB {{ Form::radio('source', 'DATAHUB' , (old('source') && old('source')=='DATAHUB') ? old('source') : true) }}
                     EWII {{ Form::radio('source', 'EWII' , (old('source') && old('source')=='EWII') ? old('source') : false) }}
                     SMART_ME {{ Form::radio('source', 'SMART_ME' , (old('source') && old('source')=='SMART_ME') ? old('source') : false) }}
@@ -34,27 +34,27 @@
                 </div>
 
                 <div class="form-group datahub">
-                    <label for="exampleInputEmail1">Refresh token</label>
+                    <label for="token">{{__('Refresh token') }}</label>
                     <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') }}">
                 </div>
                 <div class="form-group ewii">
-                    <label for="exampleInputEmail1">Email</label>
+                    <label for="ewiiEmail">{{ __('Email') }}</label>
                     <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') }}">
                 </div>
                 <div class="form-group ewii">
-                    <label for="exampleInputEmail1">Password</label>
+                    <label for="ewiiPassword">{{ __('Password') }}</label>
                     <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiiPassword') }}">
                 </div>
                 <div class="form-group smartmedetails">
-                    <label for="exampleInputEmail1">Smart-me id:</label>
+                    <label for="smartmeid">{{ __('Smart-me id:') }}</label>
                     <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') }}">
                 </div>
                 <div class="form-group smartmedetails">
-                    <label for="exampleInputEmail1">Smart-me username:</label>
+                    <label for="smartmeuser">{{ __('Smart-me username:') }}</label>
                     <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') }}">
                 </div>
                 <div class="form-group smartmedetails">
-                    <label for="exampleInputEmail1">Smart-me password:</label>
+                    <label for="smartmepassword">{{ __('Smart-me password:') }}</label>
                     <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') }}">
                 </div>
 
@@ -67,7 +67,7 @@
                     <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary mt-2">{{ __('Submit') }}</button>
             </form>
         </div>
     </div>
