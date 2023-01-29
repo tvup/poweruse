@@ -9,20 +9,27 @@ export default defineConfig(({command, mode}) => {
     return {
         assetsInclude: ['**/*.webm'],
         publicDir: 'public',
+        base: './',
         build: {
+            outDir: './public',
+            sourcemap: true,
             manifest: true,
-            emptyOutDir: true,
+            emptyOutDir: false,
         },
         plugins: [
             VitePWA({
+                base: '/',
+                scope: '/',
+                outDir: './public',
                 includeManifestIcons: false,
-                mode: env.APP_ENV=='production' ? 'production' : 'development',
+                mode: mode === 'production' ? 'production' : 'development',
                 strategies: 'generateSW',
                 injectRegister: 'inline',
                 registerType: 'prompt',
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
+                    id: '/totalprices',
                     start_url: '/totalprices',
                     icons: [
                         {
@@ -35,20 +42,45 @@ export default defineConfig(({command, mode}) => {
                             sizes: '512x512',
                             type: 'image/png'
                         },
+                        {
+                            src: '/assets/images/icons/pwa-maskable_icon.png',
+                            sizes: '512x512',
+                            type: 'image/png',
+                            purpose: 'maskable'
+                        },
                     ],
                     theme_color: '#2196f3',
                     background_color: '#2196f3',
-                    scope: '/',
                     description: 'My Awesome App that will make you fall in love with Laravel.'
                 },
                 workbox: {
-                    additionalManifestEntries: [{url: '/index.php', revision: '1'}],
+                    modifyURLPrefix: {
+                        'build/': '/' //I'm unsure if this actually is needed
+                    },
+                    skipWaiting: false,
+
+                    additionalManifestEntries: [
+                        {url: '/home', revision: '1'}
+                    ],
                     globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
                     maximumFileSizeToCacheInBytes: 2150000,
-                    navigateFallback: '/index.php',
-                    navigateFallbackDenylist: [/^\/assets\/images/] //This is due to the manifest icons are in the public
-                                                                    //folder and we don't want those to be versioned for the
-                                                                    //time being.
+                    navigateFallback: '/home',
+                    navigateFallbackDenylist: [
+                        /^\/assets\/images/ ,
+                        /^\/el-meteringpoint/ ,
+                        /^\/el-charges/ ,
+                        /^\/consumption/ ,
+                        /^\/el-spotprices/ ,
+                        /^\/el/ ,
+                        /^\/el-custom/ ,
+                        /^\/totalprices/ ,
+                        /^\/login/ ,
+                        /^\/register/ ,
+                        /^\/privacy/,
+                        /^\/profile/
+                    ] //This is due to the manifest icons are in the public
+                      //folder and we don't want those to be versioned for the
+                      //time being.
                 },
                 devOptions: {
                     enabled: true,
@@ -63,6 +95,7 @@ export default defineConfig(({command, mode}) => {
                     'resources/js/custom.js',
                 ],
                 refresh: true,
+                buildDirectory: './'
             }),
             vue({
                 template: {

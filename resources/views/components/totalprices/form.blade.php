@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Prisområde:</label>
+                        <label for="area">Prisområde:</label>
                         DK1 {{ Form::radio('area', 'DK1' , (old('area') && old('area')=='DK1') ? old('area') : false) }}
                         DK2 {{ Form::radio('area', 'DK2' , (old('area') && old('area')=='DK2') ? old('area') : true) }}
                     </div>
@@ -33,16 +33,10 @@
                     </div>
 
 
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary mt-2">
                         {{ __('Get')}}
                     </button>
                 </form>
-            </div>
-
-            <div>
-                <div class="card-body table-responsive p-0">
-
-                </div>
             </div>
         </div>
     </div>

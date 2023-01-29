@@ -214,15 +214,15 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary"
+                          <button type="button" class="btn btn-primary my-2 me-2"
                                   v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
                                   @click="createMeteringPoint();">{{ $t('Save to poweruse') }}
                           </button>
-                          <button type="button" class="btn btn-info"
+                          <button type="button" class="btn btn-info my-2 me-2"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
                                   @click.prevent="editMeteringPoint();">{{ $t('Update') }}
                           </button>
-                          <button type="button" class="btn btn-secondary"
+                          <button type="button" class="btn btn-secondary my-2 me-2"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
                                   @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
                           </button>
@@ -462,6 +462,7 @@
 <!-- We put our scripts inside script tag -->
 <script>
 import Form from "vform";
+import {trans} from 'laravel-vue-i18n';
 // Declare /metering-point-management component
 export default {
   props: {
@@ -593,6 +594,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
+        cancelButtonText: trans('Cancel'),
         confirmButtonText: trans('Yes, delete it!')
       }).then((result) => {
         // confirm delete?

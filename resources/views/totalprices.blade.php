@@ -51,9 +51,9 @@
                 },
                 options: {
                     scales: {
-                        yAxes: [{
+                        y: {
+                            beginAtZero: true,
                             ticks: {
-                                beginAtZero: true,
                                 callback: function (value) {
                                     if (value % 1 === 0) {
                                         return value;
@@ -63,18 +63,20 @@
                             scaleLabel: {
                                 display: false
                             }
-                        }]
-                    },
-                    legend: {
-                        display: false,
-                        labels: {
-                            // This more specific font property overrides the global property
-                            fontColor: '#122C4B',
-                            fontFamily: "'Muli', sans-serif",
-                            padding: 25,
-                            boxWidth: 25,
-                            fontSize: 14,
                         }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                            labels: {
+                                // This more specific font property overrides the global property
+                                fontColor: '#122C4B',
+                                fontFamily: "'Muli', sans-serif",
+                                padding: 25,
+                                boxWidth: 25,
+                                fontSize: 14,
+                            }
+                        },
                     },
                     layout: {
                         padding: {
