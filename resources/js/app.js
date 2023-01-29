@@ -79,8 +79,6 @@ const {
     },
 })
 window.updateServiceWorker = updateServiceWorker;
-window.needRefresh = needRefresh;
-
 
 
 import.meta.glob([
