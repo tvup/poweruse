@@ -23,7 +23,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/privacy', [App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy');
 Route::get('/build/manifest.webmanifest', [\App\Http\Controllers\WebManifestController::class, 'manifest']);
 
-
 Route::middleware('locale')->group(function () {
     // Routes that requires auth
     Route::middleware('protected.routes')->group(function () {
