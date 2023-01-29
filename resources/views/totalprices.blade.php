@@ -18,6 +18,11 @@
                 </div>
             </div>
         @endif
+        @if(@isset($data))
+        <div class="card">
+            <pre class="json-output">{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        </div>
+        @endif
         <div class="card">
             <div class="card-header font-weight-bold">
                 <h2 class="card-title text-lg leading-6 font-medium text-gray-900">
@@ -28,11 +33,9 @@
         </div>
     </div>
 @endsection
+
 @if(@isset($chart))
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <!-- CHARTS -->
-    <script type="module">
-        window.onload = function () {
+    @section('javaScript')
             var ctx = document.getElementById('userChart').getContext('2d');
             var chart = new Chart(ctx, {
                 type: 'bar',
@@ -83,17 +86,6 @@
                     }
                 }
             });
-        }
-
-    </script>
+    @endsection
 @endif
 
-<script type="module">
-    if ('serviceWorker' in navigator) {
-        // Register a service worker hosted at the root of the
-        // site using the default scope.
-        navigator.serviceWorker.register('{{ Vite::asset('resources/js/serviceworker.js') }}').then(function (registration) {
-        });
-    } else {
-    }
-</script>

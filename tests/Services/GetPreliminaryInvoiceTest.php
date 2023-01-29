@@ -25,16 +25,16 @@ class GetPreliminaryInvoiceTest extends TestCase
     {
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
-        $this->charges = $this->loadTestData(fixture_path('typical_charges.json'));
+        $this->charges = $this->loadTestData(test_fixture_path('typical_charges.json'));
 
-        $this->spotPrices = $this->loadTestData(fixture_path('spot_prices.json'));
+        $this->spotPrices = $this->loadTestData(test_fixture_path('spot_prices.json'));
 
         //Consumption is normally returned from the service as an array with {date_time=>usage}
         //So a key with 00:00 means the usage between 00:00 and 01:00
-        $this->testConsumptions = $this->loadTestData(fixture_path('consumption_data.json'));
+        $this->testConsumptions = $this->loadTestData(test_fixture_path('consumption_data.json'));
 
         $array = [];
-        foreach ($this->loadTestData(fixture_path('charges.json')) as $object) {
+        foreach ($this->loadTestData(test_fixture_path('charges.json')) as $object) {
             $datahubPriceList = new DatahubPriceList();
             $datahubPriceList->fill($object);
             array_push($array, $datahubPriceList);

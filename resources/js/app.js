@@ -25,6 +25,50 @@ import {
     AlertSuccess
 } from 'vform/src/components/bootstrap5'
 
+//This is for prompt-update of PWA
+import { registerSW } from 'virtual:pwa-register'
+const intervalMS = 60 * 60 * 1000
+const updateSW = registerSW({
+    onRegisteredSW(swUrl, r) {
+        r && setInterval(async () => {
+            if (!(!r.installing && navigator)) {
+                return
+            }
+
+            if (('connection' in navigator) && !navigator.onLine) {
+                return
+            }
+
+            const resp = await fetch(swUrl, {
+                cache: 'no-store',
+                headers: {
+                    'cache': 'no-store',
+                    'cache-control': 'no-cache',
+                },
+            })
+
+            if (resp?.status === 200) {
+                await r.update()
+            }
+        }, intervalMS)
+    },
+    immediate: true,
+    onNeedRefresh() {},
+    onOfflineReady() {},
+    onRegisterError(error) {
+        console.log('Unfortunately an error has occurred so it wasn\'t possible to register the service worker: ' + error);
+    }
+})
+
+
+import.meta.glob([
+    '../videos/*.webm',
+    '../images/icons/*.{ico,png,svg,jpg}'
+]);
+
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
 import flatpickr from "flatpickr";
 let appLocale = $('html').attr('lang');
 import {Danish} from "flatpickr/dist/l10n/da";

@@ -119,6 +119,14 @@ simply by adding `XDEBUG_MODE=coverage` as environment varible.
 XDEBUG_MODE=coverage sail test
 ```
 
+## PWA
+The appilication is provided as PWA (https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+Icons for the PWA isn't imported and rendered through vite as one might expect. This is due to fact, that the technology
+doesn't seem mature enough at point of implementing to be able to handle icon-assets in manifest.
+Service worker registration is performed in app.js while all configuration is kept in vite.config.js
+Be careful if changing paths/urls as errors might not show immediately and can seem a bit tricky since module is doing a
+lot of *magic!* and adds sub-directories to path-strings.
+
 ## Mails
 When developing locally we use Mailhog to trap all mails.
 

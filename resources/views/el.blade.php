@@ -97,8 +97,7 @@
 
 @endsection
 
-<script type="module">
-    window.onload = function () {
+@section('javaScript')
         $(function() {
             $( "#smart_me" ).change(function() {
                 let isSmartMeSelected = $( "#smart_me").is(':checked');
@@ -156,6 +155,5 @@
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
             });
         });
-    }
 
-</script>
+@endsection

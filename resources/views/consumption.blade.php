@@ -74,19 +74,9 @@
 </div>
 
 @endsection
-<script type="module">
-    window.onload = function () {
-        $(function() {
-            $(document).ready(function(){
+
+@section('javaScript')
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
-            });
-        });
-    }
-
-</script>
-
-<script type="module">
-    window.onload = function () {
         $(function() {
             $('input[type=radio][name=source]').change(function() {
                 let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
@@ -185,6 +175,5 @@
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
             });
         });
-    }
 
-</script>
+@endsection

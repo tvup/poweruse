@@ -26,7 +26,7 @@
                             </div>
                             <div class="col-md-6 labels mt-2"><label class="labels">{{ __('Name') }}</label><input type="text" class="form-control" name="name" value="{{old('name', $user->name)}}"></div>
                             <div class="col-md-6 labels mt-2"><label class="labels">{{ __('Email') }}</label><input type="text" class="form-control" name="email" value="{{ old('email', $user->email) }}"></div>
-                            <div class="col-md-12 labels mt-2"><label class="labels">{{ __('Refresh token') }}</label><input type="password" class="form-control" name="refresh_token" value="{{ old('email', $user->refresh_token) }}"></div>
+                            <div class="col-md-12 labels mt-2"><label class="labels">{{ __('Refresh token') }}</label><input type="password" class="form-control" name="refresh_token" value="{{ old('refresh_token', Illuminate\Support\Str::repeat('*', Illuminate\Support\Str::length($user->refresh_token ?: ''))) }}"></div>
                                 <div class="col-md-12">
                                     <label class="labels mt-2">{{ __('Language') }}</label>
                                     <div class="form-check form-check">
