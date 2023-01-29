@@ -14,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        app()->make(Vite::class)->withEntryPoints(['resources/sass/app.scss', 'resources/js/app.js'])->useBuildDirectory('');
+        //We want to make sure that Vite doesn't use the default "build/"-path when resolving assets
+        //Here we can take advantage of the fact that the class is a singleton.
+        app()->make(Vite::class)->useBuildDirectory('');
     }
 
     /**
