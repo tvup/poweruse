@@ -1,7 +1,7 @@
 $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 
 // Fonts
-import "@fontsource/nunito";
+@import "@fontsource/nunito/scss/mixins.scss";
 // Font Awesome
 @import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "@fortawesome/fontawesome-free/scss/solid.scss";
