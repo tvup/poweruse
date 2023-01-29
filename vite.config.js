@@ -9,14 +9,19 @@ export default defineConfig(({command, mode}) => {
     return {
         assetsInclude: ['**/*.webm'],
         publicDir: 'public',
+        base: './',
         build: {
+            outDir: './public',
             sourcemap: true,
             minify: false,
             manifest: true,
-            emptyOutDir: true,
+            emptyOutDir: false,
         },
         plugins: [
             VitePWA({
+                base: '/',
+                scope: '/',
+                outDir: './public',
                 minify: false,
                 includeManifestIcons: false,
                 mode: env.APP_ENV=='production' ? 'production' : 'development',

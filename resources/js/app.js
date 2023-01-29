@@ -44,7 +44,6 @@ function useRegisterSW(options = {}) {
     const updateServiceWorker = registerSW({
         immediate,
         onNeedRefresh() {
-            console.log('WE SHOULD BE HERE');
             needRefresh.value = true;
             window.dispatchEvent(new CustomEvent('open-modal', {detail: 'confirm-update-page'}));
             onNeedRefresh == null ? void 0 : onNeedRefresh();
@@ -72,12 +71,11 @@ const {
     immediate: true,
     onRegisteredSW(swUrl, r) {
         // eslint-disable-next-line no-console
-        console.log(`Service Worker at: ${swUrl} ` + reloadSW)
+        //console.log(`Service Worker at: ${swUrl} ` + reloadSW)
         r && setInterval(async () => {
             // eslint-disable-next-line no-console
-            console.log('Checking for sw update')
+            //console.log('Checking for sw update')
             // eslint-disable-next-line no-console
-            console.log(navigator.serviceWorker.controller)
             await r.update()
         }, 10000 /* 20s for testing purposes */)
     },
