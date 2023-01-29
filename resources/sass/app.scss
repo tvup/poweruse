@@ -166,9 +166,17 @@ input:checked + .slider:before {
   padding: 3px 10px;
 }
 
-main {
-  margin-bottom: 40px;
+#app {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
+
+main {
+  flex: 1;
+}
+
+
 
 .video-size {
   top: 0;
