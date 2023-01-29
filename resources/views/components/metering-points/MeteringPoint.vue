@@ -462,6 +462,7 @@
 <!-- We put our scripts inside script tag -->
 <script>
 import Form from "vform";
+import {trans} from 'laravel-vue-i18n';
 // Declare /metering-point-management component
 export default {
   props: {
