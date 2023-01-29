@@ -99,11 +99,11 @@
                           :pageCount="last_page" :prev-text="$t('Prev')"
                           :next-text="$t('Next')"></pagination>
             </nav>
-            <button type="button" class="btn btn-primary"
+            <button type="button" class="btn btn-primary m-2"
                     v-if="authUser && authUser!='no' && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
                     @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
             </button>
-            <button type="button" class="btn btn-danger"
+            <button type="button" class="btn btn-danger m-2"
                     v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'POWERUSE'"
                     @click.prevent="deleteCharges(metering_point_id)">{{ $t('Delete all charges in DB') }}
             </button>

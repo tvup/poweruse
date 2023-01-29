@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Foundation\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,6 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //We want to make sure that Vite doesn't use the default "build/"-path when resolving assets
+        //Here we can take advantage of the fact that the class is a singleton.
+        app()->make(Vite::class)->useBuildDirectory('');
     }
 
     /**

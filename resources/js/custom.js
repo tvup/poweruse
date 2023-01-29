@@ -1,6 +1,6 @@
 //https://blog.madbob.org/fixing-vite-bootstrap-jquery/
 import $ from 'jquery';
-import * as bootstrap from 'bootstrap';
+import {Modal, Tooltip, Popover} from "bootstrap";
 
 function defineJQueryPlugin(plugin) {
     const name = plugin.NAME;
@@ -13,6 +13,6 @@ function defineJQueryPlugin(plugin) {
     }
 }
 
-defineJQueryPlugin(bootstrap.Modal);
-defineJQueryPlugin(bootstrap.Tooltip);
-defineJQueryPlugin(bootstrap.Popover);
+defineJQueryPlugin(Modal);
+defineJQueryPlugin(Tooltip);
+defineJQueryPlugin(Popover);
