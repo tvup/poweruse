@@ -321,7 +321,7 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015): array
+    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015, User $user): array
     {
         if (is_string($overhead)) {
             $overhead = str_replace(',', '.', $overhead);
@@ -346,7 +346,7 @@ class GetPreliminaryInvoice
             $key = 'charges ' . $refreshToken;
             $charges = cache($key);
             if (!$charges) {
-                $charges = $this->meteringDataService->getCharges(null, ['refresh_token' => $refreshToken]);
+                $charges = $this->meteringDataService->getCharges(null, ['refresh_token' => $refreshToken], $user);
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
             }
