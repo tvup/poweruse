@@ -63,7 +63,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           href="{{ route('el-custom') }}">{{__('Beregn prisen for et bestemt forbrug i dag') }}</a>
+                           href="{{ route('el-custom') }}">{{__('Scheme usage') }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
