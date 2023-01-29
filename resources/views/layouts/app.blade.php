@@ -139,7 +139,7 @@
     </x-modal>
 
 
-    <footer class="p-2 rounded bg-white shadow-sm w-100">
+    <footer class="fixed-bottom  p-2 rounded bg-white shadow-sm w-100">
         @include('components.footer')
     </footer>
 </div>
