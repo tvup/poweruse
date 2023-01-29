@@ -42,6 +42,12 @@ export default defineConfig(({command, mode}) => {
                             sizes: '512x512',
                             type: 'image/png'
                         },
+                        {
+                            src: '/assets/images/icons/pwa-maskable_icon.png',
+                            sizes: '512x512',
+                            type: 'image/png',
+                            purpose: 'maskable'
+                        },
                     ],
                     theme_color: '#2196f3',
                     background_color: '#2196f3',
