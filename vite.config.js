@@ -49,28 +49,31 @@ export default defineConfig(({command, mode}) => {
                 },
                 workbox: {
                     modifyURLPrefix: {
-                        'build/': '/'
+                        'build/': '/' //I'm unsure if this actually is needed
                     },
                     skipWaiting: false,
+
                     additionalManifestEntries: [
-                        {url: '/home', revision: '1'},
-                        {url: '/el-meteringpoint', revision: '1'},
-                        {url: '/el-charges', revision: '1'},
-                        {url: '/consumption', revision: '1'},
-                        {url: '/el-spotprices', revision: '1'},
-                        {url: '/el', revision: '1'},
-                        {url: '/el-custom', revision: '1'},
-                        {url: '/totalprices', revision: '1'},
-                        {url: '/login', revision: '1'},
-                        {url: '/register', revision: '1'},
-                        {url: '/privacy', revision: '1'}
+                        {url: '/home', revision: '1'}
                     ],
                     globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
                     maximumFileSizeToCacheInBytes: 2150000,
                     navigateFallback: '/home',
-                    navigateFallbackDenylist: [/^\/assets\/images/] //This is due to the manifest icons are in the public
-                                                                    //folder and we don't want those to be versioned for the
-                                                                    //time being.
+                    navigateFallbackDenylist: [
+                        /^\/assets\/images/ ,
+                        /^\/el-meteringpoint/ ,
+                        /^\/el-charges/ ,
+                        /^\/consumption/ ,
+                        /^\/el-spotprices/ ,
+                        /^\/el/ ,
+                        /^\/el-custom/ ,
+                        /^\/totalprices/ ,
+                        /^\/login/ ,
+                        /^\/register/ ,
+                        /^\/privacy/
+                    ] //This is due to the manifest icons are in the public
+                      //folder and we don't want those to be versioned for the
+                      //time being.
                 },
                 devOptions: {
                     enabled: true,
