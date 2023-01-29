@@ -188,7 +188,7 @@ class ElController extends Controller
                     $meterData[$newKey] = ($newValue ?: 0);
                 }
             }
-            $data = $this->getUsageCost($meterData, $request->token, $request->area, $request->overhead);
+            $data = $this->getUsageCost($meterData, $request->token, $request->area, $request->overhead, auth()->user());
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:
@@ -415,12 +415,13 @@ class ElController extends Controller
      * @param string|null $refreshToken
      * @param string $price_area
      * @param float $overhead
+     * @param User $user
      * @return JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.015) : JsonResponse
+    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.015, User $user) : JsonResponse
     {
-        $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead);
+        $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead, $user);
 
         return response()->json($bill);
     }
