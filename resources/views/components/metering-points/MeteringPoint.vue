@@ -220,7 +220,7 @@
                           </button>
                           <button type="button" class="btn btn-info"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click.prevent="editMeteringPoint(metering_point);">{{ $t('Update') }}
+                                  @click.prevent="editMeteringPoint();">{{ $t('Update') }}
                           </button>
                           <button type="button" class="btn btn-secondary"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
@@ -291,7 +291,7 @@
                 <td class="align-middle">{{ metering_point.second_consumer_party_name }}</td>
                 <td class="align-middle">{{ metering_point.hasRelation }}</td>
                 <td class="align-middle">
-                  <a href="" @click.prevent="editMeteringPoint(metering_point)">
+                  <a href="" @click.prevent="editMeteringPoint()">
                     <i class="fa fa-edit"></i>
                   </a>
                   <a href="" @click.prevent="deleteMeteringPoint(metering_point.id)">
@@ -562,12 +562,9 @@ export default {
       });
     },
     // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
-    editMeteringPoint(metering_point) {
+    editMeteringPoint() {
       this.isFormCreateMeteringPointMode = false;
-      this.form.reset(); // v form reset inputs
-      this.form.clear(); // v form clear errors
-      $('#meteringPointModal').modal('show'); // show modal
-      this.form.fill(metering_point);
+      this.updateMeteringPoint();
     },
     // /updateMeteringPoint() function. Function we use to update metering point details by calling api/metering-points/{id} method PUT (carrying form input data).
     updateMeteringPoint() {
