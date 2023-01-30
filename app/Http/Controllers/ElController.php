@@ -28,49 +28,27 @@ use Tvup\EwiiApi\EwiiApiException;
 
 class ElController extends Controller
 {
-    public const TOKEN_FILENAME = 'eloverblik-token.serialized';
-
-    /**
-     * @var GetMeteringData
-     */
-    private $meteringDataService;
-
-    /**
-     * @var GetPreliminaryInvoice
-     */
-    private $preliminaryInvoiceService;
-
-    /**
-     * @var GetSpotPrices
-     */
-    private $spotPricesService;
-
-    /**
-     * @var GetSmartMeMeterData
-     */
-    private $smartMeMeterDataService;
-
-    private GetDatahubPriceLists $datahubPriceListsService;
+    private const TOKEN_FILENAME = 'eloverblik-token.serialized';
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(GetMeteringData $meteringDataService, GetPreliminaryInvoice $preliminaryInvoiceService, GetSpotPrices $spotPricesService, GetSmartMeMeterData $smartMeMeterDataService, GetDatahubPriceLists $datahubPriceListsService)
-    {
-        $this->meteringDataService = $meteringDataService;
-        $this->preliminaryInvoiceService = $preliminaryInvoiceService;
-        $this->spotPricesService = $spotPricesService;
-        $this->smartMeMeterDataService = $smartMeMeterDataService;
-        $this->datahubPriceListsService = $datahubPriceListsService;
+    public function __construct(
+        private readonly GetMeteringData $meteringDataService,
+        private readonly GetPreliminaryInvoice $preliminaryInvoiceService,
+        private readonly GetSpotPrices $spotPricesService,
+        private readonly GetSmartMeMeterData $smartMeMeterDataService,
+        private readonly GetDatahubPriceLists $datahubPriceListsService
+    ) {
     }
 
     public function index() : View
     {
         $data = session('data');
 
-        return view('el')->with('data', $data ? $data->original : null)->with('refresh_token', auth()->user()?->refresh_token);
+        return view('el')->with('data', $data->original ?? null)->with('refresh_token', auth()->user()?->refresh_token);
     }
 
     public function indexSpotprices() : View
@@ -119,7 +97,7 @@ class ElController extends Controller
             }
 
             $smartMeCredentials = null;
-            if ($request->smart_me == 'on') {
+            if ($request->boolean('smart_me')) {
                 $smartMeCredentials = [];
                 $smartMeCredentials['username'] = $request->smartmeuser;
                 $smartMeCredentials['password'] = $request->smartmepassword;
@@ -181,7 +159,7 @@ class ElController extends Controller
             $fields = $request->all();
             $meterData = [];
             foreach ($fields as $key => $value) {
-                if (strpos($key, 'usage') !== false) {
+                if (str_contains($key, 'usage')) {
                     $timeslot = (int) str_replace('usage', '', $key);
                     $newKey = Carbon::now('Europe/Copenhagen')->startOfDay()->hour($timeslot)->format('c');
                     $newValue = $value ? str_replace(',', '.', $value) : null;
@@ -551,7 +529,7 @@ class ElController extends Controller
                         return $item != '' ? '\'' . $item . '\'' : 'null';
                 }
             })->toArray();
-            $response = $response . vsprintf($query, $bindings) . ';' . PHP_EOL;
+            $response .= vsprintf($query, $bindings) . ';' . PHP_EOL;
         }
 
         return $response;
@@ -694,9 +672,8 @@ class ElController extends Controller
         }
         $startDate = $from->toDateString();
         $endDate = $from->addDay()->toDateString();
-        $spotPrices = array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
 
-        return $spotPrices;
+        return array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
     }
 
     /**
@@ -775,7 +752,13 @@ class ElController extends Controller
         for ($i = 0; $i <= $limit; $i++) {
             $j = ($i <= 23 ? $i : $i - 24);
             $now2 = clone $now;
-            array_push($totalPrice, ['time' => $now2->addHours($i)->toDateTimeString(), 'price' => round(($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2)]);
+            $totalPrice[] = [
+                'time' => $now2->addHours($i)->toDateTimeString(),
+                'price' => round(
+                    ($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25,
+                    2
+                ),
+            ];
         }
 
         return ['result'=>['data' =>$totalPrice]];
