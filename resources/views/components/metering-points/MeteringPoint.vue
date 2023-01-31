@@ -214,15 +214,15 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary"
+                          <button type="button" class="btn btn-primary my-2 me-2"
                                   v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
                                   @click="createMeteringPoint();">{{ $t('Save to poweruse') }}
                           </button>
-                          <button type="button" class="btn btn-info"
+                          <button type="button" class="btn btn-info my-2 me-2"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click.prevent="editMeteringPoint(metering_point);">{{ $t('Update') }}
+                                  @click.prevent="editMeteringPoint();">{{ $t('Update') }}
                           </button>
-                          <button type="button" class="btn btn-secondary"
+                          <button type="button" class="btn btn-secondary my-2 me-2"
                                   v-if="authUser && metering_point.source == 'POWERUSE'"
                                   @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
                           </button>
@@ -291,7 +291,7 @@
                 <td class="align-middle">{{ metering_point.second_consumer_party_name }}</td>
                 <td class="align-middle">{{ metering_point.hasRelation }}</td>
                 <td class="align-middle">
-                  <a href="" @click.prevent="editMeteringPoint(metering_point)">
+                  <a href="" @click.prevent="editMeteringPoint()">
                     <i class="fa fa-edit"></i>
                   </a>
                   <a href="" @click.prevent="deleteMeteringPoint(metering_point.id)">
@@ -462,6 +462,7 @@
 <!-- We put our scripts inside script tag -->
 <script>
 import Form from "vform";
+import {trans} from 'laravel-vue-i18n';
 // Declare /metering-point-management component
 export default {
   props: {
@@ -562,12 +563,9 @@ export default {
       });
     },
     // /editMeteringPoint() function. Function we use to 1. Set /isFormCreateMeteringPointMode to 'false', 2. Reset and clear form data, 3. Show modal containing dynamic form for adding/updating metering point details, 4. Fill form with metering point details.
-    editMeteringPoint(metering_point) {
+    editMeteringPoint() {
       this.isFormCreateMeteringPointMode = false;
-      this.form.reset(); // v form reset inputs
-      this.form.clear(); // v form clear errors
-      $('#meteringPointModal').modal('show'); // show modal
-      this.form.fill(metering_point);
+      this.updateMeteringPoint();
     },
     // /updateMeteringPoint() function. Function we use to update metering point details by calling api/metering-points/{id} method PUT (carrying form input data).
     updateMeteringPoint() {
@@ -596,6 +594,7 @@ export default {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
+        cancelButtonText: trans('Cancel'),
         confirmButtonText: trans('Yes, delete it!')
       }).then((result) => {
         // confirm delete?

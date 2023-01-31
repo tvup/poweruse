@@ -63,7 +63,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           href="{{ route('el-custom') }}">{{__('Beregn prisen for et bestemt forbrug i dag') }}</a>
+                           href="{{ route('el-custom') }}">{{__('Scheme usage') }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
@@ -123,6 +123,21 @@
         @include('errors')
         @yield('content')
     </main>
+
+    <x-modal name="confirm-update-page" focusable>
+        <div class="pwa-toast">
+            {{ __('New content available, click on reload button to update.') }}
+            <div class="message">
+                <button onclick="updateServiceWorker()">
+                    {{ __('Reload') }}
+                </button>
+                <button x-on:click="$dispatch('close')">
+                    {{ __('Close') }}
+                </button>
+            </div>
+        </div>
+    </x-modal>
+
 
     <footer class="p-2 rounded bg-white shadow-sm w-100">
         @include('components.footer')
