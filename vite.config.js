@@ -3,6 +3,13 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import i18n from 'laravel-vue-i18n/vite';
 import {VitePWA} from 'vite-plugin-pwa';
+import { readFileSync, writeFile } from 'fs';
+import { fileURLToPath } from 'url';
+
+const file = fileURLToPath(new URL('revision', import.meta.url));
+let revision = readFileSync(file, 'utf8');
+revision = parseInt(revision) + 1;
+writeFile(file, revision.toString(), (err) => { });
 
 export default defineConfig(({command, mode}) => {
     const env = loadEnv(mode, process.cwd(), '');
@@ -60,7 +67,7 @@ export default defineConfig(({command, mode}) => {
                     skipWaiting: false,
 
                     additionalManifestEntries: [
-                        {url: '/home', revision: '1'}
+                        {url: '/home', revision: revision.toString()}
                     ],
                     globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
                     maximumFileSizeToCacheInBytes: 2150000,
