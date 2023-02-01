@@ -1,6 +1,6 @@
 !assets/
-!assets/sw-functional.js
 assets/*
+!assets/sw-functional.js
 !assets/images/
 
 .env
