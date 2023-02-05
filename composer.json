@@ -6,12 +6,14 @@
     "type": "project",
     "require": {
         "php": ">=8.1.0",
+        "ext-curl": "*",
         "doctrine/dbal": "^3.5",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^9.0",
         "laravel/passport": "^11.5",
         "laravel/tinker": "^2.7",
         "laravelcollective/html": "^6.0",
+        "orhanerday/open-ai": "^3.4",
         "tvup/eloverblikapi": "^2.0.0",
         "tvup/ewiiapi": "v2.1.1"
     },
