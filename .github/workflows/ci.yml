@@ -35,16 +35,8 @@ jobs:
           php artisan config:clear
           php artisan view:clear
       - name: PHPUnit Tests
-        uses: php-actions/phpunit@v3
-        with:
-          version: 9
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml
-          args: --coverage-clover coverage_report.xml
-          php_version: "8.1"
-          php_extensions: xdebug
-        env:
-          XDEBUG_MODE: coverage
+        run: |
+          php artisan test
       - name: Static analysis
         run: ./bin/phpstan
       - name: PSR
