@@ -60,6 +60,4 @@ return [
         'paasword' => env('SMART_ME_PASSWORD', 'test-password'),
     ],
 
-    'openai_api_key' => env('OPENAI_API_KEY'),
-
 ];
