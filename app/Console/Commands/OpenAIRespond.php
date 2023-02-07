@@ -92,12 +92,15 @@ class OpenAIRespond extends Command
             stream_filter_append($handle, 'remove_all_the_open_a_i_noise_from_stream_filter');
 
             $testDisk = Storage::disk('test');
+
+            $testFileName = Str::beforeLast($file, '.') . 'Test.' . Str::afterLast($file, '.');
+
             //Clear file content
-            $testDisk->put($file, '');
+            $testDisk->put($testFileName, '');
 
             while ($binary = fread($handle, 8)) {
                 $output->write($binary);
-                $testDisk->append($file, $binary, '');
+                $testDisk->append($testFileName, $binary, '');
             }
         } catch (GuzzleException $e) {
             $output->writeln('An error occurred while sending post request to: ' . $url);
