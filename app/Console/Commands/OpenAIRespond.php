@@ -36,7 +36,7 @@ class OpenAIRespond extends Command
      */
     public function handle(): int
     {
-        stream_filter_register('remove_all_the_open_a_i_noise_from_stream_filter', 'App\PowerUseStreamUtilities\RemoveAllTheOpenAINoiseFromStreamFilter');
+        stream_filter_register('remove_all_the_open_a_i_noise_from_stream_filter', 'App\StreamUtilities\RemoveAllTheOpenAINoiseFromStreamFilter');
 
         $question = implode(' ', $this->argument()['question']);
 
