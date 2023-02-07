@@ -35,7 +35,7 @@ jobs:
           php artisan config:clear
           php artisan view:clear
       - name: PHPUnit Tests
-        uses: php-actions/phpunit@v3
+        uses: php-actions/phpunit@v2
         with:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
