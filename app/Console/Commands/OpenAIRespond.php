@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Orhanerday\OpenAi\OpenAi;
+use League\Flysystem\FilesystemException;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -16,7 +19,7 @@ class OpenAIRespond extends Command
      *
      * @var string
      */
-    protected $signature = 'openai:respond {question*}';
+    protected $signature = 'openai:respond {question*} {--file=}';
 
     /**
      * The console command description.
@@ -31,38 +34,77 @@ class OpenAIRespond extends Command
      * @return int
      * @throws BindingResolutionException
      */
-    public function handle() : int
+    public function handle(): int
     {
+        stream_filter_register('remove_all_the_open_a_i_noise_from_stream_filter', 'App\PowerUseStreamUtilities\RemoveAllTheOpenAINoiseFromStreamFilter');
+
         $question = implode(' ', $this->argument()['question']);
 
         $output = new ConsoleOutput();
 
-        $open_ai = app()->makeWith(OpenAi::class, ['OPENAI_API_KEY' => config('services.openai_api_key')]);
-        $open_ai->completion(
-            [
+        $fileContent = '';
+
+        $file = $this->option('file');
+
+        if ($file) {
+            try {
+                $fileContent = Storage::disk('src')->read($file);
+            } catch (FilesystemException $e) {
+                $output->writeln('It wasn\'t possible to read the file: ' . $file);
+                $output->writeln('Exception: ' . $e->getMessage());
+
+                return CommandAlias::INVALID;
+            }
+
+            //Make sure directory is present
+            $directory = Str::beforeLast($file, '/');
+            if (!is_dir('tests/' . $directory)) {
+                mkdir('tests/' . $directory, 0777, true);
+            }
+        }
+
+        //Concatenate question and file name
+        $str = $question . ' ' . (!empty($fileContent) ? PHP_EOL . $fileContent : '');
+
+        $url = 'https://api.openai.com/v1/completions';
+        $token = config('services.openai_api_key');
+
+        $client = app()->make(Client::class);
+        $data = [
+            'debug' => false,
+            'stream' => true,
+            'headers' => ['Authorization' => 'Bearer ' . $token],
+            'json' => [
                 'model' => 'text-davinci-003',
-                'prompt' => $question,
                 'temperature' => 0.7,
-                'max_tokens' => 600,
                 'top_p' => 1,
                 'frequency_penalty' => 0,
                 'presence_penalty' => 0,
+                'max_tokens' => 600,
+                'prompt' => "' . $str . '",
                 'stream' => true,
             ],
-            function ($curl_info, $data) use ($output) {
-                $choices = json_decode(trim(Str::substr($data, 6)));
-                if ($choices) {
-                    foreach ($choices->choices as $choice) {
-                        $output->write($choice->text);
-                    }
-                }
-                flush();
+        ];
+        try {
+            $response = $client->post($url, $data);
+            $handle = $response->getBody()->detach();
 
-                return strlen($data);
+            stream_filter_append($handle, 'remove_all_the_open_a_i_noise_from_stream_filter');
+
+            $testDisk = Storage::disk('test');
+            //Clear file content
+            $testDisk->put($file, '');
+
+            while ($binary = fread($handle, 8)) {
+                $output->write($binary);
+                $testDisk->append($file, $binary, '');
             }
-        );
+        } catch (GuzzleException $e) {
+            $output->writeln('An error occurred while sending post request to: ' . $url);
+            $output->writeln('Code: ' . $e->getCode() . ' Message: ' . $e->getMessage());
 
-        $output->writeln('');
+            return CommandAlias::FAILURE;
+        }
 
         return CommandAlias::SUCCESS;
     }
