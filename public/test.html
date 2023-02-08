@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<body>
+
+<input type="button" onclick="window.nativeLayer.postMessage({type: 'test'})" value="Test the JS Bridge"/>
+
+<script>
+    $(document).ready(function() {
+        window.nativeLayer = {
+            postMessage: function (payload) {
+                window.webkit.messageHandlers.native.postMessage(payload);
+            }
+        };
+    });
+</script>
+</body>
+</html>
