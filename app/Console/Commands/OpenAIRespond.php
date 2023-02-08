@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use League\Flysystem\FilesystemException;
 use Symfony\Component\Console\Command\Command as CommandAlias;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 class OpenAIRespond extends Command
 {
