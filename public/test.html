@@ -13,7 +13,9 @@
     $(document).ready(function() {
         window.nativeLayer = {
             postMessage: function (payload) {
-                window.webkit.messageHandlers.native.postMessage(payload);
+                const nativeCommunicator =
+                    typeof webkit !== 'undefined' ? webkit.messageHandlers.native : window.native;
+                nativeCommunicator.postMessage(payload);
             }
         };
     });
