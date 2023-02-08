@@ -126,7 +126,7 @@ class OpenAIRespond extends Command
 
             stream_filter_append($handle, 'remove_all_the_open_a_i_noise_from_stream_filter');
 
-            while ($binary = fread($handle, 8)) {
+            while ($binary = fread($handle, 1)) {
                 $this->consoleOutput->write($binary);
                 $testDisk?->append($testFileName, $binary, '');
             }
