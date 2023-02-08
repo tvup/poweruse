@@ -21,7 +21,7 @@ class OpenAIRespond extends Command
      *
      * @var string
      */
-    protected $signature = 'o {question?} {--file=}';
+    protected $signature = 'openai:respond {question?} {--file=}';
 
     /**
      * The console command description.
