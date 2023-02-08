@@ -33,11 +33,6 @@ class OpenAIRespond extends Command
     private SourceCodeService $sourceCodeService;
 
     /**
-     * @var ConsoleOutput
-     */
-    private ConsoleOutput $consoleOutput;
-
-    /**
      * Execute the console command.
      *
      * @param SourceCodeService $sourceCodeService
@@ -47,7 +42,6 @@ class OpenAIRespond extends Command
     public function handle(SourceCodeService $sourceCodeService): int
     {
         $this->sourceCodeService = $sourceCodeService;
-        $this->consoleOutput = app()->make(ConsoleOutput::class);
         stream_filter_register('remove_all_the_open_a_i_noise_from_stream_filter', 'App\StreamUtilities\RemoveAllTheOpenAINoiseFromStreamFilter');
 
         $question = implode(' ', $this->argument()['question']);
@@ -85,8 +79,8 @@ class OpenAIRespond extends Command
         try {
             $fileContent = $this->sourceCodeService->getSourceCodeFile($file);
         } catch (FilesystemException $e) {
-            $this->consoleOutput->writeln('It wasn\'t possible to read the file: ' . $file);
-            $this->consoleOutput->writeln('Exception: ' . $e->getMessage());
+            $this->output->writeln('It wasn\'t possible to read the file: ' . $file);
+            $this->output->writeln('Exception: ' . $e->getMessage());
             exit(CommandAlias::INVALID);
         }
 
@@ -127,12 +121,12 @@ class OpenAIRespond extends Command
             stream_filter_append($handle, 'remove_all_the_open_a_i_noise_from_stream_filter');
 
             while ($binary = fread($handle, 1)) {
-                $this->consoleOutput->write($binary);
+                $this->output->write($binary);
                 $testDisk?->append($testFileName, $binary, '');
             }
         } catch (GuzzleException $e) {
-            $this->consoleOutput->writeln('An error occurred while sending post request to: ' . $url);
-            $this->consoleOutput->writeln('Code: ' . $e->getCode() . ' Message: ' . $e->getMessage());
+            $this->output->writeln('An error occurred while sending post request to: ' . $url);
+            $this->output->writeln('Code: ' . $e->getCode() . ' Message: ' . $e->getMessage());
             exit(CommandAlias::FAILURE);
         }
     }
