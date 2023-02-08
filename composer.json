@@ -13,7 +13,6 @@
         "laravel/passport": "^11.5",
         "laravel/tinker": "^2.7",
         "laravelcollective/html": "^6.0",
-        "orhanerday/open-ai": "^3.4",
         "tvup/eloverblikapi": "^2.0.0",
         "tvup/ewiiapi": "v2.1.1"
     },
@@ -28,7 +27,7 @@
         "mockery/mockery": "^1.5",
         "nunomaduro/collision": "^6.3",
         "nunomaduro/larastan": "^2.0",
-        "phpunit/phpunit": "9.6.2",
+        "phpunit/phpunit": "^9.6",
         "spatie/laravel-ignition": "^1.6"
     },
     "autoload": {
