@@ -3,16 +3,20 @@
 namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 
 class OpenAIService
 {
-    public function __construct(private PendingRequest $openAi)
+    private PendingRequest $openAiClient;
+
+    public function __construct()
     {
+        $this->openAiClient = Http::baseUrl(config('services.openai.base_url'))->withToken(config('services.openai.key'));
     }
 
     public function ask(string $question): mixed
     {
-        return $this->openAi->send('POST', 'v1/completions', [
+        return $this->openAiClient->send('POST', 'v1/completions', [
             'stream' => true,
             'laravel_data' => [
                 'scheme' => 'http',
