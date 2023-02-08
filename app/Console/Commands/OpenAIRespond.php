@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Services\OpenAIService;
 use App\Services\SourceCodeService;
-use GuzzleHttp\Client;
+use App\StreamUtilities\RemoveAllTheOpenAINoiseFromStreamFilter;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -20,7 +21,7 @@ class OpenAIRespond extends Command
      *
      * @var string
      */
-    protected $signature = 'openai:respond {question*} {--file=}';
+    protected $signature = 'o {question?} {--file=}';
 
     /**
      * The console command description.
@@ -41,30 +42,23 @@ class OpenAIRespond extends Command
     public function handle(SourceCodeService $sourceCodeService): int
     {
         $this->sourceCodeService = $sourceCodeService;
-        stream_filter_register('remove_all_the_open_a_i_noise_from_stream_filter', 'App\StreamUtilities\RemoveAllTheOpenAINoiseFromStreamFilter');
+        stream_filter_register('remove_all_the_open_a_i_noise_from_stream_filter', RemoveAllTheOpenAINoiseFromStreamFilter::class);
 
-        $question = implode(' ', $this->argument()['question']);
+        $question = $this->ask('What do you want me to do?');
 
         $fileContent = '';
 
-        $file = $this->option('file');
-
-        if ($file) {
+        if ($file = $this->option('file')) {
             $fileContent = $this->getSourceCodeFile($file); //Exits if file can't be loaded
-            $this->sourceCodeService->touchTestDir($file);
+            $this->sourceCodeService->createDirIfNotExists($file);
             $testFileName = Str::beforeLast($file, '.') . 'Test.' . Str::afterLast($file, '.');
             $testDisk = Storage::disk('test');
             $testDisk->put($testFileName, '');
         }
 
         //Concatenate question and file name
-        $str = $question . ' ' . (!empty($fileContent) ? PHP_EOL . $fileContent : '');
-
-        $url = 'https://api.openai.com/v1/completions';
-        $token = config('services.openai_api_key');
-
-        $client = app()->make(Client::class);
-        $this->requestOpenAI($token, $str, $url, $client, $testDisk ?? null, $testFileName ?? null); //Exits if GuzzleException occurs
+        $finalQuestion = $question . ' ' . (!empty($fileContent) ? PHP_EOL . $fileContent : '');
+        $this->requestOpenAI($finalQuestion, $testDisk ?? null, $testFileName ?? null); //Exits if GuzzleException occurs
 
         return CommandAlias::SUCCESS;
     }
@@ -86,45 +80,21 @@ class OpenAIRespond extends Command
         return $fileContent;
     }
 
-    /**
-     * @param mixed $token
-     * @param string $str
-     * @return array
-     */
-    private function buildRequestData(mixed $token, string $str): array
+    private function requestOpenAI(string $question, FilesystemAdapter $testDisk = null, string $testFileName = null): void
     {
-        return [
-            'debug' => false,
-            'stream' => true,
-            'headers' => ['Authorization' => 'Bearer ' . $token],
-            'json' => [
-                'model' => 'text-davinci-003',
-                'temperature' => 0.7,
-                'top_p' => 1,
-                'frequency_penalty' => 0,
-                'presence_penalty' => 0,
-                'max_tokens' => 600,
-                'prompt' => "' . $str . '",
-                'stream' => true,
-            ],
-        ];
-    }
-
-    private function requestOpenAI(string $token, string $str, string $url, Client $client, FilesystemAdapter $testDisk = null, string $testFileName = null): void
-    {
-        $data = $this->buildRequestData($token, $str);
         try {
-            $response = $client->post($url, $data);
+            $response = app(OpenAIService::class)->ask($question);
             $handle = $response->getBody()->detach();
 
             stream_filter_append($handle, 'remove_all_the_open_a_i_noise_from_stream_filter');
 
             while ($binary = fread($handle, 1)) {
                 $this->output->write($binary);
+
                 $testDisk?->append($testFileName, $binary, '');
             }
         } catch (GuzzleException $e) {
-            $this->output->writeln('An error occurred while sending post request to: ' . $url);
+            $this->output->writeln('An error occurred while sending post request to chat gtp');
             $this->output->writeln('Code: ' . $e->getCode() . ' Message: ' . $e->getMessage());
             exit(CommandAlias::FAILURE);
         }

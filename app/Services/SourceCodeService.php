@@ -18,7 +18,7 @@ class SourceCodeService
         return Storage::disk('src')->read($file);
     }
 
-    public function touchTestDir(string $file) : void
+    public function createDirIfNotExists(string $file) : void
     {
         //Make sure directory is present
         $directory = Str::beforeLast($file, '/');
