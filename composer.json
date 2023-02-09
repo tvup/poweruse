@@ -9,7 +9,7 @@
         "ext-curl": "*",
         "doctrine/dbal": "^3.5",
         "fideloper/proxy": "^4.0",
-        "laravel/framework": "9.50.2",
+        "laravel/framework": "^9.0",
         "laravel/passport": "^11.5",
         "laravel/tinker": "^2.7",
         "laravelcollective/html": "^6.0",
