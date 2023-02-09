@@ -28,7 +28,7 @@
         "nunomaduro/collision": "^6.3",
         "nunomaduro/larastan": "^2.0",
         "phpunit/phpunit": "^9.6",
-        "spatie/laravel-ignition": "^1.6"
+        "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
         "classmap": [
