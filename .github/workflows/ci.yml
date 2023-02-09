@@ -12,7 +12,7 @@ jobs:
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
 
-      - uses: php-actions/composer@v5
+      - uses: php-actions/composer@v6
         with:
           php_version: "8.1"
 
