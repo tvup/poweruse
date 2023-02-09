@@ -29,6 +29,8 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
           php artisan migrate
+      - name: Install passport
+        run: php artisan  passport:install -n
       - name: Clear caches
         run: |
           php artisan cache:clear
