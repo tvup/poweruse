@@ -68,13 +68,15 @@ class ProcessController extends Controller
         $startOfCurrentDay = $startOfCurrentHour->startOfDay();
 
         $limit = $includeTomorrow ? 47 : 23;
-        for ($i = 0; $i <= $limit; $i++) {
-            if ($i < $currentHour) {
-            } else {
-                $j = ($i <= 23 ? $i : $i - 24);
-                $now2 = clone $startOfCurrentDay;
-                $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridOperatorTariffPrices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
-            }
+        foreach (range($currentHour, $limit) as $hour) {
+            $hourOnDay = ($hour <= 23 ? $hour : $hour - 24);
+            // Calculate total price without VAT
+            $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$hour] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0];
+            // Add 25% VAT
+            $grossAmount = $netAmount * 1.25;
+            // Round to two decimals and add to array as datetime-index eg. "2023-02-01 02:00:00"
+            $timeOnDay = $startOfCurrentDay->copy()->addHours($hour)->toDateTimeString();
+            $totalPrice[$timeOnDay] = round($grossAmount, 2);
         }
         $companies = Operator::$operatorName;
 
