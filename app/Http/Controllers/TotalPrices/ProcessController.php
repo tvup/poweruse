@@ -63,12 +63,18 @@ class ProcessController extends Controller
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
         $totalPrice = [];
-        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
+        $startOfCurrentHour = Carbon::now('Europe/Copenhagen')->startOfHour();
+        $currentHour = $startOfCurrentHour->hour;
+        $startOfCurrentDay = $startOfCurrentHour->startOfDay();
+
         $limit = $includeTomorrow ? 47 : 23;
         for ($i = 0; $i <= $limit; $i++) {
-            $j = ($i <= 23 ? $i : $i - 24);
-            $now2 = clone $now;
-            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridOperatorTariffPrices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
+            if($i<$currentHour) { } else {
+                $j = ($i <= 23 ? $i : $i - 24);
+                $now2 = clone $startOfCurrentDay;
+                $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridOperatorTariffPrices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
+            }
+
         }
         $companies = Operator::$operatorName;
 
