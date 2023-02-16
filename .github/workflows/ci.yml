@@ -36,7 +36,7 @@ jobs:
           php artisan view:clear
       - name: PHPUnit Tests
         run: |
-          php artisan test
+          ./vendor/bin/phpunit
       - name: Static analysis
         run: ./bin/phpstan
       - name: PSR
