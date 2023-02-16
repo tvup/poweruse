@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
 
-      - uses: php-actions/composer@v5
+      - uses: php-actions/composer@v6
         with:
           php_version: "8.1"
 
@@ -36,7 +36,7 @@ jobs:
           php artisan view:clear
       - name: PHPUnit Tests
         run: |
-          php artisan test
+          ./vendor/bin/phpunit
       - name: Static analysis
         run: ./bin/phpstan
       - name: PSR

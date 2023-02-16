@@ -22,7 +22,7 @@ class TotalPricesController extends Controller
 
         $companies = cache()->remember('companies-list for total prices', Carbon::now('Europe/Copenhagen')->endOfDay(), function () {
             $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
-            $results = DB::connection('mysql')->select(DB::raw("
+            $results = DB::connection('mysql')->select((string) DB::raw("
                 SELECT GLN_Number, concat(concat(ChargeOwner, ' '), Note) as tariff, Note, ChargeOwner
                 FROM datahub_price_lists
                 WHERE
@@ -36,7 +36,7 @@ class TotalPricesController extends Controller
                   AND Note NOT IN ( " . list_of_tariffs_for_non_private_consumers() . '
                     )
                 group by ChargeOwner, Note, GLN_Number
-            '));
+            ')->getValue(DB::connection()->getQueryGrammar()));
 
             return array_map(function ($record) {
                 $key = $record->ChargeOwner . '//' . $record->Note;
