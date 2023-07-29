@@ -55,7 +55,7 @@
                             beginAtZero: true,
                             ticks: {
                                 callback: function (value) {
-                                    if (value % 1 === 0) {
+                                    if (value % 0.5 === 0) {
                                         return value;
                                     }
                                 }
