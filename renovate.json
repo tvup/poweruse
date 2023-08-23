@@ -12,7 +12,8 @@
       "separateMinorPatch": false,
       "groupName": "all dependencies",
       "groupSlug": "update-dependencies",
-      "automerge": true
+      "automerge": true,
+      "matchConfidence": ["high", "very high"]
     },
     {
       "packagePatterns": ["*"],
