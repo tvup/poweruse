@@ -17,7 +17,7 @@
     },
     {
       "packagePatterns": ["*"],
-      "updateTypes": ["major"],
+      "updateTypes": ["major", "minor"],
       "enabled": false
     }
   ]
