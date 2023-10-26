@@ -35,7 +35,14 @@ class GetMeteringData
     public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false): array
     {
         logger('Accessing EloverblikApi. MD5 of refresh token: ' . md5($refreshToken));
-        $energiOverblikApi = $this->getEloverblikApi($refreshToken);
+        try {
+            $energiOverblikApi = $this->getEloverblikApi($refreshToken);
+        } catch (ElOverblikApiException $e) {
+            if($e->getCode()==401) {
+                logger()->warning('Refresh token is not authorized: ' . $refreshToken);
+            }
+            throw $e;
+        }
 
         if ($debug) {
             $energiOverblikApi->setDebug(true);
@@ -290,6 +297,12 @@ class GetMeteringData
         }
     }
 
+    /**
+     * @param string $refreshToken
+     * @return ElOverblikApiInterface
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Tvup\ElOverblikApi\ElOverblikApiException
+     */
     private function getEloverblikApi(string $refreshToken): ElOverblikApiInterface
     {
         if (!$this->energiOverblikApi) {

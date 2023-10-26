@@ -59,7 +59,7 @@ class ProcessController extends Controller
         //Get other tariffs
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
-        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
+        //$tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
         $totalPrice = [];
@@ -71,7 +71,7 @@ class ProcessController extends Controller
         foreach (range($currentHour, $limit) as $hour) {
             $hourOnDay = ($hour <= 23 ? $hour : $hour - 24);
             // Calculate total price without VAT
-            $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$hour] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0];
+            $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$hour] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0];
             // Add 25% VAT
             $grossAmount = $netAmount * 1.25;
             // Round to two decimals and add to array as datetime-index eg. "2023-02-01 02:00:00"
@@ -175,8 +175,8 @@ class ProcessController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
         $note = 'Elafgift';
-        $startDate = '2023-01-01';
-        $endDate = '2023-06-30';
+        $startDate = '2023-0LAd 7-01';
+        $endDate = '2024-01-01';
 
         return (new RetrieveTariffFromOperator())->handle(
             operator: $operator,
