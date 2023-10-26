@@ -101,9 +101,9 @@ class MeteringPointController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreMeteringPointRequest $request
-     * @return array
+     * @return MeteringPointTransformer
      */
-    public function store(StoreMeteringPointRequest $request):array
+    public function store(StoreMeteringPointRequest $request): MeteringPointTransformer
     {
         $validated = $request->validated();
 

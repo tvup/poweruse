@@ -38,7 +38,7 @@ class GetMeteringData
         try {
             $energiOverblikApi = $this->getEloverblikApi($refreshToken);
         } catch (ElOverblikApiException $e) {
-            if($e->getCode()==401) {
+            if ($e->getCode() == 401) {
                 logger()->warning('Refresh token is not authorized: ' . $refreshToken);
             }
             throw $e;
@@ -108,7 +108,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ?MeteringPoint
+    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ? MeteringPointTransformer
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
@@ -122,7 +122,7 @@ class GetMeteringData
                 $key = 'meteringPointData ' . $refresh_token;
                 $meteringPoint = $this->getMeteringPointFromCache($key);
                 if ($meteringPoint) {
-                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::DATAHUB);
+                    return app(MeteringPointTransformer::class)->transform($meteringPoint, SourceEnum::DATAHUB);
                 }
                 $energiOverblikApi = $this->getEloverblikApi($refresh_token);
                 $response = null;
@@ -136,7 +136,7 @@ class GetMeteringData
                     $expiresAt = now()->addDay()->startOfDay();
                     cache([$key => $response], $expiresAt);
 
-                    return MeteringPointTransformer::transform($response, SourceEnum::DATAHUB);
+                    return app(MeteringPointTransformer::class)->transform($response, SourceEnum::DATAHUB);
                 }
             case SourceEnum::EWII:
                 if (!$ewiiUserName || !$ewiiPassword) {
@@ -147,7 +147,7 @@ class GetMeteringData
                     $key = 'meteringPointData ' . $ewiiUserName;
                     $meteringPoint = $this->getMeteringPointFromCache($key);
                     if ($meteringPoint) {
-                        return MeteringPointTransformer::transform($meteringPoint, SourceEnum::EWII);
+                        return app(MeteringPointTransformer::class)->transform($meteringPoint, SourceEnum::EWII);
                     }
                     try {
                         $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
@@ -161,7 +161,7 @@ class GetMeteringData
                             $expiresAt = now()->addDay()->startOfDay();
                             cache([$key => $response1], $expiresAt);
 
-                            return MeteringPointTransformer::transform($response1, SourceEnum::EWII);
+                            return app(MeteringPointTransformer::class)->transform($response1, SourceEnum::EWII);
                         }
                     } catch (EwiiApiException $e) {
                         if (!$exception) {
@@ -179,10 +179,10 @@ class GetMeteringData
                         break;
                     }
                 }
-                $meteringPoint = MeteringPoint::whereUserId($user->id)->first();
+                $meteringPoint = MeteringPoint::whereUserId($user->id)->first()->toArray();
 
                 if ($meteringPoint) {
-                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::POWERUSE);
+                    return app(MeteringPointTransformer::class)->transform($meteringPoint, SourceEnum::POWERUSE);
                 } else {
                     if (!$exception) {
                         $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, ['where user_id is ' . $user->id]);

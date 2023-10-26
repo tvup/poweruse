@@ -53,7 +53,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
                         try {
                             $chargeGroup = $datahubChargeGroups->getChargeGroup($chargeOwner);
                         } catch (ModelNotFoundException $e) {
-                            throw new RecordsNotFoundException(Str::replaceLast('.','',$e->getMessage()) . ' with GridOperatorName: ' . $chargeOwner);
+                            throw new RecordsNotFoundException(Str::replaceLast('.', '', $e->getMessage()) . ' with GridOperatorName: ' . $chargeOwner);
                         }
 
                         return substr($chargeGroup->grid_operator_gln, 0, -4);

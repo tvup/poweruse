@@ -59,7 +59,6 @@ class ProcessController extends Controller
         //Get other tariffs
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
-        //$tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
         $totalPrice = [];
@@ -132,28 +131,6 @@ class ProcessController extends Controller
         $chargeTypeCode = '41000';
         $note = 'Systemtarif';
         $startDate = '2023-01-01';
-        $endDate = '2023-12-31';
-
-        return (new RetrieveTariffFromOperator())->handle(
-            operator: $operator,
-            chargeType: $chargeType,
-            chargeTypeCode: $chargeTypeCode,
-            note: $note,
-            startDate: $startDate,
-            endDate: $endDate,
-        );
-    }
-
-    /**
-     * @param string $operator
-     * @return array<int, float>
-     */
-    private function getTSOOperatorBalancetariff(string $operator): array
-    {
-        $chargeType = 'D03';
-        $chargeTypeCode = '45013';
-        $note = 'Balancetarif for forbrug';
-        $startDate = '2022-01-01';
         $endDate = '2023-12-31';
 
         return (new RetrieveTariffFromOperator())->handle(

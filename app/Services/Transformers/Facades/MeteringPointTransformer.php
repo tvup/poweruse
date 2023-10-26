@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Facade;
  */
 class MeteringPointTransformer extends Facade
 {
+    public string $metering_point_id;
+
+    public string $id;
+
     protected static function getFacadeAccessor(): string
     {
         return 'metering_point_transformer';
