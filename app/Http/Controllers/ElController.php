@@ -604,6 +604,14 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
+        } catch (ElOverblikApiException $e) {
+            return match ($e->getCode()) {
+                401 => redirect('consumption')->with('error', 'Failed - cannot login with credentials.')->withInput(
+                    $request->all()
+                ),
+                default => response($e->getMessage(), $e->getCode())
+                    ->header('Content-Type', 'text/plain'),
+            };
         }
 
         return redirect('consumption')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());

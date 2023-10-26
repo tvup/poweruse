@@ -54,7 +54,7 @@ class GetDatahubPriceLists
             'offset' => $offset,
         ];
 
-        return Http::acceptJson()
+        return Http::acceptJson()->retry(3, 500)
             ->get($url, $queryParameters)->json('records');
     }
 
