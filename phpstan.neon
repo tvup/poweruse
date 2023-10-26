@@ -9,7 +9,6 @@ parameters:
     level: 6
 
     ignoreErrors: # All these errors are weird to fix. We will do that lastly,
-        - '#Parameter \#1 \$response of method App#'
         - '#Static call to instance method App#'
         - '#does not accept default value of type#'
         - '#Unable to resolve the template type TKey in call to function collect#'
