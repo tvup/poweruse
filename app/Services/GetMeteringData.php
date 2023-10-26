@@ -124,6 +124,7 @@ class GetMeteringData
                 if ($meteringPoint) {
                     /** @var MeteringPoint $meteringPoint1 */
                     $meteringPoint1 = MeteringPointTransformer::transform($meteringPoint, SourceEnum::DATAHUB);
+
                     return $meteringPoint1;
                 }
                 $energiOverblikApi = $this->getEloverblikApi($refresh_token);
@@ -140,6 +141,7 @@ class GetMeteringData
 
                     /** @var MeteringPoint $meteringPoint5 */
                     $meteringPoint5 = MeteringPointTransformer::transform($response, SourceEnum::DATAHUB);
+
                     return $meteringPoint5;
                 }
             case SourceEnum::EWII:
@@ -153,6 +155,7 @@ class GetMeteringData
                     if ($meteringPoint) {
                         /** @var MeteringPoint $meteringPoint4 */
                         $meteringPoint4 = MeteringPointTransformer::transform($meteringPoint, SourceEnum::EWII);
+
                         return $meteringPoint4;
                     }
                     try {
@@ -169,6 +172,7 @@ class GetMeteringData
 
                             /** @var MeteringPoint $meteringPoint3 */
                             $meteringPoint3 = MeteringPointTransformer::transform($response1, SourceEnum::EWII);
+
                             return $meteringPoint3;
                         }
                     } catch (EwiiApiException $e) {
@@ -187,11 +191,12 @@ class GetMeteringData
                         break;
                     }
                 }
-                $meteringPoint = MeteringPoint::whereUserId($user->id)->first()->toArray();
+                $meteringPoint = MeteringPoint::whereUserId($user->id)->first();
 
                 if ($meteringPoint) {
                     /** @var MeteringPoint $meteringPoint2 */
                     $meteringPoint2 = MeteringPointTransformer::transform($meteringPoint, SourceEnum::POWERUSE);
+
                     return $meteringPoint2;
                 } else {
                     if (!$exception) {

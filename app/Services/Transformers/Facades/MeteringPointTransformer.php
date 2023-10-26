@@ -7,8 +7,8 @@ use App\Models\MeteringPoint;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static transform(array $response, SourceEnum $sourceEnum)
- * @method static prepareForJson(MeteringPoint $response)
+ * @method static transform(array|MeteringPoint $meteringPoint, SourceEnum $sourceEnum)
+ * @method static prepareForJson(MeteringPoint $meteringPoint)
  */
 class MeteringPointTransformer extends Facade
 {
