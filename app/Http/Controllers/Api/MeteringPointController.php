@@ -101,41 +101,48 @@ class MeteringPointController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreMeteringPointRequest $request
-     * @return MeteringPointTransformer
+     * @return array
      */
-    public function store(StoreMeteringPointRequest $request): MeteringPointTransformer
+    public function store(StoreMeteringPointRequest $request): array
     {
         $validated = $request->validated();
 
-        return MeteringPointTransformer::prepareForJson(MeteringPoint::updateOrCreate(
-            [
-                'metering_point_id' => $request['metering_point_id'],
-            ],
-            [
-                'parent_id' => Arr::get($validated, 'parent_id'),
-                'type_of_mp' => Arr::get($validated, 'type_of_mp'),
-                'settlement_method' => Arr::get($validated, 'settlement_method'),
-                'meter_number' => Arr::get($validated, 'meter_number'),
-                'consumer_c_v_r' => Arr::get($validated, 'consumer_c_v_r'),
-                'data_access_c_v_r' => Arr::get($validated, 'data_access_c_v_r'),
-                'consumer_start_date' => Carbon::parse($request['consumer_start_date'], 'UTC')->timezone('Europe/Copenhagen')->toDateString(),
-                'meter_reading_occurrence' => Arr::get($validated, 'meter_reading_occurrence'),
-                'balance_supplier_name' => Arr::get($validated, 'balance_supplier_name'),
-                'street_code' => Arr::get($validated, 'street_code'),
-                'street_name' => Arr::get($validated, 'street_name'),
-                'building_number' => Arr::get($validated, 'building_number'),
-                'floor_id' => Arr::get($validated, 'floor_id'),
-                'room_id' => Arr::get($validated, 'room_id'),
-                'city_name' => Arr::get($validated, 'city_name'),
-                'city_sub_division_name' => Arr::get($validated, 'city_sub_division_name'),
-                'municipality_code' => Arr::get($validated, 'municipality_code'),
-                'location_description' => Arr::get($validated, 'location_description'),
-                'first_consumer_party_name' => Arr::get($validated, 'first_consumer_party_name'),
-                'second_consumer_party_name' => Arr::get($validated, 'second_consumer_party_name'),
-                'hasRelation' => Arr::get($validated, 'hasRelation'),
-                'user_id' => auth('api')->user()->id,
-            ]
-        ));
+        /** @var array $meteringpoint */
+        $meteringpoint = MeteringPointTransformer::prepareForJson(
+            MeteringPoint::updateOrCreate(
+                [
+                    'metering_point_id' => $request['metering_point_id'],
+                ],
+                [
+                    'parent_id' => Arr::get($validated, 'parent_id'),
+                    'type_of_mp' => Arr::get($validated, 'type_of_mp'),
+                    'settlement_method' => Arr::get($validated, 'settlement_method'),
+                    'meter_number' => Arr::get($validated, 'meter_number'),
+                    'consumer_c_v_r' => Arr::get($validated, 'consumer_c_v_r'),
+                    'data_access_c_v_r' => Arr::get($validated, 'data_access_c_v_r'),
+                    'consumer_start_date' => Carbon::parse($request['consumer_start_date'], 'UTC')->timezone(
+                        'Europe/Copenhagen'
+                    )->toDateString(),
+                    'meter_reading_occurrence' => Arr::get($validated, 'meter_reading_occurrence'),
+                    'balance_supplier_name' => Arr::get($validated, 'balance_supplier_name'),
+                    'street_code' => Arr::get($validated, 'street_code'),
+                    'street_name' => Arr::get($validated, 'street_name'),
+                    'building_number' => Arr::get($validated, 'building_number'),
+                    'floor_id' => Arr::get($validated, 'floor_id'),
+                    'room_id' => Arr::get($validated, 'room_id'),
+                    'city_name' => Arr::get($validated, 'city_name'),
+                    'city_sub_division_name' => Arr::get($validated, 'city_sub_division_name'),
+                    'municipality_code' => Arr::get($validated, 'municipality_code'),
+                    'location_description' => Arr::get($validated, 'location_description'),
+                    'first_consumer_party_name' => Arr::get($validated, 'first_consumer_party_name'),
+                    'second_consumer_party_name' => Arr::get($validated, 'second_consumer_party_name'),
+                    'hasRelation' => Arr::get($validated, 'hasRelation'),
+                    'user_id' => auth('api')->user()->id,
+                ]
+            )
+        );
+
+        return $meteringpoint;
     }
 
     /**
