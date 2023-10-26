@@ -7,27 +7,27 @@
     "require": {
         "php": ">=8.1.0",
         "ext-curl": "*",
-        "doctrine/dbal": "^3.5",
-        "laravel/framework": "^10.0",
-        "laravel/passport": "^11.5",
-        "laravel/tinker": "^2.7",
-        "laravelcollective/html": "^6.0",
-        "tvup/eloverblikapi": "^2.0.0",
-        "tvup/ewiiapi": "v2.1.1"
+        "doctrine/dbal": "^3.7",
+        "laravel/framework": "^10.29",
+        "laravel/passport": "^11.9",
+        "laravel/tinker": "^2.8",
+        "laravelcollective/html": "^6.4",
+        "tvup/eloverblikapi": "^2.0",
+        "tvup/ewiiapi": "^2.1"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^2.12",
-        "brianium/paratest": "^7.0",
-        "fakerphp/faker": "^1.20",
-        "friendsofphp/php-cs-fixer": "^3.13",
-        "laravel/breeze": "^1.15",
-        "laravel/sail": "^1.16",
+        "barryvdh/laravel-ide-helper": "^2.13",
+        "brianium/paratest": "^7.3",
+        "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.35",
+        "laravel/breeze": "^1.25",
+        "laravel/sail": "^1.26",
         "laravel/ui": "^4.2",
-        "mockery/mockery": "^1.5",
-        "nunomaduro/collision": "^7.0",
-        "nunomaduro/larastan": "^2.0",
-        "phpunit/phpunit": "^10.0",
-        "spatie/laravel-ignition": "^2.0"
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^7.10",
+        "nunomaduro/larastan": "^2.6",
+        "phpunit/phpunit": "^10.4",
+        "spatie/laravel-ignition": "^2.3"
     },
     "autoload": {
         "classmap": [
