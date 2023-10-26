@@ -122,7 +122,7 @@ class GetMeteringData
                 $key = 'meteringPointData ' . $refresh_token;
                 $meteringPoint = $this->getMeteringPointFromCache($key);
                 if ($meteringPoint) {
-                    return app(MeteringPointTransformer::class)->transform($meteringPoint, SourceEnum::DATAHUB);
+                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::DATAHUB);
                 }
                 $energiOverblikApi = $this->getEloverblikApi($refresh_token);
                 $response = null;
@@ -136,7 +136,7 @@ class GetMeteringData
                     $expiresAt = now()->addDay()->startOfDay();
                     cache([$key => $response], $expiresAt);
 
-                    return app(MeteringPointTransformer::class)->transform($response, SourceEnum::DATAHUB);
+                    return MeteringPointTransformer::transform($response, SourceEnum::DATAHUB);
                 }
             case SourceEnum::EWII:
                 if (!$ewiiUserName || !$ewiiPassword) {
@@ -147,7 +147,7 @@ class GetMeteringData
                     $key = 'meteringPointData ' . $ewiiUserName;
                     $meteringPoint = $this->getMeteringPointFromCache($key);
                     if ($meteringPoint) {
-                        return app(MeteringPointTransformer::class)->transform($meteringPoint, SourceEnum::EWII);
+                        return MeteringPointTransformer::transform($meteringPoint, SourceEnum::EWII);
                     }
                     try {
                         $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
@@ -161,7 +161,7 @@ class GetMeteringData
                             $expiresAt = now()->addDay()->startOfDay();
                             cache([$key => $response1], $expiresAt);
 
-                            return app(MeteringPointTransformer::class)->transform($response1, SourceEnum::EWII);
+                            return MeteringPointTransformer::transform($response1, SourceEnum::EWII);
                         }
                     } catch (EwiiApiException $e) {
                         if (!$exception) {
@@ -182,7 +182,7 @@ class GetMeteringData
                 $meteringPoint = MeteringPoint::whereUserId($user->id)->first()->toArray();
 
                 if ($meteringPoint) {
-                    return app(MeteringPointTransformer::class)->transform($meteringPoint, SourceEnum::POWERUSE);
+                    return MeteringPointTransformer::transform($meteringPoint, SourceEnum::POWERUSE);
                 } else {
                     if (!$exception) {
                         $exception = app()->make(ModelNotFoundException::class)->setModel(MeteringPoint::class, ['where user_id is ' . $user->id]);
