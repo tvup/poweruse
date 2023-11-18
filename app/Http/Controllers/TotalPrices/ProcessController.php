@@ -152,7 +152,7 @@ class ProcessController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
         $note = 'Elafgift';
-        $startDate = '2023-0LAd 7-01';
+        $startDate = '2023-07-01';
         $endDate = '2024-01-01';
 
         return (new RetrieveTariffFromOperator())->handle(
