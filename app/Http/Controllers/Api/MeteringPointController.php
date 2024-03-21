@@ -148,7 +148,7 @@ class MeteringPointController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\MeteringPoint $meteringPoint
+     * @param MeteringPoint $meteringPoint
      */
     public function show(MeteringPoint $meteringPoint): JsonResponse
     {
@@ -159,7 +159,7 @@ class MeteringPointController extends Controller
      * Update the specified resource in storage.
      *
      * @param UpdateMeteringPointRequest $request
-     * @param \App\Models\MeteringPoint $meteringPoint
+     * @param MeteringPoint $meteringPoint
      */
     public function update(UpdateMeteringPointRequest $request, MeteringPoint $meteringPoint): JsonResponse
     {
@@ -173,7 +173,7 @@ class MeteringPointController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\MeteringPoint $meteringPoint
+     * @param MeteringPoint $meteringPoint
      * @return JsonResponse
      */
     public function destroy(MeteringPoint $meteringPoint): JsonResponse

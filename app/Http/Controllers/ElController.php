@@ -632,9 +632,12 @@ class ElController extends Controller
         $collection = collect($data[0]);
         $gridprices = [];
         $collection->each(function ($item, $key) use (&$gridprices) {
-            if (Str::contains($key, 'Price')) {
-                $key = ((int) Str::replace('Price', '', $key)) - 1;
-                $gridprices[$key] = $item;
+            if (is_string($key) && Str::contains($key, 'Price')) {
+                $numericKey = Str::replace('Price', '', $key);
+                if (is_numeric($numericKey)) {
+                    $keyIndex = ((int) $numericKey) - 1;
+                    $gridprices[$keyIndex] = $item;
+                }
             }
         });
 

@@ -79,14 +79,14 @@ class GetPreliminaryInvoice
         switch ($dataSource) {
             case SourceEnum::EWII:
                 if (!$ewiiCredentials || (!array_key_exists('ewiiEmail', $ewiiCredentials) && !array_key_exists('ewiiPassword', $ewiiCredentials))) {
-                    throw new \InvalidArgumentException('EWII was selected as provider, but email and password for EWII-account wasn\'t given');
+                    throw new InvalidArgumentException('EWII was selected as provider, but email and password for EWII-account wasn\'t given');
                 }
                 $key = $ewiiCredentials['ewiiEmail'] . ' ' . $start_date . ' ' . $end_date;
                 break;
             case SourceEnum::DATAHUB:
             case null:
                 if (!$refreshToken) {
-                    throw new \InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
+                    throw new InvalidArgumentException('Eloverblik was selected as provider, but refresh token wasn\'t given');
                 }
                 $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
                 $source = SourceEnum::DATAHUB;
@@ -217,7 +217,9 @@ class GetPreliminaryInvoice
                     throw new InvalidArgumentException('Price element for tariff ' . $tariff['name'] . ' by operator ' . $tariff['owner'] . ' with validity period from: ' . $start_date . ' to: ' . $to_date . ' not found');
                 }
                 $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
-                $netPrices = array_filter($netPrices, 'strlen');
+                $netPrices = array_filter($netPrices, function ($value) {
+                    return strlen($value) > 0;
+                });
                 if (count($netPrices) > 1) {
                     if (array_key_exists($datahubPriceList->Note, $bill)) {
                         $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $netPrices[Carbon::parse($hour)->hour] * $consumption;
@@ -235,22 +237,22 @@ class GetPreliminaryInvoice
             }
 
             if (array_key_exists('Spotpris', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
                 }
             }
             $bill['Spotpris'] = round($bill['Spotpris'], 2);
 
             if (array_key_exists('Overhead', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Overhead'] = $bill['Overhead'] + $consumption * $overhead;
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Overhead'] = $consumption * $overhead;
                 }
             }
@@ -384,22 +386,22 @@ class GetPreliminaryInvoice
                 $bill[$tariff['name']] = round($bill[$tariff['name']], 2);
             }
             if (array_key_exists('Spotpris', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
                 }
             }
             $bill['Spotpris'] = round($bill['Spotpris'], 2);
 
             if (array_key_exists('Overhead', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Overhead'] = $bill['Overhead'] + $consumption * $overhead;
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::parse()->now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
                     $bill['Overhead'] = $consumption * $overhead;
                 }
             }
