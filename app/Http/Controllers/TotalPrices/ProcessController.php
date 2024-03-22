@@ -23,7 +23,7 @@ class ProcessController extends Controller
     public function __invoke(Request $request): RedirectResponse
     {
         $includeTomorrow = false;
-        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+        if (Carbon::now('Europe/Copenhagen')->gt(now()->startOfHour()->hour(13))) {
             $includeTomorrow = true;
         }
 

@@ -739,7 +739,7 @@ class ElController extends Controller
     public function apiGetTotalPriceToday(string $glnNumber) : array
     {
         $includeTomorrow = false;
-        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+        if (Carbon::now('Europe/Copenhagen')->gt(now()->startOfHour()->hour(13))) {
             $includeTomorrow = true;
         }
 

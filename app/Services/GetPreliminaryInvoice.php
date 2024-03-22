@@ -64,7 +64,7 @@ class GetPreliminaryInvoice
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMeCredentials) {
-                $end_date = Carbon::now()->startOfHour()->format('Y-m-d\TH:i:s');
+                $end_date = now()->startOfHour()->format('Y-m-d\TH:i:s');
             }
         }
         if (Carbon::parse($start_date)->startOfDay()->eq(Carbon::parse($end_date)->startOfDay())) {
@@ -237,22 +237,22 @@ class GetPreliminaryInvoice
             }
 
             if (array_key_exists('Spotpris', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
                 }
             }
             $bill['Spotpris'] = round($bill['Spotpris'], 2);
 
             if (array_key_exists('Overhead', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Overhead'] = $bill['Overhead'] + $consumption * $overhead;
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Overhead'] = $consumption * $overhead;
                 }
             }
@@ -386,22 +386,22 @@ class GetPreliminaryInvoice
                 $bill[$tariff['name']] = round($bill[$tariff['name']], 2);
             }
             if (array_key_exists('Spotpris', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
                 }
             }
             $bill['Spotpris'] = round($bill['Spotpris'], 2);
 
             if (array_key_exists('Overhead', $bill)) {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Overhead'] = $bill['Overhead'] + $consumption * $overhead;
                 }
             } else {
-                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(Carbon::now()->startOfHour())) {
+                if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
                     $bill['Overhead'] = $consumption * $overhead;
                 }
             }
