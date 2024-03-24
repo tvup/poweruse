@@ -18,19 +18,20 @@ export default defineConfig(({command, mode}) => {
         publicDir: 'public',
         base: './',
         build: {
-            outDir: './public',
+            outDir: './public/build',
             sourcemap: true,
             manifest: true,
             emptyOutDir: false,
         },
         plugins: [
             VitePWA({
-                includeManifestIcons: false,
                 strategies: 'injectManifest',
+                srcDir: 'resources/js',
+                filename: 'sw.js', // Denne fil bør være din source service worker
                 injectManifest: {
-                    swSrc: './resources/js/sw.js', // Sti til din tilpassede SW
-                    swDest: 'service-worker.js', // Destinationsfilnavn i "public" mappe
-                    globDirectory: 'public/', // Directory hvor assets vil blive pre-cached
+                    swSrc: 'resources/js/sw.js', // Path til din custom service worker-fil
+                    swDest: 'service-worker.js', // Output destination for den injicerede service worker
+                    globDirectory: 'public/', // Directory hvor dine assets vil blive pre-cached
                 },
                 manifest: {
                     name: 'Poweruse - Total-prices',
@@ -94,29 +95,17 @@ export default defineConfig(({command, mode}) => {
                 },
 
             }),
-            laravel({
-                input: [
-                    'resources/sass/app.scss',
-                    'resources/js/app.js',
-                    'resources/js/custom.js',
-                ],
-                refresh: true,
-                buildDirectory: './'
-            }),
-            vue({
-                template: {
-                    transformAssetUrls: {
-                        base: null,
-                        includeAbsolute: false,
-                    },
-                },
-            }),
+            laravel([
+                'resources/sass/app.scss',
+                'resources/js/app.js',
+                'resources/js/custom.js',
+            ]),
+            vue(),
             i18n(),
         ],
         resolve: {
             alias: {
-                vue: 'vue/dist/vue.esm-bundler.js',
-                $: "jQuery",
+                '@': '/resources/js',
             },
         },
     }
