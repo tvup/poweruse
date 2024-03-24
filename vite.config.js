@@ -60,7 +60,6 @@ export default defineConfig(({command, mode}) => {
                     description: 'My Awesome App that will make you fall in love with Laravel.'
                 },
                 workbox: {
-                    importScripts: ['assets/sw-functional.js'],
                     modifyURLPrefix: {
                         'build/': '/' //I'm unsure if this actually is needed
                     },
