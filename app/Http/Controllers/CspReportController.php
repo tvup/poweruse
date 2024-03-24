@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\File;
 
 class CspReportController extends Controller
 {
-    public function report(): int
+    public function report(): \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|Response
     {
         logger()->info(request()->getContent());
-        return response()->status(204);
+        return response('ok', 201);
     }
 }
