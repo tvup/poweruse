@@ -92,11 +92,7 @@
                 document.addEventListener('DOMContentLoaded', () => {
                     const lastAccessTime = localStorage.getItem('lastAccessTime');
                     const currentHour = new Date().getHours();
-                    if (lastAccessTime !== null && parseInt(lastAccessTime) !== currentHour) {
-                        localStorage.setItem('lastAccessTime', currentHour);
-                    } else {
-                        localStorage.setItem('lastAccessTime', currentHour);
-                    }
+                    localStorage.setItem('lastAccessTime', currentHour);
                 });
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'visible') {
