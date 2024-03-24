@@ -207,7 +207,7 @@ class ProcessController extends Controller
     private function getGridOperatorTariffPrices(array $array): array
     {
         $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
-        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'' . $toDay . '\' between ValidFrom and ValidTo')->firstOrFail();
+        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'' . $toDay . '\' between ValidFrom and COALESCE(ValidTo,now())')->firstOrFail();
         $collection = collect($datahubPriceList);
         $gridOperatorTariffPrices = [];
         $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
