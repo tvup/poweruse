@@ -18,7 +18,7 @@ class MeteringPointFactory extends Factory
             'type_of_mp' => $this->faker->word(),
             'settlement_method' => $this->faker->word(),
             'meter_number' => $this->faker->word(),
-            'consumer_c_v_r' => $this->faker->word(),
+            'consumer_c_v_r' => $this->faker->numberBetween(0,9999999),
             'data_access_c_v_r' => $this->faker->numberBetween(0,9999999),
             'consumer_start_date' => Carbon::now(),
             'meter_reading_occurrence' => $this->faker->word(),
