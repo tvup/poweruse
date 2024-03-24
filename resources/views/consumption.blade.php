@@ -1,77 +1,77 @@
 @extends("layouts.app")
 
 @section('content')
-    <div class="container mt-4">
-        @if(session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
+<div class="container mt-4">
+    @if(session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {!! session('error') !!}
+        </div>
+    @endif
+    <div class="card">
+        <div class="card-header text-center font-weight-bold">
+            Hent forbrug
+        </div>
+        @if(@isset($data))
+            <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '' }}</pre>
         @endif
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {!! session('error') !!}
+        <div class="card-body">
+            {{ html()->form('POST', url('getConsumption'))->open() }}
+            {{ csrf_field() }}
+
+            <div class="form-group">
+                <label for="source">{{ __('Source:') }}:</label>
+                {{ html()->radio('source', (old('source') === 'DATAHUB' || old('source') === null), 'DATAHUB')->id('DATAHUB') }} DATAHUB
+                {{ html()->radio('source', (old('source') === 'EWII'), 'EWII')->id('EWII') }} EWII
+                {{ html()->radio('source', (old('source') === 'SMART_ME'), 'SMART_ME')->id('SMART_ME') }} SMART_ME
+                <div class="smart_me">Tilføj data fra SMART-ME?
+                    {{ html()->checkbox('smart_me', old('smart_me') == 'on')->id('smart_me') }}
+                </div>
             </div>
-        @endif
-        <div class="card">
-            <div class="card-header text-center font-weight-bold">
-                Hent forbrug
+
+            <div class="form-group datahub">
+                <label for="token">{{ __('Refresh token') }}</label>
+                {{ html()->text('token')->class('form-control')->value(old('token')) }}
             </div>
-            @if(@isset($data))
-                <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '' }}</pre>
-            @endif
-            <div class="card-body">
-                {{ html()->form('POST', url('getConsumption'))->open() }}
-                {{ csrf_field() }}
-
-                <div class="form-group">
-                    <label for="source">{{ __('Source:') }}:</label>
-                    {{ html()->radio('source', (old('source') === 'DATAHUB' || old('source') === null), 'DATAHUB')->id('DATAHUB') }} DATAHUB
-                    {{ html()->radio('source', (old('source') === 'EWII'), 'EWII')->id('EWII') }} EWII
-                    {{ html()->radio('source', (old('source') === 'SMART_ME'), 'SMART_ME')->id('SMART_ME') }} SMART_ME
-                    <div class="smart_me">Tilføj data fra SMART-ME?
-                        {{ html()->checkbox('smart_me', old('smart_me') == 'on')->id('smart_me') }}
-                    </div>
-                </div>
-
-                <div class="form-group datahub">
-                    <label for="token">{{ __('Refresh token') }}</label>
-                    {{ html()->text('token')->class('form-control')->value(old('token')) }}
-                </div>
-                <div class="form-group ewii">
-                    <label for="ewiiEmail">{{ __('Email') }}</label>
-                    {{ html()->email('ewiiEmail')->class('form-control')->value(old('ewiiEmail')) }}
-                </div>
-                <div class="form-group ewii">
-                    <label for="ewiiPassword">{{ __('Password') }}</label>
-                    {{ html()->password('ewiiPassword')->class('form-control')->value(old('ewiiPassword')) }}
-                </div>
-                <div class="form-group smartmedetails">
-                    <label for="smartmeid">{{ __('Smart-me id:') }}</label>
-                    {{ html()->text('smartmeid')->class('form-control')->value(old('smartmeid')) }}
-                </div>
-                <div class="form-group smartmedetails">
-                    <label for="smartmeuser">{{ __('Smart-me username:') }}</label>
-                    {{ html()->text('smartmeuser')->class('form-control')->value(old('smartmeuser')) }}
-                </div>
-                <div class="form-group smartmedetails">
-                    <label for="smartmepassword">{{ __('Smart-me password:') }}</label>
-                    {{ html()->password('smartmepassword')->class('form-control')->value(old('smartmepassword')) }}
-                </div>
-
-                <div class="form-group">
-                    <label for="start_date">Start dato</label>
-                    {{ html()->text('start_date')->class('date form-control start_date')->value(old('start_date') ?: \Carbon\Carbon::now()->startOfMonth()->toDateString()) }}
-                </div>
-                <div class="form-group">
-                    <label for="end_date">Slut dato (eks.)</label>
-                    {{ html()->text('end_date')->class('date form-control end_date')->value(old('end_date') ?: \Carbon\Carbon::now()->toDateString()) }}
-                </div>
-
-                {{ html()->button(__('Submit'), 'submit')->class('btn btn-primary mt-2') }}
-                {{ html()->form()->close() }}
+            <div class="form-group ewii">
+                <label for="ewiiEmail">{{ __('Email') }}</label>
+                {{ html()->email('ewiiEmail')->class('form-control')->value(old('ewiiEmail')) }}
             </div>
+            <div class="form-group ewii">
+                <label for="ewiiPassword">{{ __('Password') }}</label>
+                {{ html()->password('ewiiPassword')->class('form-control')->value(old('ewiiPassword')) }}
+            </div>
+            <div class="form-group smartmedetails">
+                <label for="smartmeid">{{ __('Smart-me id:') }}</label>
+                {{ html()->text('smartmeid')->class('form-control')->value(old('smartmeid')) }}
+            </div>
+            <div class="form-group smartmedetails">
+                <label for="smartmeuser">{{ __('Smart-me username:') }}</label>
+                {{ html()->text('smartmeuser')->class('form-control')->value(old('smartmeuser')) }}
+            </div>
+            <div class="form-group smartmedetails">
+                <label for="smartmepassword">{{ __('Smart-me password:') }}</label>
+                {{ html()->password('smartmepassword')->class('form-control')->value(old('smartmepassword')) }}
+            </div>
+
+            <div class="form-group">
+                <label for="start_date">Start dato</label>
+                {{ html()->text('start_date')->class('date form-control start_date')->value(old('start_date') ?: \Carbon\Carbon::now()->startOfMonth()->toDateString()) }}
+            </div>
+            <div class="form-group">
+                <label for="end_date">Slut dato (eks.)</label>
+                {{ html()->text('end_date')->class('date form-control end_date')->value(old('end_date') ?: \Carbon\Carbon::now()->toDateString()) }}
+            </div>
+
+            {{ html()->button(__('Submit'), 'submit')->class('btn btn-primary mt-2') }}
+            {{ html()->form()->close() }}
         </div>
     </div>
+</div>
 
 @endsection
 
