@@ -26,7 +26,7 @@ class TotalPricesController extends Controller
                 SELECT GLN_Number, concat(concat(ChargeOwner, ' '), Note) as tariff, Note, ChargeOwner
                 FROM datahub_price_lists
                 WHERE
-                    '" . $toDay . "' between ValidFrom and ValidTo
+                    '" . $toDay . "' between ValidFrom and COALESCE(ValidTo,now())
                 AND GLN_Number IN (SELECT SUBSTRING(grid_operator_gln,
                                                       1,
                                                       CHAR_LENGTH(grid_operator_gln) - 4)
