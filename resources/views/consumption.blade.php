@@ -24,10 +24,10 @@
                 {{ csrf_field() }}
 
                 <div class="form-group">
-                    <label for="smart_me">{{ __('Source:') }}:</label>
-                    DATAHUB {{ Form::radio('source', 'DATAHUB' , (old('source') && old('source')=='DATAHUB') ? old('source') : true) }}
-                    EWII {{ Form::radio('source', 'EWII' , (old('source') && old('source')=='EWII') ? old('source') : false) }}
-                    SMART_ME {{ Form::radio('source', 'SMART_ME' , (old('source') && old('source')=='SMART_ME') ? old('source') : false) }}
+                    <label for="source">{{ __('Source:') }}:</label>
+                    {{ html()->radio('source', (old('source') === 'DATAHUB' || old('source') === null), 'DATAHUB')->id('DATAHUB') }} DATAHUB
+                    {{ html()->radio('source', (old('source') === 'EWII'), 'EWII')->id('EWII') }} EWII
+                    {{ html()->radio('source', (old('source') === 'SMART_ME'), 'SMART_ME')->id('SMART_ME') }} SMART_ME
                     <div class="smart_me">Tilføj data fra SMART-ME?
                         <input name="smart_me" id="smart_me" type="checkbox" {{ old('smart_me') == 'on' ? 'checked' : ''}}>
                     </div>
