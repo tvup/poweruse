@@ -16,7 +16,7 @@ class PowerUsePolicy extends Basic
 //            ->addDirective(Directive::STYLE, ['https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/'])
 //            ->addDirective(Directive::IMG, 'https://laravel.com');
 
-        $this->reportOnly();
+        $this->addDirective(Directive::IMG, 'https://laravel.com')->reportOnly();
     }
 
 }
