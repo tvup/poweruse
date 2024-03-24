@@ -96,7 +96,10 @@ class ProcessController extends Controller
                 break;
         }
 
-        return redirect('totalprices')->with('status', __('All data collected'))->with(['data' => $data])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
+        return redirect('totalprices')->with('status',
+            __('All data collected'))->with(['data' => $data])->with(['chart' => $chart])->with('companies',
+            $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat,
+            525600)->withCookie('netcompany', $request->netcompany, 525600);
     }
 
     /**
@@ -171,11 +174,11 @@ class ProcessController extends Controller
      */
     private function makeColors(array $array): array
     {
-        $min = (float) min($array);
-        $max = (float) max($array);
+        $min = (float)min($array);
+        $max = (float)max($array);
         $colours = [];
         foreach ($array as $value) {
-            $value = (float) $value;
+            $value = (float)$value;
             $percentage = ($value - $min) / ($max - $min);
             $percentage = $percentage * 100.0;
 
@@ -190,9 +193,9 @@ class ProcessController extends Controller
                 $G = 255 - (5.1 * $percentage);
             }
 
-            $dechex_r = dechex((int) $R) === '0' ? '00' : dechex((int) $R);
-            $dechex_g = dechex((int) $G) === '0' ? '00' : dechex((int) $G);
-            $dechex_b = dechex((int) $B) === '0' ? '00' : dechex((int) $B);
+            $dechex_r = dechex((int)$R) === '0' ? '00' : dechex((int)$R);
+            $dechex_g = dechex((int)$G) === '0' ? '00' : dechex((int)$G);
+            $dechex_b = dechex((int)$B) === '0' ? '00' : dechex((int)$B);
 
             $colours[] = '#' . $dechex_r . $dechex_g . $dechex_b;
         }
@@ -209,15 +212,16 @@ class ProcessController extends Controller
         $datahubPriceList = DatahubPriceList::query()
             ->whereNote($priceListKeys[1])
             ->whereChargeowner($priceListKeys[0])
-            ->isValid(now('Europe/Copenhagen')->startOfDay());
-        $collection = collect($datahubPriceList);
+            ->isValid(now('Europe/Copenhagen')->startOfDay())
+            ->firstOrFail();
+
         $gridOperatorTariffPrices = [];
-        $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
-            if (Str::contains($key, 'Price')) {
-                $key = ((int) Str::replace('Price', '', $key)) - 1;
-                $gridOperatorTariffPrices[$key] = $item;
-            }
-        });
+        collect($datahubPriceList)->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
+                if (Str::contains((string) $key, 'Price')) {
+                    $key = ((float) Str::replace('Price', '', (string) $key)) - 1;
+                    $gridOperatorTariffPrices[$key] = $item;
+                }
+            });
 
         return $gridOperatorTariffPrices;
     }
