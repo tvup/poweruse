@@ -38,7 +38,7 @@
                 @endfor
 
                 <div class="form-group">
-                    <label>Prisområde:</label>
+                    <label for="area">Prisområde:</label>
                     {{ html()->radio('area', (old('area') === 'DK1' || old('area') === null), 'DK1')->id('DK1') }} DK1
                     {{ html()->radio('area', old('area') === 'DK2', 'DK2')->id('DK2') }} DK2
                 </div>
