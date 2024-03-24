@@ -100,13 +100,13 @@ class ProcessController extends Controller
             'status',
             __('All data collected')
         )->with(['data' => $data])->with(['chart' => $chart])->with(
-                'companies',
-                $companies
-            )->withInput($request->all())->withCookie(
-                    'outputformat',
-                    $request->outputformat,
-                    525600
-                )->withCookie('netcompany', $request->netcompany, 525600);
+            'companies',
+            $companies
+        )->withInput($request->all())->withCookie(
+            'outputformat',
+            $request->outputformat,
+            525600
+        )->withCookie('netcompany', $request->netcompany, 525600);
     }
 
     /**
