@@ -127,7 +127,7 @@
         <div class="pwa-toast">
             {{ __('New content available, click on reload button to update.') }}
             <div class="message">
-                <button onclick="updateServiceWorker()">
+                <button onclick="confirmUpdatePage()" id="updatebutton">
                     {{ __('Reload') }}
                 </button>
                 <button x-on:click="$dispatch('close')">
@@ -178,6 +178,15 @@
             });
         }
 
+        document.getElementById("updatebutton").onclick = function() {
+            console.log('Hey update1');
+            if ('serviceWorker' in navigator) {
+                console.log('Hey update2');
+                navigator.serviceWorker.ready.then((registration) => {
+                    registration.waiting.postMessage({ action: 'skipWaiting' });
+                });
+            }
+        };
 
         @yield('javaScript')
     }
