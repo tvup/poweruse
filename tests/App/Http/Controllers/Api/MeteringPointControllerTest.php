@@ -17,7 +17,6 @@ use Tests\TestCase;
 
 class MeteringPointControllerTest extends TestCase
 {
-
     private MeteringPointController $meteringPointController;
 
     /**
@@ -41,11 +40,11 @@ class MeteringPointControllerTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user, 'api');
         $storeMeteringPointRequest = Mockery::mock(StoreMeteringPointRequest::class)->makePartial();
-        $array = ['metering_point_id' => 'dsfdsfds', 'type_of_mp' => '1', 'settlement_method' => 'D02', 'meter_number' => '1234', 'meter_reading_occurrence' => 'PYTH1', 'balance_supplier_name' => 'supplier', 'street_code' => '123', 'street_name' => 'Omvejen', 'building_number' => '12', 'city_name' => 'Ørsted', 'municipality_code' => '123', 'hasRelation' => 0];
+        $meteringPoint = MeteringPoint::factory()->create(['metering_point_id' => 'dsfdsfds', 'type_of_mp' => '1', 'settlement_method' => 'D02', 'meter_number' => '1234', 'meter_reading_occurrence' => 'PYTH1', 'balance_supplier_name' => 'supplier', 'street_code' => '123', 'street_name' => 'Omvejen', 'building_number' => '12', 'city_name' => 'Ørsted', 'municipality_code' => '123', 'hasRelation' => 0]);
         $storeMeteringPointRequest->shouldReceive('all')
-            ->andReturn($array);
+            ->andReturn($meteringPoint->toArray());
         $storeMeteringPointRequest->shouldReceive('validated')
-            ->andReturn($array);
+            ->andReturn($meteringPoint->toArray());
         $response = $this->meteringPointController->store($storeMeteringPointRequest);
         $this->assertIsArray($response);
     }
