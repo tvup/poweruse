@@ -91,10 +91,8 @@
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'visible') {
                         const lastAccessTime = localStorage.getItem('lastAccessTime');
-                        const currentTime = new Date().getTime(); // Tid i millisekunder
-                        if (lastAccessTime !== null && (currentTime - parseInt(lastAccessTime)) > 120000) { // 120000 ms = 2 minutter
-                            console.log('Hey! I should reload');
-                            localStorage.setItem('lastAccessTime', currentTime.toString());
+                        const currentHour = new Date().getHours();
+                        if (lastAccessTime !== null && parseInt(lastAccessTime) !== currentHour) {
                             document.getElementById("totalprices-form").submit()
                         }
                     }
@@ -104,8 +102,8 @@
 @section('javaScript')
     document.addEventListener('submit', () => {
         const lastAccessTime = localStorage.getItem('lastAccessTime');
-        const currentTime = new Date().getTime()
-        localStorage.setItem('lastAccessTime', currentTime);
+        const currentHour = new Date().getHours();
+        localStorage.setItem('lastAccessTime', currentHour);
     });
 @endsection
 
