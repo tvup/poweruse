@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["master"],
+  "extends": [
+    "config:base",
+    ":disableRateLimiting",
+    "docker:disable"
+  ],
+  "packageRules": [
+    {
+      "packagePatterns": ["*"],
+      "separateMinorPatch": false,
+      "groupName": "all dependencies",
+      "groupSlug": "update-dependencies",
+      "automerge": true
+    },
+    {
+      "packagePatterns": ["*"],
+      "updateTypes": ["major", "minor"],
+      "enabled": false
+    }
+  ]
+}

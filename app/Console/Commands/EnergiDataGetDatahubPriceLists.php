@@ -18,13 +18,13 @@ class EnergiDataGetDatahubPriceLists extends Command
      * @var string
      */
     protected $signature = 'energidata:get-datahub-prices '
-    . '{--operator= : Name of the operator to query prices for} '
-    . '{--charge-type= : The type of charge to query for. One of: D01=Subscription, D02=Fee, D03=Tariff} '
-    . '{--charge-type-code= : The code of the charge type to query for} '
-    . '{--note= : The text that represents the note of the tariff in question} '
-    . '{--start-date= : The date from which the price should be valid}'
-    . '{--end-date= : The date to which the price should be valid}'
-    . '{--save-to-db : Save to database}';
+        . '{--operator= : Name of the operator to query prices for} '
+        . '{--charge-type= : The type of charge to query for. One of: D01=Subscription, D02=Fee, D03=Tariff} '
+        . '{--charge-type-code= : The code of the charge type to query for} '
+        . '{--note= : The text that represents the note of the tariff in question} '
+        . '{--start-date= : The date from which the price should be valid}'
+        . '{--end-date= : The date to which the price should be valid}'
+        . '{--save-to-db : Save to database}';
 
     /**
      * The console command description.

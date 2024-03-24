@@ -20,7 +20,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      *
-     * @param  \App\Http\Requests\ProfileUpdateRequest  $request
+     * @param  ProfileUpdateRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ProfileUpdateRequest $request)
@@ -39,7 +39,7 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request)

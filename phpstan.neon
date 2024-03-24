@@ -1,5 +1,5 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
 
 parameters:
     paths:
@@ -9,7 +9,7 @@ parameters:
     level: 6
 
     ignoreErrors: # All these errors are weird to fix. We will do that lastly,
-        - '#cache invoked with#'
+        - '#Static call to instance method App\\Services\\Transformers\\Facades\\MeteringPointTransformer::#'
         - '#does not accept default value of type#'
         - '#Unable to resolve the template type TKey in call to function collect#'
         - '#Unable to resolve the template type TValue in call to function collect#'

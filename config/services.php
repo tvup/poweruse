@@ -60,4 +60,12 @@ return [
         'paasword' => env('SMART_ME_PASSWORD', 'test-password'),
     ],
 
+    'openai' => [
+        'base_url' => env('OPENAI_API_URL', 'https://api.openai.com'),
+        'key' => env('OPENAI_API_KEY'),
+    ],
+
+    'incident_server' => [
+        'url' => env('INCIDENT_SERVER_URL'),
+    ],
 ];

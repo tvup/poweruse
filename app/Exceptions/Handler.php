@@ -3,105 +3,81 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that are not reported.
-     *
-     * @var array<int, class-string<\Throwable>>
-     */
-    protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException::class,
-        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
-    ];
-
     /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
      * @var array<int, string>
      */
     protected $dontFlash = [
+        'current_password',
         'password',
         'password_confirmation',
     ];
 
     /**
-     * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param Throwable $throwable
-     * @return void
+     * Register the exception handling callbacks for the application.
      */
-    public function report(Throwable $throwable)
+    public function register(): void
     {
-        if (in_array(app()->environment(), ['production', 'staging'])) {
+        $this->reportable(function (Throwable $e) {
             try {
-                $this->fejlvarp_exception_handler($throwable);
-            } catch (\Exception $exception) {
-                logger()->error($exception->getMessage());
+                if (config('services.incident_server.url')) {
+                    $this->fejlvarp_exception_handler($e);
+                }
+            } catch (\Exception $fejlVarpException) {
+                logger()->error('Couldn\'t report to fejlvarp: ' . $fejlVarpException->getMessage());
+                logger()->error('Original error: ' . $e->getMessage());
             }
-        }
-        parent::report($throwable);
+        });
     }
 
     /**
-     * Render an exception into an HTTP response.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Throwable $exception
-     * @return Response
-     */
-    public function render($request, Throwable $exception)
-    {
-        return parent::render($request, $exception);
-    }
-
-    /**
-     * @param \Throwable $exception
+     * @param Throwable $exception
      * @throws \JsonException
      */
     private function fejlvarp_exception_handler(Throwable $exception) : void
     {
-        if(app()->environment('production')) {
-            // Generate unique hash from message + file + line number
-            // We strip out revision-part of the file name.
-            // Assuming a standard capistrano deployment path, this will prevent duplicates across deploys.
-            $hash = 'Nabovaern' . $exception->getMessage() . preg_replace('~revisions/[0-9]{14}/~', '--', $exception->getFile()) . $exception->getLine();
-            $opts = [
-                'http' => [
-                    'method' => 'POST',
-                    'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                    'content' => http_build_query(
-                        [
-                            'hash' => md5($hash),
-                            'subject' => $exception->getMessage(),
-                            'data' => json_encode([
-                                'application' => 'WooInvoice-Test',
-                                'error' => [
-                                    'type' => get_class($exception),
-                                    'message' => $exception->getMessage(),
-                                    'code' => $exception->getCode(),
-                                    'file' => $exception->getFile(),
-                                    'line' => $exception->getLine(),
-                                    'trace' => $exception->getTraceAsString(),
-                                ],
-                                'environment' => [
-                                    'GET' => $_GET ?: null,
-                                    'POST' => $_POST ?: null,
-                                    'SERVER' => $_SERVER ?: null,
-                                    'SESSION' => $_SESSION ?? null,
-                                ],
-                            ], JSON_THROW_ON_ERROR),
-                        ]
-                    )],
-            ];
-            $context = stream_context_create($opts);
-            $content = file_get_contents('https://fejlvarp.wooinvoice.dk', false, $context);
-        }
+        // Generate unique hash from message + file + line number
+        // We strip out revision-part of the file name.
+        // Assuming a standard capistrano deployment path, this will prevent duplicates across deploys.
+        $environment = config('app.env');
+        $appName = config('app.name') . '-' . $environment;
+        $hash = $appName . $exception->getMessage() . preg_replace('~revisions/[0-9]{14}/~', '--', $exception->getFile()) . $exception->getLine();
+        $opts = [
+            'http' => [
+                'method' => 'POST',
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'content' => http_build_query(
+                    [
+                        'hash' => md5($hash),
+                        'subject' => $exception->getMessage(),
+                        'data' => json_encode([
+                            'application' => $appName,
+                            'error' => [
+                                'type' => get_class($exception),
+                                'message' => $exception->getMessage(),
+                                'code' => $exception->getCode(),
+                                'file' => $exception->getFile(),
+                                'line' => $exception->getLine(),
+                                'trace' => $exception->getTraceAsString(),
+                            ],
+                            'environment' => [
+                                'GET' => $_GET ?: null,
+                                'POST' => $_POST ?: null,
+                                'SERVER' => $_SERVER ?: null,
+                                'SESSION' => $_SESSION ?? null,
+                            ],
+                        ], JSON_THROW_ON_ERROR),
+                    ]
+                )],
+        ];
+        $context = stream_context_create($opts);
+        /** @var string $incidentServerUrl */
+        $incidentServerUrl = config('services.incident_server.url');
+        $content = file_get_contents($incidentServerUrl, false, $context);
     }
 }

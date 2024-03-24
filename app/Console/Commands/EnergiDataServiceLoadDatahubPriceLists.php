@@ -48,15 +48,20 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
             foreach ($records as $record) {
                 //GLN-number hack because energinet doesn't return gln number as they should
                 $chargeOwner = $record['ChargeOwner'];
-                $gln = cache()->remember('ChargeOwner-' . $chargeOwner, 3600, function () use ($chargeOwner, $datahubChargeGroups) {
-                    try {
-                        $chargeGroup = $datahubChargeGroups->getChargeGroup($chargeOwner);
-                    } catch (ModelNotFoundException $e) {
-                        throw new RecordsNotFoundException($e->getMessage() . ' with GridOperatorName = ' . $chargeOwner);
-                    }
+                try {
+                    $gln = cache()->remember('ChargeOwner-' . $chargeOwner, 3600, function () use ($chargeOwner, $datahubChargeGroups) {
+                        try {
+                            $chargeGroup = $datahubChargeGroups->getChargeGroup($chargeOwner);
+                        } catch (ModelNotFoundException $e) {
+                            throw new RecordsNotFoundException(Str::replaceLast('.', '', $e->getMessage()) . ' with GridOperatorName: ' . $chargeOwner);
+                        }
 
-                    return substr($chargeGroup->grid_operator_gln, 0, -4);
-                });
+                        return substr($chargeGroup->grid_operator_gln, 0, -4);
+                    });
+                } catch (RecordsNotFoundException $e) {
+                    logger()->warning($e->getMessage());
+                    continue;
+                }
                 try {
                     DatahubPriceList::create([
                         'ChargeOwner' => $record['ChargeOwner'],

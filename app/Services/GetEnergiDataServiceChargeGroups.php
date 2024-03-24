@@ -12,10 +12,14 @@ class GetEnergiDataServiceChargeGroups
      */
     public function requestChargeGroups(int $limit = 100, int $offset = 0): array
     {
-        $url = 'https://api.energidataservice.dk/dataset/ChargeGroupYear?limit=' . $limit . '&offset=' . $offset;
+        $url = 'https://api.energidataservice.dk/dataset/ChargeGroupYear';
+        $queryParameters = [
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
 
         return Http::acceptJson()
-            ->get($url)->json('records');
+            ->get($url, $queryParameters)->json('records');
     }
 
     /**

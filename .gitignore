@@ -7,6 +7,7 @@
 /storage/refresh_tokens*
 /vendor
 .env
+.rnd
 .phpunit.result.cache
 .php-cs-fixer.cache
 Homestead.json

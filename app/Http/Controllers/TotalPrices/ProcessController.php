@@ -17,13 +17,13 @@ class ProcessController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return RedirectResponse
      */
     public function __invoke(Request $request): RedirectResponse
     {
         $includeTomorrow = false;
-        if (Carbon::now('Europe/Copenhagen')->gt(Carbon::now()->startOfHour()->hour(13))) {
+        if (Carbon::now('Europe/Copenhagen')->gt(now()->startOfHour()->hour(13))) {
             $includeTomorrow = true;
         }
 
@@ -59,16 +59,23 @@ class ProcessController extends Controller
         //Get other tariffs
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
-        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
         $totalPrice = [];
-        $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
+        $startOfCurrentHour = Carbon::now('Europe/Copenhagen')->startOfHour();
+        $currentHour = $startOfCurrentHour->hour;
+        $startOfCurrentDay = $startOfCurrentHour->startOfDay();
+
         $limit = $includeTomorrow ? 47 : 23;
-        for ($i = 0; $i <= $limit; $i++) {
-            $j = ($i <= 23 ? $i : $i - 24);
-            $now2 = clone $now;
-            $totalPrice[$now2->addHours($i)->toDateTimeString()] = round(($gridOperatorTariffPrices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25, 2);
+        foreach (range($currentHour, $limit) as $hour) {
+            $hourOnDay = ($hour <= 23 ? $hour : $hour - 24);
+            // Calculate total price without VAT
+            $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$hour] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0];
+            // Add 25% VAT
+            $grossAmount = $netAmount * 1.25;
+            // Round to two decimals and add to array as datetime-index eg. "2023-02-01 02:00:00"
+            $timeOnDay = $startOfCurrentDay->copy()->addHours($hour)->toDateTimeString();
+            $totalPrice[$timeOnDay] = round($grossAmount, 2);
         }
         $companies = Operator::$operatorName;
 
@@ -140,35 +147,13 @@ class ProcessController extends Controller
      * @param string $operator
      * @return array<int, float>
      */
-    private function getTSOOperatorBalancetariff(string $operator): array
-    {
-        $chargeType = 'D03';
-        $chargeTypeCode = '45013';
-        $note = 'Balancetarif for forbrug';
-        $startDate = '2022-01-01';
-        $endDate = '2023-12-31';
-
-        return (new RetrieveTariffFromOperator())->handle(
-            operator: $operator,
-            chargeType: $chargeType,
-            chargeTypeCode: $chargeTypeCode,
-            note: $note,
-            startDate: $startDate,
-            endDate: $endDate,
-        );
-    }
-
-    /**
-     * @param string $operator
-     * @return array<int, float>
-     */
     private function getTSOOperatorAfgifttariff(string $operator): array
     {
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
         $note = 'Elafgift';
-        $startDate = '2023-01-01';
-        $endDate = '2023-06-30';
+        $startDate = '2023-07-01';
+        $endDate = '2024-01-01';
 
         return (new RetrieveTariffFromOperator())->handle(
             operator: $operator,
