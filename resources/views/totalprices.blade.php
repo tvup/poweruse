@@ -28,7 +28,6 @@
                 <h2 class="card-title text-lg leading-6 font-medium text-gray-900">
                     {{ __('Get total prices for next hours') }}
                 </h2>
-                {{ now()->toDateTimeString() }}
             </div>
             <x-totalprices.form :companies="$companies"/>
         </div>
@@ -89,23 +88,24 @@
                     }
                 }
             });
-                document.addEventListener('DOMContentLoaded', () => {
-                    const lastAccessTime = localStorage.getItem('lastAccessTime');
-                    const currentHour = new Date().getHours();
-                    localStorage.setItem('lastAccessTime', currentHour);
-                });
                 document.addEventListener('visibilitychange', () => {
-                    console.log('Should i reload?');
                     if (document.visibilityState === 'visible') {
                         const lastAccessTime = localStorage.getItem('lastAccessTime');
                         const currentTime = new Date().getTime(); // Tid i millisekunder
                         if (lastAccessTime !== null && (currentTime - parseInt(lastAccessTime)) > 120000) { // 120000 ms = 2 minutter
                             console.log('Hey! I should reload');
                             localStorage.setItem('lastAccessTime', currentTime.toString());
-                            location.reload(); // Eller anden logik
+                            document.getElementById("totalprices-form").submit()
                         }
                     }
                 });
     @endsection
 @endif
+@section('javaScript')
+    document.addEventListener('submit', () => {
+        const lastAccessTime = localStorage.getItem('lastAccessTime');
+        const currentTime = new Date().getTime()
+        localStorage.setItem('lastAccessTime', currentTime);
+    });
+@endsection
 

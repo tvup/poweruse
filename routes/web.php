@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,7 +41,7 @@ Route::middleware('locale')->group(function () {
     Route::post(
         'totalprices',
         App\Http\Controllers\TotalPrices\ProcessController::class,
-    )->name('totalprices.process');
+    )->withoutMiddleware([VerifyCsrfToken::class])->name('totalprices.process');
 
     Route::get('el/', 'ElController@index')->name('el');
     Route::get('el-meteringpoint/', 'MeteringPointController@index')->name('el-meteringpoint');
