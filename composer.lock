@@ -4145,16 +4145,16 @@
         },
         {
             "name": "spatie/laravel-html",
-            "version": "3.6.0",
+            "version": "3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-html.git",
-                "reference": "96ee6fc6b6484150c10c23985b3826b066aafc52"
+                "reference": "df15763c190954ee46a74e0bf5b4b5bbf2e1f170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-html/zipball/96ee6fc6b6484150c10c23985b3826b066aafc52",
-                "reference": "96ee6fc6b6484150c10c23985b3826b066aafc52",
+                "url": "https://api.github.com/repos/spatie/laravel-html/zipball/df15763c190954ee46a74e0bf5b4b5bbf2e1f170",
+                "reference": "df15763c190954ee46a74e0bf5b4b5bbf2e1f170",
                 "shasum": ""
             },
             "require": {
@@ -4211,7 +4211,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-html/tree/3.6.0"
+                "source": "https://github.com/spatie/laravel-html/tree/3.7.0"
             },
             "funding": [
                 {
@@ -4219,7 +4219,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-03-08T11:56:06+00:00"
+            "time": "2024-03-23T11:28:29+00:00"
         },
         {
             "name": "symfony/clock",
