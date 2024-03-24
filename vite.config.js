@@ -3,6 +3,13 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import i18n from 'laravel-vue-i18n/vite';
 import {VitePWA} from 'vite-plugin-pwa';
+import { readFileSync, writeFile } from 'fs';
+import { fileURLToPath } from 'url';
+
+const file = fileURLToPath(new URL('revision', import.meta.url));
+let revision = readFileSync(file, 'utf8');
+revision = parseInt(revision) + 1;
+writeFile(file, revision.toString(), (err) => { });
 
 export default defineConfig(({command, mode}) => {
     const env = loadEnv(mode, process.cwd(), '');
@@ -23,9 +30,9 @@ export default defineConfig(({command, mode}) => {
                 outDir: './public',
                 includeManifestIcons: false,
                 mode: mode === 'production' ? 'production' : 'development',
-                strategies: 'generateSW',
-                injectRegister: 'inline',
-                registerType: 'prompt',
+                strategies: 'injectManifest',
+                srcDir: 'resources/js',
+                filename: 'sw.js',
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
@@ -51,7 +58,7 @@ export default defineConfig(({command, mode}) => {
                     ],
                     theme_color: '#2196f3',
                     background_color: '#2196f3',
-                    description: 'My Awesome App that will make you fall in love with Laravel.'
+                    description: 'Get current electricty prices, calculate your upcomming bill, explore your past usages, and more.',
                 },
                 workbox: {
                     modifyURLPrefix: {
@@ -60,7 +67,7 @@ export default defineConfig(({command, mode}) => {
                     skipWaiting: false,
 
                     additionalManifestEntries: [
-                        {url: '/home', revision: '1'}
+                        {url: '/home', revision: revision.toString()}
                     ],
                     globPatterns: ['**/*.{js,ico,css,png,svg,jpg,jpeg,webm,woff2,ttf}'],
                     maximumFileSizeToCacheInBytes: 2150000,
@@ -110,7 +117,7 @@ export default defineConfig(({command, mode}) => {
         resolve: {
             alias: {
                 vue: 'vue/dist/vue.esm-bundler.js',
-                $: "jQuery",
+                '@': '/resources/js',
             },
         },
     }

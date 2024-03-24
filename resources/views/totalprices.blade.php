@@ -88,6 +88,22 @@
                     }
                 }
             });
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') {
+                        const lastAccessTime = localStorage.getItem('lastAccessTime');
+                        const currentHour = new Date().getHours();
+                        if (lastAccessTime !== null && parseInt(lastAccessTime) !== currentHour) {
+                            document.getElementById("totalprices-form").submit()
+                        }
+                    }
+                });
     @endsection
 @endif
+@section('javaScript')
+    document.addEventListener('submit', () => {
+        const lastAccessTime = localStorage.getItem('lastAccessTime');
+        const currentHour = new Date().getHours();
+        localStorage.setItem('lastAccessTime', currentHour);
+    });
+@endsection
 

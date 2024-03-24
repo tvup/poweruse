@@ -7,7 +7,7 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                     {{ __('Grid area options') }}
                 </h3>
-                {{ html()->form('POST', route('totalprices.process'))->open() }}
+                {{ html()->form('POST', route('totalprices.process'))->id('totalprices-form')->open() }}
                 {{ csrf_field() }}
 
                 <div class="sm:col-span-3">

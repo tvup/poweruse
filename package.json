@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp public/.vite/manifest.json public/manifest.json",
     "build-dev": "vite build --mode=development"
   },
   "devDependencies": {
@@ -13,12 +13,12 @@
     "autoprefixer": "^10.4.2",
     "axios": "^1.1.2",
     "bootstrap": "^5.2.3",
-    "laravel-vite-plugin": "^0.7.0",
+    "laravel-vite-plugin": "^1.0.2",
     "lodash": "^4.17.19",
     "postcss": "^8.4.6",
     "sass": "^1.56.1",
-    "vite": "^4.0.0",
-    "vite-plugin-pwa": "^0.14.1"
+    "vite": "^5.2.4",
+    "vite-plugin-pwa": "^0.19.7"
   },
   "dependencies": {
     "@fontsource/nunito": "^4.5.12",
@@ -33,5 +33,6 @@
     "workbox-precaching": "^6.5.4",
     "workbox-routing": "^6.5.4",
     "workbox-window": "^6.5.4"
-  }
+  },
+  "type": "module"
 }
