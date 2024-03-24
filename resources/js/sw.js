@@ -1,5 +1,4 @@
-// src/sw.js
-// Din egen logik her...
+self.__WB_MANIFEST;
 
 // Workbox precaching. Oprette en selv-invokerende funktion:
 self.addEventListener('install', event => {
