@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,7 +22,7 @@ Route::get('/', function () {
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/privacy', [App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy');
-Route::get('/build/manifest.webmanifest', [\App\Http\Controllers\WebManifestController::class, 'manifest']);
+Route::get('/build/manifest.webmanifest', [App\Http\Controllers\WebManifestController::class, 'manifest']);
 
 Route::middleware('locale')->group(function () {
     // Routes that requires auth
@@ -40,7 +41,7 @@ Route::middleware('locale')->group(function () {
     Route::post(
         'totalprices',
         App\Http\Controllers\TotalPrices\ProcessController::class,
-    )->name('totalprices.process');
+    )->withoutMiddleware([VerifyCsrfToken::class])->name('totalprices.process');
 
     Route::get('el/', 'ElController@index')->name('el');
     Route::get('el-meteringpoint/', 'MeteringPointController@index')->name('el-meteringpoint');

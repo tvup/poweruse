@@ -36,7 +36,7 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * @param \Throwable $exception
+     * @param Throwable $exception
      * @throws \JsonException
      */
     private function fejlvarp_exception_handler(Throwable $exception) : void

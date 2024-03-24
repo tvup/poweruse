@@ -316,7 +316,7 @@ class GetMeteringData
      * @param string $refreshToken
      * @return ElOverblikApiInterface
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     * @throws \Tvup\ElOverblikApi\ElOverblikApiException
+     * @throws ElOverblikApiException
      */
     private function getEloverblikApi(string $refreshToken): ElOverblikApiInterface
     {

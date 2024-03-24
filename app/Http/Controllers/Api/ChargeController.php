@@ -105,7 +105,7 @@ class ChargeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\StoreChargeRequest $request
+     * @param StoreChargeRequest $request
      * @return JsonResponse
      */
     public function store(StoreChargeRequest $request): JsonResponse
@@ -141,7 +141,7 @@ class ChargeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Charge $charge
+     * @param Charge $charge
      * @return JsonResponse
      */
     public function show(Charge $charge): JsonResponse
@@ -152,8 +152,8 @@ class ChargeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\UpdateChargeRequest $request
-     * @param \App\Models\Charge $charge
+     * @param UpdateChargeRequest $request
+     * @param Charge $charge
      * @return JsonResponse
      */
     public function update(UpdateChargeRequest $request, Charge $charge): JsonResponse
@@ -189,7 +189,7 @@ class ChargeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Charge $charge
+     * @param Charge $charge
      * @return JsonResponse
      */
     public function destroy(Charge $charge): JsonResponse
@@ -205,7 +205,7 @@ class ChargeController extends Controller
     /**
      * Remove the specified resources from storage.
      *
-     * @param \App\Models\MeteringPoint $meteringPoint
+     * @param MeteringPoint $meteringPoint
      * @return JsonResponse
      */
     public function destroyAll(MeteringPoint $meteringPoint): JsonResponse

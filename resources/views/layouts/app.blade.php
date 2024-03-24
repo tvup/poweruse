@@ -22,7 +22,6 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <link rel="manifest" href="/build/manifest.webmanifest"/>
 
@@ -128,7 +127,7 @@
         <div class="pwa-toast">
             {{ __('New content available, click on reload button to update.') }}
             <div class="message">
-                <button onclick="updateServiceWorker()">
+                <button onclick="confirmUpdatePage()" id="updatebutton">
                     {{ __('Reload') }}
                 </button>
                 <button x-on:click="$dispatch('close')">
@@ -165,6 +164,27 @@
                 $('.arrow').css("z-index", 1055);
             }
         }
+
+        var logoutForm = document.getElementById('logout-form');
+        if(logoutForm) {
+            logoutForm.addEventListener('submit', function(e) {
+                // Logik for at rydde op i Service Worker
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.active.postMessage({ action: 'clearCache' });
+                    });
+                }
+            });
+        }
+
+        document.getElementById("updatebutton").onclick = function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then((registration) => {
+                    registration.waiting.postMessage({ action: 'skipWaiting' });
+                });
+            }
+        };
+
         @yield('javaScript')
     }
 </script>

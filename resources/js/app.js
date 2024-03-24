@@ -83,7 +83,8 @@ window.updateServiceWorker = updateServiceWorker;
 
 import.meta.glob([
     '../videos/*.webm',
-    '../images/icons/*.{ico,png,svg,jpg}'
+    '../images/icons/*.{ico,png,svg,jpg}',
+    '../images/*.jpeg'
 ]);
 
 import Chart from 'chart.js/auto';
