@@ -169,7 +169,6 @@
         if(logoutForm) {
             logoutForm.addEventListener('submit', function(e) {
                 // Logik for at rydde op i Service Worker
-                console.log('Logging out...');
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.ready.then((registration) => {
                         registration.active.postMessage({ action: 'clearCache' });
