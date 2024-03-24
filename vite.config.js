@@ -24,15 +24,6 @@ export default defineConfig(({command, mode}) => {
             emptyOutDir: false,
         },
         plugins: [
-            laravel({
-                input: [
-                    'resources/sass/app.scss',
-                    'resources/js/app.js',
-                    'resources/js/custom.js',
-                ],
-                refresh: true,
-                buildDirectory: './'
-            }),
             VitePWA({
                 base: '/',
                 scope: '/',
@@ -67,7 +58,7 @@ export default defineConfig(({command, mode}) => {
                     ],
                     theme_color: '#2196f3',
                     background_color: '#2196f3',
-                    description: 'My Awesome App that will make you fall in love with Laravel.'
+                    description: 'Get current electricty prices, calculate your upcomming bill, explore your past usages, and more.',
                 },
                 workbox: {
                     modifyURLPrefix: {
@@ -103,6 +94,15 @@ export default defineConfig(({command, mode}) => {
                     type: 'module',
                 },
 
+            }),
+            laravel({
+                input: [
+                    'resources/sass/app.scss',
+                    'resources/js/app.js',
+                    'resources/js/custom.js',
+                ],
+                refresh: true,
+                buildDirectory: './'
             }),
             vue({
                 template: {
