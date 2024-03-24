@@ -54,6 +54,6 @@ Route::middleware('locale')->group(function () {
     Route::post('getConsumption', 'ElController@getConsumption');
     Route::post('getTotalPrices', 'ElController@getTotalPrices');
     Route::post('processcustom', 'ElController@processCustom');
-    Route::get('report-pls-here', 'CspReportController@report');
+    Route::post('report-pls-here', 'CspReportController@report');
 });
 require __DIR__ . '/auth.php';
