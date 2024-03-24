@@ -62,14 +62,14 @@ class ElController extends Controller
     {
         $data = session('data');
 
-        return view('consumption')->with('data', $data ?: null);
+        return view('consumption')->with('data', $data ?: null)->with('refresh_token', auth()->user()?->refresh_token);
     }
 
     public function indexCustomUsage() : View
     {
         $data = session('data');
 
-        return view('el-custom')->with('data', $data ?: null);
+        return view('el-custom')->with('data', $data ?: null)->with('refresh_token', auth()->user()?->refresh_token);
     }
 
     public function processData(Request $request) : RedirectResponse|Response
