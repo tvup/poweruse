@@ -90,7 +90,6 @@
                 }
             });
                 document.addEventListener('DOMContentLoaded', () => {
-                    console.log('Tid til at gemme');
                     const lastAccessTime = localStorage.getItem('lastAccessTime');
                     const currentHour = new Date().getHours();
                     localStorage.setItem('lastAccessTime', currentHour);
