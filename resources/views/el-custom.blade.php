@@ -38,9 +38,9 @@
                 @endfor
 
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Prisområde:</label>
-                    DK1 {{ Form::radio('area', 'DK1' , (old('area') && old('area')=='DK1') ? old('area') : false) }}
-                    DK2 {{ Form::radio('area', 'DK2' , (old('area') && old('area')=='DK2') ? old('area') : true) }}
+                    <label>Prisområde:</label>
+                    {{ html()->radio('area', (old('area') === 'DK1' || old('area') === null), 'DK1')->id('DK1') }} DK1
+                    {{ html()->radio('area', old('area') === 'DK2', 'DK2')->id('DK2') }} DK2
                 </div>
 
                 <div class="form-group">

@@ -72,9 +72,9 @@
                     <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">{{ __('Price area') }}:</label>
-                    DK1 {{ Form::radio('area', 'DK1' , (old('area') && old('area')=='DK1') ? old('area') : false) }}
-                    DK2 {{ Form::radio('area', 'DK2' , (old('area') && old('area')=='DK2') ? old('area') : true) }}
+                    {!! html()->label(__('Price area')) !!}
+                    {!! html()->radio('area', 'DK1')->checked(old('area') ? old('area') == 'DK1' : true)->value('DK1') !!} DK1
+                    {!! html()->radio('area', 'DK2')->checked(old('area') == 'DK2')->value('DK2') !!} DK2
                 </div>
 
                 <div class="form-group">
