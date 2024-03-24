@@ -164,6 +164,21 @@
                 $('.arrow').css("z-index", 1055);
             }
         }
+
+        var logoutForm = document.getElementById('logout-form');
+        if(logoutForm) {
+            logoutForm.addEventListener('submit', function(e) {
+                // Logik for at rydde op i Service Worker
+                console.log('Logging out...');
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.active.postMessage({ action: 'clearCache' });
+                    });
+                }
+            });
+        }
+
+
         @yield('javaScript')
     }
 </script>
