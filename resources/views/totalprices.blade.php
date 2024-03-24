@@ -95,10 +95,12 @@
                     localStorage.setItem('lastAccessTime', currentHour);
                 });
                 document.addEventListener('visibilitychange', () => {
+                    console.log('Should i reload?');
                     if (document.visibilityState === 'visible') {
                         const lastAccessTime = localStorage.getItem('lastAccessTime');
                         const currentTime = new Date().getTime(); // Tid i millisekunder
                         if (lastAccessTime !== null && (currentTime - parseInt(lastAccessTime)) > 120000) { // 120000 ms = 2 minutter
+                            console.log('Hey! I should reload');
                             localStorage.setItem('lastAccessTime', currentTime.toString());
                             location.reload(); // Eller anden logik
                         }
