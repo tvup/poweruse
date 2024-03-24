@@ -28,6 +28,7 @@
                 <h2 class="card-title text-lg leading-6 font-medium text-gray-900">
                     {{ __('Get total prices for next hours') }}
                 </h2>
+                {{ now()->toDateTimeString() }}
             </div>
             <x-totalprices.form :companies="$companies"/>
         </div>
@@ -88,7 +89,6 @@
                     }
                 }
             });
-            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
                 document.addEventListener('DOMContentLoaded', () => {
                     const lastAccessTime = localStorage.getItem('lastAccessTime');
                     const currentHour = new Date().getHours();
@@ -97,14 +97,13 @@
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'visible') {
                         const lastAccessTime = localStorage.getItem('lastAccessTime');
-                        const currentHour = new Date().getHours();
-                        if (lastAccessTime !== null && parseInt(lastAccessTime) !== currentHour) {
-                            localStorage.setItem('lastAccessTime', currentHour);
-                            location.reload();
+                        const currentTime = new Date().getTime(); // Tid i millisekunder
+                        if (lastAccessTime !== null && (currentTime - parseInt(lastAccessTime)) > 120000) { // 120000 ms = 2 minutter
+                            localStorage.setItem('lastAccessTime', currentTime.toString());
+                            location.reload(); // Eller anden logik
                         }
                     }
                 });
-            }
     @endsection
 @endif
 
