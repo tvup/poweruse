@@ -88,6 +88,27 @@
                     }
                 }
             });
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                document.addEventListener('DOMContentLoaded', () => {
+                    const lastAccessTime = localStorage.getItem('lastAccessTime');
+                    const currentHour = new Date().getHours();
+                    if (lastAccessTime !== null && parseInt(lastAccessTime) !== currentHour) {
+                        localStorage.setItem('lastAccessTime', currentHour);
+                    } else {
+                        localStorage.setItem('lastAccessTime', currentHour);
+                    }
+                });
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') {
+                        const lastAccessTime = localStorage.getItem('lastAccessTime');
+                        const currentHour = new Date().getHours();
+                        if (lastAccessTime !== null && parseInt(lastAccessTime) !== currentHour) {
+                            localStorage.setItem('lastAccessTime', currentHour);
+                            location.reload();
+                        }
+                    }
+                });
+            }
     @endsection
 @endif
 

@@ -18,21 +18,30 @@ export default defineConfig(({command, mode}) => {
         publicDir: 'public',
         base: './',
         build: {
-            outDir: './public/build',
+            outDir: './public',
             sourcemap: true,
             manifest: true,
             emptyOutDir: false,
         },
         plugins: [
+            laravel({
+                input: [
+                    'resources/sass/app.scss',
+                    'resources/js/app.js',
+                    'resources/js/custom.js',
+                ],
+                refresh: true,
+                buildDirectory: './'
+            }),
             VitePWA({
+                base: '/',
+                scope: '/',
+                outDir: './public',
+                includeManifestIcons: false,
+                mode: mode === 'production' ? 'production' : 'development',
                 strategies: 'injectManifest',
                 srcDir: 'resources/js',
-                filename: 'sw.js', // Denne fil bør være din source service worker
-                injectManifest: {
-                    swSrc: 'resources/js/sw.js', // Path til din custom service worker-fil
-                    swDest: 'service-worker.js', // Output destination for den injicerede service worker
-                    globDirectory: 'public/', // Directory hvor dine assets vil blive pre-cached
-                },
+                filename: 'sw.js',
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
@@ -95,16 +104,19 @@ export default defineConfig(({command, mode}) => {
                 },
 
             }),
-            laravel([
-                'resources/sass/app.scss',
-                'resources/js/app.js',
-                'resources/js/custom.js',
-            ]),
-            vue(),
+            vue({
+                template: {
+                    transformAssetUrls: {
+                        base: null,
+                        includeAbsolute: false,
+                    },
+                },
+            }),
             i18n(),
         ],
         resolve: {
             alias: {
+                vue: 'vue/dist/vue.esm-bundler.js',
                 '@': '/resources/js',
             },
         },
