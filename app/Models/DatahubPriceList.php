@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DatahubPriceList extends BaseModel
@@ -37,5 +39,18 @@ class DatahubPriceList extends BaseModel
         }
 
         return false;
+    }
+
+    /**
+     * @param Builder<DatahubPriceList> $query
+     * @return Builder<DatahubPriceList>s
+     */
+    public function scopeIsValid(Builder $query, Carbon $at): Builder
+    {
+        return $query->where('ValidFrom', '<=', now())
+            ->where(function (Builder $query) use ($at) {
+                $query->where('ValidTo', '>=', $at)
+                    ->orWhereNull('ValidTo');
+            });
     }
 }

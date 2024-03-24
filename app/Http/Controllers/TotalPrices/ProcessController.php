@@ -201,13 +201,15 @@ class ProcessController extends Controller
     }
 
     /**
-     * @param array<string> $array
+     * @param array<string> $priceListKeys
      * @return array<int, float>
      */
-    private function getGridOperatorTariffPrices(array $array): array
+    private function getGridOperatorTariffPrices(array $priceListKeys): array
     {
-        $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
-        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'' . $toDay . '\' between ValidFrom and COALESCE(ValidTo,now())')->firstOrFail();
+        $datahubPriceList = DatahubPriceList::query()
+            ->whereNote($priceListKeys[1])
+            ->whereChargeowner($priceListKeys[0])
+            ->isValid(now('Europe/Copenhagen')->startOfDay());
         $collection = collect($datahubPriceList);
         $gridOperatorTariffPrices = [];
         $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
