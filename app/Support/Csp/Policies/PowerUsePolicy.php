@@ -12,11 +12,9 @@ class PowerUsePolicy extends Basic
     {
         parent::configure();
 
-//        $this->addDirective(Directive::SCRIPT, ['https://unpkg.com/vue@3/'])
-//            ->addDirective(Directive::STYLE, ['https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/'])
-//            ->addDirective(Directive::IMG, 'https://laravel.com');
-
-        $this->addDirective(Directive::IMG, 'https://laravel.com')->reportOnly();
+        $this->addDirective(Directive::SCRIPT, ["'nonce-{nonce}'"])
+            ->addDirective(Directive::STYLE, ["'nonce-{nonce}'"])
+            ->reportOnly();
     }
 
 }
