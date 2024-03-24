@@ -96,7 +96,17 @@ class ProcessController extends Controller
                 break;
         }
 
-        return redirect('totalprices')->with('status', __('All data collected'))->with(['data' => $data])->with(['chart' => $chart])->with('companies', $companies)->withInput($request->all())->withCookie('outputformat', $request->outputformat, 525600)->withCookie('netcompany', $request->netcompany, 525600);
+        return redirect('totalprices')->with(
+            'status',
+            __('All data collected')
+        )->with(['data' => $data])->with(['chart' => $chart])->with(
+            'companies',
+            $companies
+        )->withInput($request->all())->withCookie(
+            'outputformat',
+            $request->outputformat,
+            525600
+        )->withCookie('netcompany', $request->netcompany, 525600);
     }
 
     /**
@@ -201,18 +211,21 @@ class ProcessController extends Controller
     }
 
     /**
-     * @param array<string> $array
+     * @param array<string> $priceListKeys
      * @return array<int, float>
      */
-    private function getGridOperatorTariffPrices(array $array): array
+    private function getGridOperatorTariffPrices(array $priceListKeys): array
     {
-        $toDay = Carbon::now('Europe/Copenhagen')->startOfDay()->toDateString();
-        $datahubPriceList = DatahubPriceList::whereNote($array[1])->whereChargeowner($array[0])->whereRaw('\'' . $toDay . '\' between ValidFrom and ValidTo')->firstOrFail();
-        $collection = collect($datahubPriceList);
+        $datahubPriceList = DatahubPriceList::query()
+            ->whereNote($priceListKeys[1])
+            ->whereChargeowner($priceListKeys[0])
+            ->isValid(now('Europe/Copenhagen')->startOfDay())
+            ->firstOrFail();
+
         $gridOperatorTariffPrices = [];
-        $collection->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
-            if (Str::contains($key, 'Price')) {
-                $key = ((int) Str::replace('Price', '', $key)) - 1;
+        collect($datahubPriceList)->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
+            if (Str::contains((string) $key, 'Price')) {
+                $key = ((float) Str::replace('Price', '', (string) $key)) - 1;
                 $gridOperatorTariffPrices[$key] = $item;
             }
         });
