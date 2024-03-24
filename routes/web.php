@@ -54,6 +54,5 @@ Route::middleware('locale')->group(function () {
     Route::post('getConsumption', 'ElController@getConsumption');
     Route::post('getTotalPrices', 'ElController@getTotalPrices');
     Route::post('processcustom', 'ElController@processCustom');
-    Route::post('report-pls-here', 'CspReportController@report')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 });
 require __DIR__ . '/auth.php';
