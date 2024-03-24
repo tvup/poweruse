@@ -24,9 +24,12 @@ class RetrieveTariffFromOperator
         $collection = collect($data[0]);
         $gridprices = [];
         $collection->each(function ($item, $key) use (&$gridprices) {
-            if (Str::contains($key, 'Price')) {
-                $key = ((int) Str::replace('Price', '', $key)) - 1;
-                $gridprices[$key] = $item;
+            if (is_string($key) && Str::contains($key, 'Price')) {
+                $cleanedKey = (string) Str::replace('Price', '', $key);
+                if (is_numeric($cleanedKey)) {
+                    $index = (int) $cleanedKey - 1;
+                    $gridprices[$index] = $item;
+                }
             }
         });
 

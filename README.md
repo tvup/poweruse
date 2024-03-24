@@ -11,7 +11,7 @@ Data is retrieved from multiple sources:
 - Ewii
 - Smart-Me
 
-## Based on Laravel 9
+## Based on Laravel 10
 
 # Installation
 <p>It's strongly recommended that you add an alias to your bash/zsh config</p>
