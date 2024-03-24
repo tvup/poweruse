@@ -27,7 +27,7 @@ class OpenAIService
                 'top_p' => 1,
                 'frequency_penalty' => 0,
                 'presence_penalty' => 0,
-                'max_tokens' => 600,
+                'max_tokens' => 1700,
                 'prompt' => "' . $question . '",
                 'stream' => true,
             ],
