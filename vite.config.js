@@ -25,14 +25,13 @@ export default defineConfig(({command, mode}) => {
         },
         plugins: [
             VitePWA({
-                base: '/',
-                scope: '/',
-                outDir: './public',
                 includeManifestIcons: false,
-                mode: mode === 'production' ? 'production' : 'development',
-                strategies: 'generateSW',
-                injectRegister: 'inline',
-                registerType: 'prompt',
+                strategies: 'injectManifest',
+                injectManifest: {
+                    swSrc: './resources/js/sw.js', // Sti til din tilpassede SW
+                    swDest: 'service-worker.js', // Destinationsfilnavn i "public" mappe
+                    globDirectory: 'public/', // Directory hvor assets vil blive pre-cached
+                },
                 manifest: {
                     name: 'Poweruse - Total-prices',
                     short_name: 'PU - totalprices',
