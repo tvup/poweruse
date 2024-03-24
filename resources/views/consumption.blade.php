@@ -21,7 +21,7 @@
         @endif
         <div class="card-body">
             <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('getConsumption')}}">
-            {{ csrf_field() }}
+                {{ csrf_field() }}
 
                 <div class="form-group">
                     <label for="source">{{ __('Source:') }}:</label>
@@ -29,7 +29,7 @@
                     {{ html()->radio('source', (old('source') === 'EWII'), 'EWII')->id('EWII') }} EWII
                     {{ html()->radio('source', (old('source') === 'SMART_ME'), 'SMART_ME')->id('SMART_ME') }} SMART_ME
                     <div class="smart_me">Tilføj data fra SMART-ME?
-                        {{ html()->checkbox('smart_me', old('smart_me') == 'on')->id('smart_me') }}
+                        <input name="smart_me" id="smart_me" type="checkbox" {{ old('smart_me') == 'on' ? 'checked' : ''}}>
                     </div>
                 </div>
 
