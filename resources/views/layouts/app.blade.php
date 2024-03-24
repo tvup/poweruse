@@ -178,7 +178,6 @@
         }
 
         document.getElementById("updatebutton").onclick = function() {
-            console.log('Hey update1');
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.ready.then((registration) => {
                     registration.waiting.postMessage({ action: 'skipWaiting' });
