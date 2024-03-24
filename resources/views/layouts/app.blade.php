@@ -180,7 +180,6 @@
         document.getElementById("updatebutton").onclick = function() {
             console.log('Hey update1');
             if ('serviceWorker' in navigator) {
-                console.log('Hey update2');
                 navigator.serviceWorker.ready.then((registration) => {
                     registration.waiting.postMessage({ action: 'skipWaiting' });
                 });
