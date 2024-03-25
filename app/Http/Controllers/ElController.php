@@ -684,7 +684,10 @@ class ElController extends Controller
         $startDate = $from->toDateString();
         $endDate = $from->addDay()->toDateString();
 
-        return array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+        /** @var array $array */
+        $array = $this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']);
+
+        return array_values($array);
     }
 
     /**

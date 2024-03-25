@@ -93,6 +93,7 @@ class ElOverblikGetMeteringData extends Command
         $refresh_token = $safeValues['refresh_token'];
         $start_date = $safeValues['start_date'];
         $end_date = $safeValues['end_date'];
+        /** @var int $optionShowCount */
         $optionShowCount = $safeValues['show-count'];
 
         switch ($optionShowCount) {
