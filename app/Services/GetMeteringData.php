@@ -191,7 +191,7 @@ class GetMeteringData
                         break;
                     }
                 }
-                $meteringPoint = MeteringPoint::whereUserId($user->id)->first();
+                $meteringPoint = MeteringPoint::whereUserId($user->id)->first()->toArray();
 
                 if ($meteringPoint) {
                     /** @var MeteringPoint $meteringPoint2 */

@@ -60,7 +60,7 @@ class GetPreliminaryInvoice
      */
     public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
     {
-        $overhead = str_replace(',', '.', $overhead);
+        $overhead = str_replace(',', '.', strval($overhead));
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMeCredentials) {

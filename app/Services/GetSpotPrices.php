@@ -70,7 +70,9 @@ class GetSpotPrices
                 $carbon = Carbon::parse($data['HourDK'], 'Europe/Copenhagen');
                 if (!$first && $carbon->eq($late_transition_end_hour)) {
                     $first = true;
-                    $timeZone2 = CarbonTimeZone::create('+2');
+                    /** @var CarbonTimeZone $timezone */
+                    $timezone = CarbonTimeZone::create('+2');
+                    $timeZone2 = new DateTimeZone($timezone->getName());
                     $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
                     $nice_one = $late_transition_end_hour2->format('c');
                     $new_array[$nice_one] = $data['SpotPriceDKK'];

@@ -16,6 +16,9 @@ class RetrieveSpotPrices
         $endDate = $from->addDay()->toDateString();
         $service = app()->make(GetSpotPrices::class);
 
-        return array_values($service->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+        /** @var array $array */
+        $array = $service->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']);
+
+        return array_values($array);
     }
 }

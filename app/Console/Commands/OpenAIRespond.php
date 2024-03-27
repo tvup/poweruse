@@ -64,10 +64,10 @@ class OpenAIRespond extends Command
     }
 
     /**
-     * @param bool|array|string $file
+     * @param string $file
      * @return string
      */
-    private function getSourceCodeFile(bool|array|string $file): string
+    private function getSourceCodeFile(string $file): string
     {
         try {
             $fileContent = $this->sourceCodeService->getSourceCodeFile($file);

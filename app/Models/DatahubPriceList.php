@@ -4,10 +4,53 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * App\Models\DatahubPriceList.
+ * @property string $ChargeOwner
+ * @property string $GLN_number
+ * @property string $ChargeType
+ * @property string $ChargeTypeCode
+ * @property string $Note
+ * @property string $Description
+ * @property Carbon $ValidFrom
+ * @property Carbon|null $ValidTo
+ * @property string $VATClass
+ * @property float $Price1
+ * @property float|null $Price2
+ * @property float|null $Price3
+ * @property float|null $Price4
+ * @property float|null $Price5
+ * @property float|null $Price6
+ * @property float|null $Price7
+ * @property float|null $Price8
+ * @property float|null $Price9
+ * @property float|null $Price10
+ * @property float|null $Price11
+ * @property float|null $Price12
+ * @property float|null $Price13
+ * @property float|null $Price14
+ * @property float|null $Price15
+ * @property float|null $Price16
+ * @property float|null $Price17
+ * @property float|null $Price18
+ * @property float|null $Price19
+ * @property float|null $Price20
+ * @property float|null $Price21
+ * @property float|null $Price22
+ * @property float|null $Price23
+ * @property float|null $Price24
+ * @property int $TransparentInvoicing
+ * @property int $TaxIndicator
+ * @property string $ResolutionDuration
+ * @property Carbon|null $created_at
+ * @property Carbon|null $deleted_at
+ */
 class DatahubPriceList extends BaseModel
 {
+    use HasFactory;
     use SoftDeletes;
 
     public $timestamps = false;

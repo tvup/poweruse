@@ -14,6 +14,13 @@ use Illuminate\Support\Str;
 
 class ProcessController extends Controller
 {
+    private RetrieveSpotPrices $retrieveSpotPrices;
+
+    public function __construct(RetrieveSpotPrices $retrieveSpotPrices)
+    {
+        $this->retrieveSpotPrices = $retrieveSpotPrices;
+    }
+
     /**
      * Handle the incoming request.
      *
@@ -28,15 +35,13 @@ class ProcessController extends Controller
         }
 
         $priceArea = $request->area;
-
         //Input-request contains two keys: Note and Chargeowner seperated by "//"
         $priceListKeys = explode('//', $request->netcompany);
 
         //Get tariff for grid operator
         $gridOperatorTariffPrices = $this->getGridOperatorTariffPrices($priceListKeys);
-
         //Get spot prices
-        $spotPrices = (new RetrieveSpotPrices())->handle(
+        $spotPrices = $this->retrieveSpotPrices->handle(
             area: $priceArea,
         );
 
@@ -226,7 +231,7 @@ class ProcessController extends Controller
         collect($datahubPriceList)->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
             if (Str::contains((string) $key, 'Price')) {
                 $key = ((float) Str::replace('Price', '', (string) $key)) - 1;
-                $gridOperatorTariffPrices[$key] = $item;
+                $gridOperatorTariffPrices[$key] = floatval($item);
             }
         });
 
