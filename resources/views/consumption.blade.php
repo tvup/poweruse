@@ -33,10 +33,14 @@
                     </div>
                 </div>
 
-                <div class="form-group datahub">
-                    <label for="token">{{__('Refresh token') }}</label>
-                    <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') }}">
-                </div>
+                @if($refresh_token)
+                    <input type="hidden" name="token" id="token" value="{{ $refresh_token }}">
+                @else
+                    <div class="form-group datahub">
+                        <label for="token">{{ __('Refresh token') }}</label>
+                        <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ?? (Cookie::get('refresh_token') ?? '') }}">
+                    </div>
+                @endif
                 <div class="form-group ewii">
                     <label for="ewiiEmail">{{ __('Email') }}</label>
                     <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') }}">
