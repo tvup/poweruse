@@ -9,6 +9,7 @@ use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
 use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\Exception;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -77,6 +78,98 @@ class MeteringPointControllerTest extends TestCase
         $updateMeteringPointRequest->headers = $headerBag;
 
         $response = $this->meteringPointController->update($updateMeteringPointRequest, $meteringPoint);
+        $this->assertEquals(ResponseAlias::HTTP_OK, $response->getStatusCode());
+    }
+
+    public function testGetMeteringPointDataDatahub()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'api');
+
+        $meteringPoint = MeteringPoint::factory()->create([
+            'metering_point_id' => '571313174112923291',
+            'type_of_mp' => 'E17',
+            'settlement_method' => 'D01',
+            'meter_number' => '21517435',
+            'consumer_c_v_r' => null,
+            'data_access_c_v_r' => null,
+            'consumer_start_date' => '2013-06-30T22:00:00.000Z',
+            'meter_reading_occurrence' => 'PT1H',
+            'balance_supplier_name' => 'EWII Energi A/S',
+            'street_code' => '3546',
+            'street_name' => 'Jernbane Alle',
+            'building_number' => '37',
+            'floor_id' => null,
+            'room_id' => null,
+            'city_name' => 'Taastrup',
+            'city_sub_division_name' => null,
+            'municipality_code' => '169',
+            'location_description' => 'i kælder',
+            'first_consumer_party_name' => 'Torben Evald Hansen',
+            'second_consumer_party_name' => null,
+            'hasRelation' => true,
+        ]);
+        $mopclk = $this->mock(GetMeteringData::class, function (MockInterface $mock) use ($meteringPoint) {
+            $mock
+                ->shouldReceive('getMeteringPointData')
+                ->once()
+                ->andReturn($meteringPoint);
+        });
+
+        $controller = new MeteringPointController($mopclk);
+
+        $response = $controller->index();
+
+        $this->assertJson($meteringPoint, $response);
+        $this->assertEquals(ResponseAlias::HTTP_OK, $response->getStatusCode());
+    }
+
+    public function testGetMeteringPointDataPoweruse()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'api');
+        $meteringPoint = MeteringPoint::factory()->create(
+            [
+            'metering_point_id' => 'et',
+            'parent_id' => 'distinctio',
+            'type_of_mp' => 'quasi',
+            'settlement_method' => 'nobis',
+            'meter_number' => 'consequatur',
+            'consumer_c_v_r' => '1058957',
+            'data_access_c_v_r' => '2052101',
+            'consumer_start_date' => '2024-03-25 00:39:23',
+            'meter_reading_occurrence' => 'optio',
+            'balance_supplier_name' => 'Laron Mraz',
+            'street_code' => 'Brad Radial',
+            'street_name' => 'Broderick Mosciski PhD',
+            'building_number' => 'optio',
+            'floor_id' => 'k',
+            'room_id' => 'u',
+            'city_name' => 'Dr. Mariana Hauck',
+            'city_sub_division_name' => 'Dr. Lafayette Thompson',
+            'municipality_code' => 'amet',
+            'location_description' => 'iusto natus provident ut',
+            'first_consumer_party_name' => 'Freddie',
+            'second_consumer_party_name' => 'Dexter Quigley',
+            'hasRelation' => 0,
+            'created_at' => '2024-03-25 00:39:23',
+            'updated_at' => '2024-03-25 00:39:23']
+        );
+        $meteringPoint->user()->associate($user);
+        $meteringPoint->save();
+
+        $mopclk = $this->mock(GetMeteringData::class, function (MockInterface $mock) use ($meteringPoint) {
+            $mock
+                ->shouldReceive('getMeteringPointData')
+                ->once()
+                ->andReturn($meteringPoint);
+        });
+
+        $controller = new MeteringPointController($mopclk);
+
+        $response = $controller->index();
+
+        $this->assertJson($meteringPoint, $response);
         $this->assertEquals(ResponseAlias::HTTP_OK, $response->getStatusCode());
     }
 
