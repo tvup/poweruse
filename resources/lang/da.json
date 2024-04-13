@@ -119,5 +119,7 @@
   "New content available, click on reload button to update.": "Der er nyt indhold tilgængeligt, klik på opdater-knappen for at opdatere.",
   "Reload": "Opdater",
   "Profile updated.": "Profilen blev opdateret",
-  "Scheme usage": "Skemaforbrug"
+  "Scheme usage": "Skemaforbrug",
+  "It wasn't possible to get tomorrow's day-ahead prices from \"ENERGI DATA SERVICE\" ( https://api.energidataservice.dk )": "Det var ikke muligt at hente i morgen dag-til-dag priser fra \"ENERGI DATA SERVICE\" ( https://api.energidataservice.dk )",
+  "It wasn't possible to get today's day-ahead prices from \"ENERGI DATA SERVICE\" ( https://api.energidataservice.dk )": "Det var ikke muligt at hente dagens dag-til-dag priser fra \"ENERGI DATA SERVICE\" ( https://api.energidataservice.dk )"
 }

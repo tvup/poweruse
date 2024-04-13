@@ -7,6 +7,7 @@ use App\Exceptions\DataUnavailableException;
 use App\Exceptions\MissingDataException;
 use App\Models\DatahubPriceList;
 use App\Models\User;
+use App\Services\Interfaces\GetSpotPricesInterface;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -60,7 +61,7 @@ class GetPreliminaryInvoice
      */
     public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = null, string $refreshToken = null, array $ewiiCredentials = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
     {
-        $overhead = str_replace(',', '.', $overhead);
+        $overhead = str_replace(',', '.', strval($overhead));
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMeCredentials) {
@@ -138,7 +139,7 @@ class GetPreliminaryInvoice
                 if ($smartMeCredentials) {
                     $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
                 }
-                $spotPrices = app(GetSpotPrices::class);
+                $spotPrices = app(GetSpotPricesInterface::class);
                 $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
                 $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
                 cache([$key => $prices], $expiresAt);

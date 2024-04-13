@@ -1,12 +1,21 @@
 includes:
     - ./vendor/larastan/larastan/extension.neon
+    - ./vendor/phpstan/phpstan-mockery/extension.neon
+    - ./vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
+    tmpDir: storage/framework/cache
     paths:
-        - app/
+        - ./app
+        - ./artisan
+        - ./bootstrap
+        - ./database
+        - ./public
+        - ./resources
+        - ./tests
 
     # Level 9 is the highest level
-    level: 6
+    level: 7
 
     ignoreErrors: # All these errors are weird to fix. We will do that lastly,
         - '#Static call to instance method App\\Services\\Transformers\\Facades\\MeteringPointTransformer::#'

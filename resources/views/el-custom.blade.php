@@ -25,10 +25,14 @@
         <div class="card-body">
             <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('processcustom')}}">
                 {{ csrf_field() }}
-                <div class="form-group datahub">
-                    <label for="exampleInputEmail1">Refresh token</label>
-                    <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') }}">
-                </div>
+                @if($refresh_token)
+                    <input type="hidden" name="token" id="token" value="{{ $refresh_token }}">
+                @else
+                    <div class="form-group datahub">
+                        <label for="token">{{ __('Refresh token') }}</label>
+                        <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ?? (Cookie::get('refresh_token') ?? '') }}">
+                    </div>
+                @endif
 
                 @for ($i = 0; $i < 24; $i++)
                     <div class="form-group datahub">

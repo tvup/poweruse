@@ -52,8 +52,13 @@ class GetSmartMeMeterData
         $end = new DateTime($year_add_to_start_date_copenhagen->startOfYear()->addYear()->toDateString(), $timeZone);
         $year_late_transition = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'))[2];
         $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen')->addHour();
+        /** @var CarbonTimeZone $timeZone2 */
         $timeZone2 = CarbonTimeZone::create('+2');
+        $timeZone2 = new DateTimeZone($timeZone2->getName());
         $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
+        if (!$late_transition_end_hour2) {
+            throw new \Exception('Could not create late_transition_end_hour2');
+        }
         $nice_one = $late_transition_end_hour2->format('c');
 
         $to_date = Carbon::parse($to_date, 'Europe/Copenhagen');
@@ -77,7 +82,9 @@ class GetSmartMeMeterData
 
             if (!$first && $start_date_copenhagen->eq($late_transition_end_hour)) {
                 $first = true;
+                /** @var CarbonTimeZone $timeZone */
                 $timeZone = CarbonTimeZone::create('+1');
+                $timeZone = new DateTimeZone($timeZone->getName());
                 $rtn_start_date_formatted = $rtn_start_date->timezone($timeZone)->format('c');
                 $array[$nice_one] = round($newResponse - $oldResponse, 2);
             }

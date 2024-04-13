@@ -2,6 +2,16 @@
 
 @section('content')
     <div class="container mt-4">
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {!! __(session('error')) !!}
+            </div>
+        @endif
+        @if (session('warning'))
+            <div class="alert alert-warning">
+                {!! __(session('warning')) !!}
+            </div>
+        @endif
         @if(@isset($chart))
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
                 <div class="bg-white graph-output">

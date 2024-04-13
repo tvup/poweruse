@@ -39,7 +39,7 @@ class GetSmartMeMeterDataTest extends TestCase
         config(['services.smartme.id'=> self::SMART_ME_ID]);
     }
 
-    public function test_get_from_date()
+    public function test_get_from_date() : void
     {
         $service = new GetSmartMeMeterData();
         $reading = $service->getFromDate();
@@ -54,7 +54,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_get_from_date_where_smart_me_true()
+    public function test_get_from_date_where_smart_me_true() : void
     {
         $service = new GetSmartMeMeterData();
         $reading = $service->getFromDate([]);
@@ -69,7 +69,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_get_from_date_with_smart_credentials()
+    public function test_get_from_date_with_smart_credentials() : void
     {
         $service = new GetSmartMeMeterData();
         $smartMe = ['id'=>self::SMART_ME_ID, 'username'=>self::SMART_ME_USERNAME, 'password'=>self::SMART_ME_PASSWORD];
@@ -86,7 +86,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_get_interval_from_date()
+    public function test_get_interval_from_date() : void
     {
         $service = new GetSmartMeMeterData();
         $smartMe = ['id' => self::SMART_ME_ID, 'username' => self::SMART_ME_USERNAME, 'password' => self::SMART_ME_PASSWORD];
@@ -106,5 +106,26 @@ class GetSmartMeMeterDataTest extends TestCase
                 $request->header('Authorization')[0] == 'Basic ' . base64_encode(self::SMART_ME_USERNAME . ':' . self::SMART_ME_PASSWORD);
         });
         Http::assertSentCount(4);
+    }
+
+    public function test_get_interval_from_date_during_dls() : void
+    {
+        $service = new GetSmartMeMeterData();
+        $smartMe = ['id' => self::SMART_ME_ID, 'username' => self::SMART_ME_USERNAME, 'password' => self::SMART_ME_PASSWORD];
+        $reading = $service->getInterval('2022-10-30 02:00:00', null, $smartMe);
+        $expectedResult = [
+            '2022-10-30T02:00:00+01:00' => (string) 0,
+            '2022-10-30T02:00:00+02:00' => (string) 0.0,
+        ];
+        $this->assertEquals($expectedResult, $reading);
+        Http::assertSent(function (Request $request) {
+            $date = '2022-10-30T02:00:00Z';
+
+            return
+                $request->url() == 'https://smart-me.com/api/MeterValues/' . self::SMART_ME_ID . '?date=' . urlencode($date) &&
+                $request['date'] == $date &&
+                $request->header('Authorization')[0] == 'Basic ' . base64_encode(self::SMART_ME_USERNAME . ':' . self::SMART_ME_PASSWORD);
+        });
+        Http::assertSentCount(2);
     }
 }

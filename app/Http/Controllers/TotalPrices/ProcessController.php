@@ -8,54 +8,89 @@ use App\Http\Controllers\Controller;
 use App\Models\DatahubPriceList;
 use App\Models\Operator;
 use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ProcessController extends Controller
 {
+    private RetrieveSpotPrices $retrieveSpotPrices;
+
+    public function __construct(RetrieveSpotPrices $retrieveSpotPrices)
+    {
+        $this->retrieveSpotPrices = $retrieveSpotPrices;
+    }
+
     /**
      * Handle the incoming request.
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function __invoke(Request $request): RedirectResponse
     {
+        $warning = false;
         $includeTomorrow = false;
         if (Carbon::now('Europe/Copenhagen')->gt(now()->startOfHour()->hour(13))) {
             $includeTomorrow = true;
         }
 
         $priceArea = $request->area;
-
         //Input-request contains two keys: Note and Chargeowner seperated by "//"
         $priceListKeys = explode('//', $request->netcompany);
 
         //Get tariff for grid operator
         $gridOperatorTariffPrices = $this->getGridOperatorTariffPrices($priceListKeys);
-
         //Get spot prices
-        $spotPrices = (new RetrieveSpotPrices())->handle(
+        $spotPrices = $this->retrieveSpotPrices->handle(
             area: $priceArea,
         );
 
         //Check if spot prices were received
         if (count($spotPrices) == 0) {
-            $message = 'It wasn\'t possible to get day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
+            $message = 'It wasn\'t possible to get today\'s day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
 
             return redirect('totalprices')->with('error', $message)->withInput($request->all());
         }
 
-        //Add tomorrows spotprices if requested
-        if ($includeTomorrow) {
-            $toMorrowSpotPrices = (new RetrieveSpotPrices())->handle(
-                area: $priceArea,
-                from: Carbon::now('Europe/Copenhagen')->startOfDay()->addDay()
-            );
-            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
+        $todayIsDstEarlyTransitionDate = null;
+        $todayIsDstLateTransitionDate = null;
+        $tomorrowIsDstEarlyTransitionDate = null;
+        $tomorrowIsDstLateTransitionDate = null;
+
+        list($early_transition_end_hour, $late_transition_end_hour) = $this->getTransitionHours();
+        if ($early_transition_end_hour->dayOfYear == now()->dayOfYear) {
+            $todayIsDstEarlyTransitionDate = $early_transition_end_hour->hour - 1;
+        }
+        if ($late_transition_end_hour->dayOfYear == now()->dayOfYear) {
+            $todayIsDstLateTransitionDate = $late_transition_end_hour->hour + 1;
+        }
+        if ($early_transition_end_hour->dayOfYear == now()->addDay()->dayOfYear) {
+            $tomorrowIsDstEarlyTransitionDate = $early_transition_end_hour->hour - 1 + 24;
+        }
+        if ($late_transition_end_hour->dayOfYear == now()->addDay()->dayOfYear) {
+            $tomorrowIsDstLateTransitionDate = $late_transition_end_hour->hour + 1 + 24;
         }
 
+        //Add tomorrows spotprices if requested
+        if ($includeTomorrow) {
+            $from = Carbon::now('Europe/Copenhagen')->startOfDay()->addDay();
+            $toMorrowSpotPrices = $this->retrieveSpotPrices->handle(
+                area: $priceArea,
+                from: $from
+            );
+
+            //Check if spot prices for tomorrow were received
+            if (count($toMorrowSpotPrices) == 0) {
+                $warning = 'It wasn\'t possible to get tomorrow\'s day-ahead prices from "ENERGI DATA SERVICE" ( https://api.energidataservice.dk )';
+                $includeTomorrow = false;
+            }
+
+            $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
+        }
         //Get other tariffs
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
@@ -67,14 +102,30 @@ class ProcessController extends Controller
         $startOfCurrentDay = $startOfCurrentHour->startOfDay();
 
         $limit = $includeTomorrow ? 47 : 23;
+        if ($todayIsDstEarlyTransitionDate || $tomorrowIsDstEarlyTransitionDate) {
+            $limit = $limit - 1;
+        }
+        if ($todayIsDstLateTransitionDate || $tomorrowIsDstLateTransitionDate) {
+            $limit = $limit + 1;
+        }
+
         foreach (range($currentHour, $limit) as $hour) {
             $hourOnDay = ($hour <= 23 ? $hour : $hour - 24);
+
+            if ($includeTomorrow && ($todayIsDstLateTransitionDate && ($hour >= 23 && $hour - 24 >= $todayIsDstLateTransitionDate))) {
+                $hourOnDay--;
+            }
+
+            if ($includeTomorrow && ($tomorrowIsDstLateTransitionDate && ($hour >= 23 && $hour >= $tomorrowIsDstLateTransitionDate))) {
+                $hourOnDay--;
+            }
+
             // Calculate total price without VAT
             $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$hour] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0];
             // Add 25% VAT
             $grossAmount = $netAmount * 1.25;
             // Round to two decimals and add to array as datetime-index eg. "2023-02-01 02:00:00"
-            $timeOnDay = $startOfCurrentDay->copy()->addHours($hour)->toDateTimeString();
+            $timeOnDay = Str::replace('T', ' ', $startOfCurrentDay->copy()->addHours($hour)->toRfc3339String());
             $totalPrice[$timeOnDay] = round($grossAmount, 2);
         }
         $companies = Operator::$operatorName;
@@ -89,11 +140,32 @@ class ProcessController extends Controller
                 $colours = $this->makeColors(array_values($totalPrice));
 
                 $chart = new \stdClass();
-                $chart->labels = (array_keys($totalPrice));
+                $array_keys = array_keys($totalPrice);
+                array_walk($array_keys, function (&$value) {
+                    $value = Str::substr($value, 0, -6);
+                });
+                $chart->labels = ($array_keys);
                 $chart->dataset = (array_values($totalPrice));
                 $chart->colours = $colours;
             default:
                 break;
+        }
+
+        if ($warning) {
+            return redirect('totalprices')->with(
+                'warning',
+                $warning
+            )->with(
+                'status',
+                __('All data collected')
+            )->with(['data' => $data])->with(['chart' => $chart])->with(
+                'companies',
+                $companies
+            )->withInput($request->all())->withCookie(
+                'outputformat',
+                $request->outputformat,
+                525600
+            )->withCookie('netcompany', $request->netcompany, 525600);
         }
 
         return redirect('totalprices')->with(
@@ -226,10 +298,40 @@ class ProcessController extends Controller
         collect($datahubPriceList)->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
             if (Str::contains((string) $key, 'Price')) {
                 $key = ((float) Str::replace('Price', '', (string) $key)) - 1;
-                $gridOperatorTariffPrices[$key] = $item;
+                $gridOperatorTariffPrices[$key] = floatval($item);
             }
         });
 
         return $gridOperatorTariffPrices;
+    }
+
+    /**
+     * @return array<\Illuminate\Support\Carbon>
+     * @throws \Exception
+     */
+    private function getTransitionHours(): array
+    {
+        $timeZone = new DateTimeZone('Europe/Copenhagen');
+        $start_date = \Illuminate\Support\Carbon::now('Europe/Copenhagen')->toDateTimeString();
+        $end_date = \Illuminate\Support\Carbon::now('Europe/Copenhagen')->addDay()->toDateTimeString();
+        $start = new DateTime(
+            \Illuminate\Support\Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(),
+            $timeZone
+        );
+        $end = new DateTime(
+            \Illuminate\Support\Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(),
+            $timeZone
+        );
+        $transitions = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'));
+        $year_early_transition = $transitions[1];
+        $year_late_transition = $transitions[2];
+        $early_transition_end_hour = \Illuminate\Support\Carbon::parse($year_early_transition['time'])->timezone(
+            'Europe/Copenhagen'
+        );
+        $late_transition_end_hour = \Illuminate\Support\Carbon::parse($year_late_transition['time'])->timezone(
+            'Europe/Copenhagen'
+        );
+
+        return [$early_transition_end_hour, $late_transition_end_hour];
     }
 }

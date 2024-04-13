@@ -8,8 +8,13 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    public function loadTestData(string $path)
+    public function loadTestData(string $path) : array
     {
-        return json_decode(file_get_contents($path), true);
+        $file_get_contents = file_get_contents($path);
+        if (is_string($file_get_contents)) {
+            return json_decode($file_get_contents, true);
+        } else {
+            return [];
+        }
     }
 }

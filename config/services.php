@@ -68,4 +68,6 @@ return [
     'incident_server' => [
         'url' => env('INCIDENT_SERVER_URL'),
     ],
+
+    'spot_price_provider' => env('SPOT_PRICE_PROVIDER'),
 ];

@@ -62,14 +62,14 @@ class ElController extends Controller
     {
         $data = session('data');
 
-        return view('consumption')->with('data', $data ?: null);
+        return view('consumption')->with('data', $data ?: null)->with('refresh_token', auth()->user()?->refresh_token);
     }
 
     public function indexCustomUsage() : View
     {
         $data = session('data');
 
-        return view('el-custom')->with('data', $data ?: null);
+        return view('el-custom')->with('data', $data ?: null)->with('refresh_token', auth()->user()?->refresh_token);
     }
 
     public function processData(Request $request) : RedirectResponse|Response
@@ -684,7 +684,10 @@ class ElController extends Controller
         $startDate = $from->toDateString();
         $endDate = $from->addDay()->toDateString();
 
-        return array_values($this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+        /** @var array $array */
+        $array = $this->spotPricesService->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']);
+
+        return array_values($array);
     }
 
     /**

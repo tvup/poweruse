@@ -2,7 +2,7 @@
 
 namespace App\Actions\ElectricityPrices;
 
-use App\Services\GetSpotPrices;
+use App\Services\Interfaces\GetSpotPricesInterface;
 use Carbon\Carbon;
 
 class RetrieveSpotPrices
@@ -14,8 +14,11 @@ class RetrieveSpotPrices
         }
         $startDate = $from->toDateString();
         $endDate = $from->addDay()->toDateString();
-        $service = app()->make(GetSpotPrices::class);
+        $service = app()->make(GetSpotPricesInterface::class);
 
-        return array_values($service->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']));
+        /** @var array $array */
+        $array = $service->getData($startDate, $endDate, $area, ['HourDK', 'SpotPriceDKK']);
+
+        return array_values($array);
     }
 }

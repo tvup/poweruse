@@ -10,11 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
-class GetSpotPrices implements GetSpotPricesInterface
+class GetElprisenSpotPrices implements GetSpotPricesInterface
 {
     public const FORMAT_INTERNAL = 'INTERNAL';
-
-    public const FORMAT_JSON = 'JSON';
 
     /**
      * @param string|null $start_date
@@ -27,37 +25,66 @@ class GetSpotPrices implements GetSpotPricesInterface
      */
     public function getData(string $start_date = null, string $end_date = null, string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
     {
-        $parameters = [];
         if (!$start_date) {
-            $start_date = 'Now-PT12H';
+            $start_date = now()->toDateTimeString();
         }
-        $parameters = array_merge($parameters, ['start' => $start_date]);
 
-        if ($end_date) {
-            $parameters = array_merge($parameters, ['end' => $end_date]);
+        if (!$end_date) {
+            $end_date = now()->addDay()->toDateTimeString();
         }
+
+        $start_date = Carbon::parse($start_date, 'Europe/Copenhagen');
+        $end_date = Carbon::parse($end_date, 'Europe/Copenhagen');
+        $days = $start_date->diffInDays($end_date);
 
         if (!$price_area) {
-            $price_area = 'ALL';
+            $price_area = 'DK1';
         }
 
-        if ($price_area != 'ALL') {
-            $parameters = array_merge($parameters, ['filter' => '{"PriceArea":"' . $price_area . '"}']);
-        }
-        if (count($columns) > 0) {
-            $parameters = array_merge($parameters, ['columns' => implode(',', $columns)]);
+        $response = [];
+        for ($i = 0; $i < $days; $i++) {
+            $prices = $this->getPricesForDay($start_date, $price_area, $end_date, $format);
+            if (is_array($prices)) {
+                $response = array_merge($response, $prices);
+            }
+            $start_date->addDay();
         }
 
-        $url = 'https://api.energidataservice.dk/dataset/Elspotprices';
+        return $response;
+    }
+
+    /**
+     * @param Carbon $start_date
+     * @param string|null $price_area
+     * @param string|null $end_date
+     * @param string $format
+     * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response
+     * @throws \Exception
+     */
+    private function getPricesForDay(
+        Carbon $start_date,
+        ?string $price_area,
+        ?string $end_date,
+        string $format
+    ): \Illuminate\Http\Client\Response|array|\GuzzleHttp\Promise\PromiseInterface {
+        $month = sprintf('%02d', $start_date->month);
+        $day = sprintf('%02d', $start_date->day);
+        $url = 'https://www.elprisenligenu.dk/api/v1/prices/' . $start_date->year . '/' . $month . '-' . $day . '_' . $price_area . '.json';
         $response = Http::acceptJson()
-            ->get($url, $parameters);
+            ->get($url);
+
+        $array = $response->json();
 
         $timeZone = new DateTimeZone('Europe/Copenhagen');
-        if ($start_date == 'Now-PT12H') {
-            $start_date = Carbon::now('Europe/Copenhagen')->hours(-12)->toDateTimeString();
-        }
-        $start = new DateTime(Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(), $timeZone);
-        $end = new DateTime(Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(), $timeZone);
+
+        $start = new DateTime(
+            Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(),
+            $timeZone
+        );
+        $end = new DateTime(
+            Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(),
+            $timeZone
+        );
 
         $transitions = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'));
         $year_late_transition = $transitions[2];
@@ -65,10 +92,9 @@ class GetSpotPrices implements GetSpotPricesInterface
 
         $first = false;
         if ($format == self::FORMAT_INTERNAL) {
-            $array = array_reverse($response['records']);
             $new_array = [];
             foreach ($array as $data) {
-                $carbon = Carbon::parse($data['HourDK'], 'Europe/Copenhagen');
+                $carbon = Carbon::parse($data['time_start'], 'Europe/Copenhagen');
                 if (!$first && $carbon->eq($late_transition_end_hour)) {
                     $first = true;
                     /** @var CarbonTimeZone $timezone */
@@ -79,15 +105,15 @@ class GetSpotPrices implements GetSpotPricesInterface
                         throw new \Exception('Could not create late_transition_end_hour2');
                     }
                     $nice_one = $late_transition_end_hour2->format('c');
-                    $new_array[$nice_one] = $data['SpotPriceDKK'];
+                    $new_array[$nice_one] = $data['DKK_per_kWh'] * 1000;
                 } else {
                     $hour = $carbon->format('c');
-                    $new_array[$hour] = $data['SpotPriceDKK'];
+                    $new_array[$hour] = $data['DKK_per_kWh'] * 1000;
                 }
             }
             $response = $new_array;
         }
 
-        return is_array($response) ? $response : $response->json();
+        return $response;
     }
 }
