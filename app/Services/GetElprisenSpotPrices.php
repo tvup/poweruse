@@ -29,12 +29,44 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
             $start_date = now()->toDateTimeString();
         }
 
+        if (!$end_date) {
+            $end_date = now()->addDay()->toDateTimeString();
+        }
+
         $start_date = Carbon::parse($start_date, 'Europe/Copenhagen');
+        $end_date = Carbon::parse($end_date, 'Europe/Copenhagen');
+        $days = $start_date->diffInDays($end_date);
 
         if (!$price_area) {
             $price_area = 'DK1';
         }
 
+        $response = [];
+        for ($i = 0; $i < $days; $i++) {
+            $prices = $this->getPricesForDay($start_date, $price_area, $end_date, $format);
+            if (is_array($prices)) {
+                $response = array_merge($prices, $response);
+            }
+            $start_date->addDay();
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param Carbon $start_date
+     * @param string|null $price_area
+     * @param string|null $end_date
+     * @param string $format
+     * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response
+     * @throws \Exception
+     */
+    private function getPricesForDay(
+        Carbon $start_date,
+        ?string $price_area,
+        ?string $end_date,
+        string $format
+    ): \Illuminate\Http\Client\Response|array|\GuzzleHttp\Promise\PromiseInterface {
         $month = sprintf('%02d', $start_date->month);
         $day = sprintf('%02d', $start_date->day);
         $url = 'https://www.elprisenligenu.dk/api/v1/prices/' . $start_date->year . '/' . $month . '-' . $day . '_' . $price_area . '.json';
@@ -45,8 +77,14 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
 
         $timeZone = new DateTimeZone('Europe/Copenhagen');
 
-        $start = new DateTime(Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(), $timeZone);
-        $end = new DateTime(Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(), $timeZone);
+        $start = new DateTime(
+            Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(),
+            $timeZone
+        );
+        $end = new DateTime(
+            Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(),
+            $timeZone
+        );
 
         $transitions = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'));
         $year_late_transition = $transitions[2];
@@ -76,6 +114,6 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
             $response = $new_array;
         }
 
-        return is_array($response) ? $response : $response->json();
+        return $response;
     }
 }
