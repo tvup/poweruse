@@ -45,7 +45,7 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
         for ($i = 0; $i < $days; $i++) {
             $prices = $this->getPricesForDay($start_date, $price_area, $end_date, $format);
             if (is_array($prices)) {
-                $response = array_merge($prices, $response);
+                $response = array_merge($response, $prices);
             }
             $start_date->addDay();
         }

@@ -7,6 +7,7 @@ use App\Exceptions\DataUnavailableException;
 use App\Exceptions\MissingDataException;
 use App\Models\DatahubPriceList;
 use App\Models\User;
+use App\Services\Interfaces\GetSpotPricesInterface;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -138,7 +139,7 @@ class GetPreliminaryInvoice
                 if ($smartMeCredentials) {
                     $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
                 }
-                $spotPrices = app(GetSpotPrices::class);
+                $spotPrices = app(GetSpotPricesInterface::class);
                 $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
                 $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
                 cache([$key => $prices], $expiresAt);
