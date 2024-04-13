@@ -21,7 +21,7 @@ class ProcessControllerTest extends TestCase
      */
     use RefreshDatabase;
 
-    public function test_invoke_at_midnight()
+    public function test_invoke_at_midnight() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 1, 1, 0, 0, 0, 'Europe/Copenhagen'));
 
@@ -70,7 +70,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -78,7 +78,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_before_1pm()
+    public function test_invoke_before_1pm() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 1, 1, 11, 0, 0, 'Europe/Copenhagen'));
 
@@ -127,7 +127,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -135,7 +135,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_after_1pm()
+    public function test_invoke_after_1pm() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 1, 1, 14, 0, 0, 'Europe/Copenhagen'));
 
@@ -187,7 +187,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -202,7 +202,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Cases with empty spot-prices BEGIN.
      */
-    public function test_invoke_before_1pm_but_spot_prices_cant_be_provided()
+    public function test_invoke_before_1pm_but_spot_prices_cant_be_provided() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 1, 1, 11, 0, 0, 'Europe/Copenhagen'));
 
@@ -251,7 +251,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('error', function ($value) {
@@ -259,7 +259,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_after_1pm_but_tomorrows_spot_prices_cant_be_provided()
+    public function test_invoke_after_1pm_but_tomorrows_spot_prices_cant_be_provided() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 1, 1, 14, 0, 0, 'Europe/Copenhagen'));
 
@@ -309,7 +309,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('warning', function ($value) {
@@ -328,7 +328,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Edge cases BEGIN.
      */
-    public function test_invoke_before_1pm_dst_early_is_today()
+    public function test_invoke_before_1pm_dst_early_is_today() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 3, 26, 1, 0, 0, 'Europe/Copenhagen'));
 
@@ -377,7 +377,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -385,7 +385,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_after_1pm_dst_early_is_today()
+    public function test_invoke_after_1pm_dst_early_is_today() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 3, 26, 14, 0, 0, 'Europe/Copenhagen'));
 
@@ -435,7 +435,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -443,7 +443,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_after_1pm_dst_early_is_tomorrow()
+    public function test_invoke_after_1pm_dst_early_is_tomorrow() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 3, 25, 14, 0, 0, 'Europe/Copenhagen'));
 
@@ -493,7 +493,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -501,7 +501,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_before_1pm_dst_late_is_today()
+    public function test_invoke_before_1pm_dst_late_is_today() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 10, 29, 1, 0, 0, 'Europe/Copenhagen'));
 
@@ -550,7 +550,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -558,7 +558,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_after_1pm_dst_late_is_today()
+    public function test_invoke_after_1pm_dst_late_is_today() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 10, 29, 14, 0, 0, 'Europe/Copenhagen'));
 
@@ -608,7 +608,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -616,7 +616,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    public function test_invoke_after_1pm_dst_late_is_tomorrow()
+    public function test_invoke_after_1pm_dst_late_is_tomorrow() : void
     {
         Carbon::setTestNow(Carbon::create(2023, 10, 28, 14, 0, 0, 'Europe/Copenhagen'));
 
@@ -666,7 +666,7 @@ class ProcessControllerTest extends TestCase
 
         // Assert session has specific keys
         foreach ($sessionData as $key => $value) {
-            $this->assertSessionHas($key, $value);
+            $this->assertSessionHas($key);
         }
 
         $response->assertSessionHas('data', function ($value) {
@@ -674,7 +674,7 @@ class ProcessControllerTest extends TestCase
         });
     }
 
-    protected function assertSessionHas($key)
+    protected function assertSessionHas(string $key) : void
     {
         // Check if session has a specific key
         $this->assertTrue(Session::has($key), "Session does not contain expected key '{$key}'");
@@ -910,7 +910,7 @@ class ProcessControllerTest extends TestCase
         ];
     }
 
-    private function getTodaySpotPricesLateDst()
+    private function getTodaySpotPricesLateDst() : array
     {
         return [
             0 => 352.0,
@@ -941,7 +941,7 @@ class ProcessControllerTest extends TestCase
         ];
     }
 
-    private function getTommorwSpotPricesLateDst()
+    private function getTommorwSpotPricesLateDst() : array
     {
         return [
             0 => 352.0,

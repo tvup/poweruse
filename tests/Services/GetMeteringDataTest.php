@@ -78,7 +78,7 @@ class GetMeteringDataTest extends TestCase
         $this->assertEquals($meteringPointArray['source'], $meteringPoint->source);
     }
 
-    public function testGetMeteringPointDataPoweruse(): void
+    public function testGetMeteringPointDataPoweruse() : void
     {
         $baseMeteringPoint = MeteringPoint::factory()->create();
         $user = User::factory()->create();
