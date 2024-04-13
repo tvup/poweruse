@@ -27,19 +27,22 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
     {
         if (!$start_date) {
             $start_date = now()->toDateTimeString();
-            $days = 1;
+        }
+
+        if (!$end_date) {
+            $end_date = now()->addDay()->toDateTimeString();
         }
 
         $start_date = Carbon::parse($start_date, 'Europe/Copenhagen');
         $end_date = Carbon::parse($end_date, 'Europe/Copenhagen');
-        $days = $end_date->diffInDays($start_date);
+        $days = $start_date->diffInDays($end_date);
 
         if (!$price_area) {
             $price_area = 'DK1';
         }
 
         $response = [];
-        for ($i = 0; $i <= $days; $i++) {
+        for ($i = 0; $i < $days; $i++) {
             $prices = $this->getPricesForDay($start_date, $price_area, $end_date, $format);
             if (is_array($prices)) {
                 $response = array_merge($prices, $response);
@@ -58,7 +61,7 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
      * @return array|\GuzzleHttp\Promise\PromiseInterface|\Illuminate\Http\Client\Response
      * @throws \Exception
      */
-    public function getPricesForDay(
+    private function getPricesForDay(
         Carbon $start_date,
         ?string $price_area,
         ?string $end_date,
