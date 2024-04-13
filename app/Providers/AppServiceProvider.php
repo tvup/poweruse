@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\GetElprisenSpotPrices;
 use App\Services\GetSpotPrices;
 use App\Services\Interfaces\GetSpotPricesInterface;
-use App\Services\Mocks\GetSpotPricesMock;
 use Illuminate\Foundation\Vite;
 use Illuminate\Support\ServiceProvider;
 
