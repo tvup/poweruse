@@ -32,7 +32,7 @@ class GetMeteringData
      * @return array<string, string>
      * @throws ElOverblikApiException
      */
-    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false): array
+    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false, SourceEnum $source = SourceEnum::DATAHUB, User $user = null): array
     {
         logger('Accessing EloverblikApi. MD5 of refresh token: ' . md5($refreshToken));
         try {
@@ -48,7 +48,7 @@ class GetMeteringData
             $energiOverblikApi->setDebug(true);
         }
 
-        $meteringPointId = $this->getMeteringPointData(SourceEnum::DATAHUB, ['refresh_token' => $refreshToken])->metering_point_id;
+        $meteringPointId = $this->getMeteringPointData($source, ['refresh_token' => $refreshToken], $user)->metering_point_id;
 
         try {
             if (!$start_date) {
@@ -144,43 +144,6 @@ class GetMeteringData
 
                     return $meteringPoint5;
                 }
-            case SourceEnum::EWII:
-                if (!$ewiiUserName || !$ewiiPassword) {
-                    if ($source == SourceEnum::EWII) {
-                        throw new \InvalidArgumentException('When retrieving data from EWII, username and password must be provided');
-                    }
-                } else {
-                    $key = 'meteringPointData ' . $ewiiUserName;
-                    $meteringPoint = $this->getMeteringPointFromCache($key);
-                    if ($meteringPoint) {
-                        /** @var MeteringPoint $meteringPoint4 */
-                        $meteringPoint4 = MeteringPointTransformer::transform($meteringPoint, SourceEnum::EWII);
-
-                        return $meteringPoint4;
-                    }
-                    try {
-                        $ewiiApi = $this->getEwiiApi($ewiiUserName, $ewiiPassword);
-                        $ewiiApi->login($ewiiUserName, $ewiiPassword);
-                        $response1 = $ewiiApi->getAddressPickerViewModel();
-//                    $ewiiApi->setSelectedAddressPickerElement($response1);
-//                    $response2 = $ewiiApi->getConsumptionMetersRaw();
-//                    $responseCombined = array_merge($response1, $response2);
-
-                        if ($response1) {
-                            $expiresAt = now()->addDay()->startOfDay();
-                            cache([$key => $response1], $expiresAt);
-
-                            /** @var MeteringPoint $meteringPoint3 */
-                            $meteringPoint3 = MeteringPointTransformer::transform($response1, SourceEnum::EWII);
-
-                            return $meteringPoint3;
-                        }
-                    } catch (EwiiApiException $e) {
-                        if (!$exception) {
-                            $exception = $e;
-                        }
-                    }
-                }
 
             case SourceEnum::POWERUSE:
             default:
@@ -243,7 +206,7 @@ class GetMeteringData
         return $responseCombined;
     }
 
-    public function getCharges(?SourceEnum $source = SourceEnum::DATAHUB, array $credentials = [], User $user = null): array
+    public function getCharges(string $start_date, string $end_date, ?SourceEnum $source = SourceEnum::DATAHUB, array $credentials = [], User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);
@@ -296,9 +259,9 @@ class GetMeteringData
                 }
             case SourceEnum::POWERUSE:
             default:
-                $subscriptions = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Abonnement')->get();
-                $tariffs = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Tarif')->get();
-                $fees = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Gebyr')->get();
+                $subscriptions = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Abonnement')->whereRaw('NOT (valid_from > \'' . $start_date . '\' OR (IF(valid_to is null,\'2030-01-01\',valid_to) < \'' . $end_date . '\' ))')->get();
+                $tariffs = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Tarif')->whereRaw('NOT (valid_from > \'' . $start_date . '\' OR (IF(valid_to is null,\'2030-01-01\',valid_to) < \'' . $end_date . '\' ))')->get();
+                $fees = Charge::whereMeteringPointId($meteringPoint->id)->whereType('Gebyr')->whereRaw('NOT (valid_from > \'' . $start_date . '\' OR (IF(valid_to is null,\'2030-01-01\',valid_to) < \'' . $end_date . '\' ))')->get();
 
                 if ($subscriptions->count() > 0 && $tariffs->count() > 0) {
                     return [$subscriptions, $tariffs, $fees];

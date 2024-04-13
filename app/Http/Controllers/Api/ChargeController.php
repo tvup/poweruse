@@ -75,7 +75,7 @@ class ChargeController extends Controller
             //If user isn't logged in, only possibility to get charges is through DATAHUB
             //And we can't get from DB if no meteringPointId is present
             $source = ($this->userIsLoggedIn && $meteringPointId) ? null : SourceEnum::DATAHUB;
-            $data = $this->meteringDataService->getCharges($source, ['refresh_token' => $refresh_token], $user);
+            $data = $this->meteringDataService->getCharges(request()->start_date, request()->end_date, $source, ['refresh_token' => $refresh_token], $user);
         } catch (ElOverblikApiException $e) {
             switch ($e->getCode()) {
                 case 400:

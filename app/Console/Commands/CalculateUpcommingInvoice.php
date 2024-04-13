@@ -50,10 +50,6 @@ class CalculateUpcommingInvoice extends Command
     public function handle()
     {
         $dataSource = SourceEnum::DATAHUB;
-        $ewiiCredentials = [
-            'ewiiEmail' => '',
-            'ewiiPassword' => '',
-        ];
 
         $validator = Validator::make([
             'refresh_token' => $this->argument('refresh_token') ?: config('services.energioverblik.refresh_token'),
@@ -92,7 +88,7 @@ class CalculateUpcommingInvoice extends Command
                 config('services.smartme.paasword')];
         }
 
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken, $ewiiCredentials);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);
 
         $outputLine = json_encode($bill, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE + JSON_PRETTY_PRINT);
         if ($outputLine) {
