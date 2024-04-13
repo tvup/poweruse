@@ -190,8 +190,8 @@ class ProcessController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = '40000';
         $note = 'Transmissions nettarif';
-        $startDate = '2023-01-01';
-        $endDate = '2023-12-31';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return (new RetrieveTariffFromOperator())->handle(
             operator: $operator,
@@ -212,8 +212,8 @@ class ProcessController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = '41000';
         $note = 'Systemtarif';
-        $startDate = '2023-01-01';
-        $endDate = '2023-12-31';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return (new RetrieveTariffFromOperator())->handle(
             operator: $operator,
@@ -234,8 +234,8 @@ class ProcessController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
         $note = 'Elafgift';
-        $startDate = '2023-07-01';
-        $endDate = '2024-01-01';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return (new RetrieveTariffFromOperator())->handle(
             operator: $operator,

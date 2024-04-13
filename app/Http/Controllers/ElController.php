@@ -665,8 +665,8 @@ class ElController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = '40000';
         $note = 'Transmissions nettarif';
-        $startDate = '2022-01-01';
-        $endDate = '2022-12-31';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
@@ -699,8 +699,8 @@ class ElController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = '41000';
         $note = 'Systemtarif';
-        $startDate = '2022-01-01';
-        $endDate = '2022-12-31';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
@@ -714,8 +714,8 @@ class ElController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = '45013';
         $note = 'Balancetarif for forbrug';
-        $startDate = '2022-01-01';
-        $endDate = '2022-12-31';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
@@ -729,8 +729,8 @@ class ElController extends Controller
         $chargeType = 'D03';
         $chargeTypeCode = 'EA-001';
         $note = 'Elafgift';
-        $startDate = '2022-10-01';
-        $endDate = '2022-12-31';
+        $startDate = '2024-01-01';
+        $endDate = '2024-12-31';
 
         return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
     }
