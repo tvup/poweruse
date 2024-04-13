@@ -14,7 +14,7 @@ class ElControllerTest extends TestCase
     use WithoutMiddleware; // Brug denne trait, hvis du vil ignorere middleware under testen.
 
     /** @test */
-    public function test_it_returns_total_price_for_today()
+    public function test_it_returns_total_price_for_today() : void
     {
         $dhlistprice = [[
             'ChargeOwner' => 'Energinet Systemansvar A/S (SYO)',

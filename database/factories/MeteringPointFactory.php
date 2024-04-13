@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\MeteringPoint>
+ */
 class MeteringPointFactory extends Factory
 {
     protected $model = MeteringPoint::class;

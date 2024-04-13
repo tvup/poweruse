@@ -54,6 +54,7 @@ class GetMeteringDataTest extends TestCase
 
         $meteringPoint = app(GetMeteringData::class)->getMeteringPointData(SourceEnum::DATAHUB, ['refresh_token'=>'token']);
 
+        $this->assertNotNull($meteringPoint);
         $this->assertEquals($meteringPointArray['streetCode'], $meteringPoint->street_code);
         $this->assertEquals($meteringPointArray['streetName'], $meteringPoint->street_name);
         $this->assertEquals($meteringPointArray['buildingNumber'], $meteringPoint->building_number);
@@ -78,7 +79,7 @@ class GetMeteringDataTest extends TestCase
         $this->assertEquals($meteringPointArray['source'], $meteringPoint->source);
     }
 
-    public function testGetMeteringPointDataPoweruse(): void
+    public function testGetMeteringPointDataPoweruse() : void
     {
         $baseMeteringPoint = MeteringPoint::factory()->create();
         $user = User::factory()->create();
@@ -86,6 +87,8 @@ class GetMeteringDataTest extends TestCase
         $baseMeteringPoint->save();
 
         $retrievedMeteringPoint = app(GetMeteringData::class)->getMeteringPointData(SourceEnum::POWERUSE, [], $user);
+
+        $this->assertNotNull($retrievedMeteringPoint);
 
         $this->assertEquals($baseMeteringPoint->street_code, $retrievedMeteringPoint->street_code);
         $this->assertEquals($baseMeteringPoint->street_name, $retrievedMeteringPoint->street_name);

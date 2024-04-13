@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\GetSpotPrices;
+use App\Services\Interfaces\GetSpotPricesInterface;
+use App\Services\Mocks\GetSpotPricesMock;
 use Illuminate\Foundation\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,5 +33,11 @@ class AppServiceProvider extends ServiceProvider
             'Tvup\EwiiApi\EwiiApiInterface',
             'Tvup\EwiiApi\EwiiApi'
         );
+
+        if (app()->environment('local')) {
+            $this->app->bind(GetSpotPricesInterface::class, GetSpotPricesMock::class);
+        } else {
+            $this->app->bind(GetSpotPricesInterface::class, GetSpotPrices::class);
+        }
     }
 }

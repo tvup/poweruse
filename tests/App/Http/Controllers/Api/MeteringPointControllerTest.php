@@ -81,7 +81,7 @@ class MeteringPointControllerTest extends TestCase
         $this->assertEquals(ResponseAlias::HTTP_OK, $response->getStatusCode());
     }
 
-    public function testGetMeteringPointDataDatahub()
+    public function testGetMeteringPointDataDatahub() : void
     {
         $user = User::factory()->create();
         $this->actingAs($user, 'api');
@@ -124,7 +124,7 @@ class MeteringPointControllerTest extends TestCase
         $this->assertEquals(ResponseAlias::HTTP_OK, $response->getStatusCode());
     }
 
-    public function testGetMeteringPointDataPoweruse()
+    public function testGetMeteringPointDataPoweruse() : void
     {
         $user = User::factory()->create();
         $this->actingAs($user, 'api');

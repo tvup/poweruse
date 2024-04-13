@@ -39,7 +39,7 @@ class GetSmartMeMeterDataTest extends TestCase
         config(['services.smartme.id'=> self::SMART_ME_ID]);
     }
 
-    public function test_get_from_date()
+    public function test_get_from_date() : void
     {
         $service = new GetSmartMeMeterData();
         $reading = $service->getFromDate();
@@ -54,7 +54,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_get_from_date_where_smart_me_true()
+    public function test_get_from_date_where_smart_me_true() : void
     {
         $service = new GetSmartMeMeterData();
         $reading = $service->getFromDate([]);
@@ -69,7 +69,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_get_from_date_with_smart_credentials()
+    public function test_get_from_date_with_smart_credentials() : void
     {
         $service = new GetSmartMeMeterData();
         $smartMe = ['id'=>self::SMART_ME_ID, 'username'=>self::SMART_ME_USERNAME, 'password'=>self::SMART_ME_PASSWORD];
@@ -86,7 +86,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_get_interval_from_date()
+    public function test_get_interval_from_date() : void
     {
         $service = new GetSmartMeMeterData();
         $smartMe = ['id' => self::SMART_ME_ID, 'username' => self::SMART_ME_USERNAME, 'password' => self::SMART_ME_PASSWORD];
@@ -108,7 +108,7 @@ class GetSmartMeMeterDataTest extends TestCase
         Http::assertSentCount(4);
     }
 
-    public function test_get_interval_from_date_during_dls()
+    public function test_get_interval_from_date_during_dls() : void
     {
         $service = new GetSmartMeMeterData();
         $smartMe = ['id' => self::SMART_ME_ID, 'username' => self::SMART_ME_USERNAME, 'password' => self::SMART_ME_PASSWORD];

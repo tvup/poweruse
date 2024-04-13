@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/app/helpers.php';
 */
 
 $app = new Illuminate\Foundation\Application(
-    realpath(__DIR__.'/../')
+    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
 /*

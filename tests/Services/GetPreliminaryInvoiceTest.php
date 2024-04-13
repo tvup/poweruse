@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class GetPreliminaryInvoiceTest extends TestCase
 {
-    private $charges;
+    private array $charges;
 
     private mixed $spotPrices;
 
@@ -21,7 +21,7 @@ class GetPreliminaryInvoiceTest extends TestCase
 
     private mixed $testCharges;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
@@ -54,7 +54,7 @@ class GetPreliminaryInvoiceTest extends TestCase
      * @throws \Tvup\ElOverblikApi\ElOverblikApiException
      * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function testGetBill()
+    public function testGetBill() : void
     {
         $this->mock(GetMeteringData::class, function (MockInterface $mock) {
             $mock

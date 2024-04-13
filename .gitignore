@@ -20,3 +20,4 @@ yarn-error.log
 /.vagrant
 /storage/ewii_cookies/ewii-cookies.json
 ./revision
+.phpunit.cache/
