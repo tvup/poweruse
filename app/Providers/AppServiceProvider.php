@@ -33,11 +33,15 @@ class AppServiceProvider extends ServiceProvider
             'Tvup\EwiiApi\EwiiApiInterface',
             'Tvup\EwiiApi\EwiiApi'
         );
-
-        if (app()->environment('local')) {
-            $this->app->bind(GetSpotPricesInterface::class, GetSpotPricesMock::class);
+        $spotServiceProvider = config('services.spot_price_provider');
+        if (!$spotServiceProvider) {
+            if (app()->environment('local')) {
+                $this->app->bind(GetSpotPricesInterface::class, GetSpotPricesMock::class);
+            } else {
+                $this->app->bind(GetSpotPricesInterface::class, GetSpotPrices::class);
+            }
         } else {
-            $this->app->bind(GetSpotPricesInterface::class, GetSpotPrices::class);
+            $this->app->bind(GetSpotPricesInterface::class, $spotServiceProvider);
         }
     }
 }
