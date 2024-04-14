@@ -23,6 +23,8 @@ class GetPreliminaryInvoice
 {
     public const ALL_TARIFFS = 'Alle Tariffer';
 
+    public const FORMAT_INTERNAL = 'INTERNAL';
+
     /**
      * @var GetMeteringData
      */
@@ -96,7 +98,7 @@ class GetPreliminaryInvoice
                     $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 }
 
-                $getSmartMeMeterData = new GetSmartMeMeterData();
+                $getSmartMeMeterData = app(GetSmartMeMeterData::class);
                 $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($start_from, $smart_me_end_date, $smartMeCredentials);
                 $meterData = array_merge($meterData, $smartMeIntervalFromDate);
             }
@@ -113,7 +115,7 @@ class GetPreliminaryInvoice
                     $price_end_date = Carbon::now('Europe/Copenhagen')->addDay()->toDateString();
                 }
                 $spotPrices = app(GetSpotPricesInterface::class);
-                $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
+                $prices = $spotPrices->getData($start_date, $price_end_date, $price_area, ['HourDK', 'SpotPriceDKK'], self::FORMAT_INTERNAL);
                 $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
                 cache([$key => $prices], $expiresAt);
             }

@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Models\RequestStatistic;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tvup\ElOverblikApi\EloverblikRequestFailed;
 use Tvup\ElOverblikApi\EloverblikRequestMade;
@@ -18,8 +17,13 @@ class RequestMadeEventSubscriber
      */
     public function handleRequestMade(EloverblikRequestMade $event)
     {
-        $query = ['count' => \DB::raw('count + 1')];
-        RequestStatistic::updateOrCreate(['verb'=>$event->getVerb(), 'endpoint'=>$event->getEndpoint()], $query);
+        $requestStatistic = RequestStatistic::where('verb', $event->getVerb())->where('endpoint', $event->getEndpoint())->first();
+        if ($requestStatistic) {
+            $requestStatistic->count = $requestStatistic->count + 1;
+            $requestStatistic->save();
+        } else {
+            RequestStatistic::create(['verb'=>$event->getVerb(), 'endpoint'=>$event->getEndpoint(), 'count' => 0]);
+        }
     }
 
     /**
@@ -40,10 +44,9 @@ class RequestMadeEventSubscriber
         }
 
         if ($hasColumn) {
-            $defaultDatabaseConnectionName = config('database.default');
-            $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
-            $query = 'Update ' . $databaseName . '.request_statistics set `' . $code . '`=' . '`' . $code . '`' . ' +1 where `verb`=\'' . $event->getVerb() . '\' and `endpoint`=\'' . $event->getEndpoint() . '\'';
-            DB::statement($query);
+            $requestStatistic = RequestStatistic::where('verb', $event->getVerb())->where('endpoint', $event->getEndpoint())->first();
+            $requestStatistic->{$code} = $requestStatistic->{$code} + 1;
+            $requestStatistic->save();
 
             return;
         }

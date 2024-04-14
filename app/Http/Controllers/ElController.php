@@ -103,7 +103,7 @@ class ElController extends Controller
                 case 500:
                 case 503:
                     $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
+                    $payload = isset($error['Payload']) ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
                     $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
 
@@ -457,7 +457,7 @@ class ElController extends Controller
             $smartMe['password'] = $request->smartmepassword;
             $smartMe['id'] = $request->smartmeid;
         }
-
+        $data = [];
         try {
             switch ($dataSource) {
                 case SourceEnum::DATAHUB:
@@ -477,8 +477,6 @@ class ElController extends Controller
                 case SourceEnum::SMARTME:
                     $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
                     break;
-                default:
-                    throw new \InvalidArgumentException('Illegal provider for meteringdata given: ' . $dataSource->value);
             }
 
             if ($request->smart_me) {
