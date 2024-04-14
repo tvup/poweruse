@@ -36,14 +36,6 @@
                   <label class="form-label form-control-lg" for="token" v-if="source=='DATAHUB'">{{ $t('Refresh token') }}</label>
                   <input class="col-xs-3 form-rounded" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
               </div>
-              <div class="mb-3">
-                  <label class="form-label form-control-lg" for="ewii_user_name" v-if="source=='EWII'">{{ $t('Ewii user name') }}</label>
-                  <input class="col-xs-3 form-rounded" id="ewii_user_name" type="text" v-if="source=='EWII'" v-model="ewii_user_name">
-              </div>
-              <div class="mb-3">
-                  <label class="form-label form-control-lg" for="ewii_password" v-if="source=='EWII'">{{ $t('Ewii password') }}</label>
-                  <input class="col-xs-3 form-rounded" id="ewii_password" type="text" v-if="source=='EWII'" v-model="ewii_password">
-              </div>
                 <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
               <div class="mb-3">
                   <button type="submit" class="btn btn-primary"
@@ -497,8 +489,6 @@ export default {
       total: 0,
       token: '',
       source: 'DATAHUB',
-      ewii_user_name: '',
-      ewii_password: ''
     }
   },
 
@@ -523,7 +513,7 @@ export default {
       });
     },
     getMeteringPointsFromToken() {
-      axios.get('api/meteringPoint/' + this.token + '?source=' + this.source + '&ewii_user_name=' + this.ewii_user_name + '&ewii_password=' + this.ewii_password).then(data => {
+      axios.get('api/meteringPoint/' + this.token + '?source=' + this.source).then(data => {
         this.metering_points = data.data.data;
         this.last_page = data.data.last_page;
         this.total = data.data.total;

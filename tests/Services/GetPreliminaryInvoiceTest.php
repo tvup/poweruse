@@ -52,7 +52,6 @@ class GetPreliminaryInvoiceTest extends TestCase
      *
      * @throws \App\Exceptions\DataUnavailableException
      * @throws \Tvup\ElOverblikApi\ElOverblikApiException
-     * @throws \Tvup\EwiiApi\EwiiApiException
      */
     public function testGetBill() : void
     {

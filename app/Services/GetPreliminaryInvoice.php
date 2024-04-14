@@ -56,7 +56,6 @@ class GetPreliminaryInvoice
      * @return array
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
-     * @throws \Tvup\EwiiApi\EwiiApiException
      */
     public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
     {
@@ -123,7 +122,6 @@ class GetPreliminaryInvoice
 
             $charges = cache($key);
             if (!$charges) {
-                //It's not possible to retrieve charges through ewii, see if they can be retrieved through POWERUSE
                 $dataSource = SourceEnum::POWERUSE;
                 try {
                     $charges = $this->meteringDataService->getCharges($start_date, $end_date, $dataSource, ['refresh_token'=>$refreshToken], $user);
@@ -149,7 +147,7 @@ class GetPreliminaryInvoice
         }
         $diff_in_days = Carbon::parse($start_date, 'Europe/Copenhagen')->diffInDays(Carbon::parse($to_date, 'Europe/Copenhagen'));
         if (Carbon::parse($to_date, 'Europe/Copenhagen')->gt(Carbon::parse($to_date, 'Europe/Copenhagen')->startOfDay())) {
-            $diff_in_days + 1;
+            $diff_in_days = $diff_in_days + 1;
         }
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days]];
 

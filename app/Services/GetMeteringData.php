@@ -11,14 +11,10 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
-use Tvup\EwiiApi\EwiiApiException;
-use Tvup\EwiiApi\EwiiApiInterface;
 
 class GetMeteringData
 {
     private ?ElOverblikApiInterface $energiOverblikApi = null;
-
-    private ?EwiiApiInterface $ewiiApi;
 
     public function __construct()
     {
@@ -67,52 +63,9 @@ class GetMeteringData
         return $response;
     }
 
-    public function getDataFromEwii(string $start_date = null, string $end_date = null, string $email = null, string $password = null): array
-    {
-        if (!$email || !$password) {
-            $email = config('services.ewii.email');
-            $password = config('services.ewii.password');
-        }
-
-        logger('Accessing EwiiApi.');
-
-        $ewiiApi = $this->getEwiiApi($email, $password);
-
-        try {
-            if (!$start_date) {
-                $start_date = Carbon::now()->startOfMonth()->toDateString();
-            }
-            if (!$end_date) {
-                $end_date = Carbon::now()->toDateString();
-            }
-            logger('Retrieving consumption data from ewiiApi with parameters: Start date => ' . $start_date . ' End date => ' . $end_date);
-            $ewiiApi->login($email, $password);
-            $response = $ewiiApi->getAddressPickerViewModel();
-
-            $ewiiApi->setSelectedAddressPickerElement($email == 'info@butikkenvedhojen.dk' ? $response[1] : $response[0]);
-            $response = $ewiiApi->getConsumptionMeters();
-            $response = $ewiiApi->getConsumptionData('csv', $response);
-            foreach (array_keys($response) as $key) {
-                if (Carbon::parse($key)->isBefore(Carbon::parse($start_date))) {
-                    unset($response[$key]);
-                }
-                if (Carbon::parse($key)->isAfter(Carbon::parse($end_date))) {
-                    unset($response[$key]);
-                }
-            }
-        } catch (EwiiApiException $e) {
-            logger()->error('Call to get consumption data from ewiiApi failed');
-            throw $e;
-        }
-
-        return $response;
-    }
-
     public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ? MeteringPoint
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
-        $ewiiUserName = isset($credentials['ewii_user_name']) ? $credentials['ewii_user_name'] : null;
-        $ewiiPassword = isset($credentials['ewii_password']) ? $credentials['ewii_password'] : null;
         $exception = null;
         switch ($source) {
             case SourceEnum::DATAHUB:
@@ -173,37 +126,6 @@ class GetMeteringData
         }
 
         return null;
-    }
-
-    public function getMeteringPointDataFromEwii(string $email = null, string $password = null): array
-    {
-        $key = 'meteringPointData ' . $email;
-
-        $meteringPointData = cache($key);
-        if ($meteringPointData) {
-            return $meteringPointData;
-        }
-
-        if (!$email || !$password) {
-            $email = config('services.ewii.email');
-            $password = config('services.ewii.password');
-        }
-
-        try {
-            $ewiiApi = $this->getEwiiApi($email, $password);
-
-            $ewiiApi->login($email, $password);
-            $response1 = $ewiiApi->getAddressPickerViewModel();
-            $ewiiApi->setSelectedAddressPickerElement($response1);
-            $response2 = $ewiiApi->getConsumptionMetersRaw();
-            $responseCombined = array_merge($response1, $response2);
-            $expiresAt = now()->addDay()->startOfDay();
-            cache([$key => $responseCombined], $expiresAt);
-        } catch (EwiiApiException $e) {
-            throw $e;
-        }
-
-        return $responseCombined;
     }
 
     public function getCharges(?string $start_date, ?string $end_date, ?SourceEnum $source = SourceEnum::POWERUSE, array $credentials = [], User $user = null): array
@@ -290,18 +212,6 @@ class GetMeteringData
         }
 
         return $this->energiOverblikApi;
-    }
-
-    private function getEwiiApi(string $email = null, string $password = null): EwiiApiInterface
-    {
-        if (!property_exists('GetMeteringData', 'ewiiApi') || !$this->ewiiApi) {
-            $this->ewiiApi = app()->makeWith('Tvup\EwiiApi\EwiiApiInterface', [
-                'email' => $email,
-                'password' => $password,
-            ]);
-        }
-
-        return $this->ewiiApi;
     }
 
     private function getMeteringPointFromCache(string $key): ?array

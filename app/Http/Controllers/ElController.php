@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Tvup\ElOverblikApi\ElOverblikApiException;
-use Tvup\EwiiApi\EwiiApiException;
 
 class ElController extends Controller
 {
@@ -115,23 +114,6 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
-        } catch (EwiiApiException $e) {
-            switch ($e->getCode()) {
-                case 400:
-                case 500:
-                case 503:
-                    $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-
-                    return redirect('el')->with('error', $message)->withInput($request->all());
-                case 2:
-                    return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
-                default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
-            }
         } catch (DataUnavailableException|MissingDataException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
@@ -173,23 +155,6 @@ class ElController extends Controller
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
             }
-        } catch (EwiiApiException $e) {
-            switch ($e->getCode()) {
-                case 400:
-                case 500:
-                case 503:
-                    $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for metering data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-
-                    return redirect('el')->with('error', $message)->withInput($request->all());
-                case 2:
-                    return redirect('el')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
-                default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
-            }
         } catch (DataUnavailableException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
@@ -200,16 +165,9 @@ class ElController extends Controller
     public function getMeteringPointData(Request $request) : RedirectResponse|Response
     {
         try {
-            switch ($request->de) {
-                case 'on':
-                    $dataSource = SourceEnum::EWII;
-                    break;
-                default:
-                    $dataSource = SourceEnum::DATAHUB;
-            }
+            $dataSource = SourceEnum::DATAHUB;
 
-            $refreshToken = null;
-            if ($dataSource == SourceEnum::DATAHUB && !$request->token) {
+            if (!$request->token) {
                 if (auth()->check() && auth()->user()->refresh_token) {
                     $refreshToken = auth()->user()->refresh_token;
                 } else {
@@ -220,9 +178,6 @@ class ElController extends Controller
             }
 
             switch ($dataSource) {
-                case SourceEnum::EWII:
-                    $data = $this->meteringDataService->getMeteringPointDataFromEwii($request->ewiiemail, $request->ewiipassword);
-                    break;
                 case SourceEnum::DATAHUB:
                     $data = $this->meteringDataService->getMeteringPointData($refreshToken);
                     break;
@@ -241,23 +196,6 @@ class ElController extends Controller
                     return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
                 case 401:
                     return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with token')->withInput($request->all());
-                default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
-            }
-        } catch (EwiiApiException $e) {
-            switch ($e->getCode()) {
-                case 400:
-                case 500:
-                case 503:
-                    $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for metering-point data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-
-                    return redirect('el-meteringpoint')->with('error', $message)->withInput($request->all());
-                case 2:
-                    return redirect('el-meteringpoint')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');
@@ -340,7 +278,6 @@ class ElController extends Controller
      * @return Response|JsonResponse
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
-     * @throws EwiiApiException
      */
     private function getPreliminaryInvoice(string $refreshToken, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
     {
@@ -354,6 +291,7 @@ class ElController extends Controller
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
                 ->header('Content-Type', 'text/plain');
         }
+
         $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, SourceEnum::POWERUSE, $refreshToken, $subscription, $overhead, $user);
 
         return response()->json($bill);
@@ -522,9 +460,6 @@ class ElController extends Controller
 
         try {
             switch ($dataSource) {
-                case SourceEnum::EWII:
-                    $data = $this->meteringDataService->getDataFromEwii($request->start_date, $end_date, $request->ewiiEmail, $request->ewiiPassword);
-                    break;
                 case SourceEnum::DATAHUB:
                     if (!$request->token) {
                         if (auth()->check() && auth()->user()->refresh_token) {
@@ -558,23 +493,6 @@ class ElController extends Controller
             $data = array_merge($data, ['Antal i serien' => count($data)]);
             $data = array_merge($data, ['Sum' => collect(array_values($data))->sum()]);
             $data = array_merge($data, ['Source' => $dataSource]);
-        } catch (EwiiApiException $e) {
-            switch ($e->getCode()) {
-                case 400:
-                case 500:
-                case 503:
-                    $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for consumption-point data at ewii failed</strong>' . '<br/>';
-                    $message = $message . 'EWII-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-
-                    return redirect('consumption')->with('error', $message)->withInput($request->all());
-                case 2:
-                    return redirect('consumption')->with('error', 'Failed - cannot login with ewii credentials.')->withInput($request->all());
-                default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
-            }
         } catch (ElOverblikApiException $e) {
             return match ($e->getCode()) {
                 401 => redirect('consumption')->with('error', 'Failed - cannot login with credentials.')->withInput(

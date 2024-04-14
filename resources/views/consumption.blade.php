@@ -40,14 +40,6 @@
                         <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ?? (Cookie::get('refresh_token') ?? '') }}">
                     </div>
                 @endif
-                <div class="form-group ewii">
-                    <label for="ewiiEmail">{{ __('Email') }}</label>
-                    <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') }}">
-                </div>
-                <div class="form-group ewii">
-                    <label for="ewiiPassword">{{ __('Password') }}</label>
-                    <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiiPassword') }}">
-                </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmeid">{{ __('Smart-me id:') }}</label>
                     <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') }}">
@@ -82,9 +74,7 @@
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
         $(function() {
             $('input[type=radio][name=source]').change(function() {
-                let isDatahubOrEwiiSelected = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
                 let isDatahubSelected = $('input[name=source][value=DATAHUB]').is(":checked");
-                let isEwiiSelected = $('input[name=source][value=EWII]').is(":checked");
                 let isSmartMeSelected = $('input[name=source][value=SMART_ME]').is(":checked");
                 let addSmartMeIsSelected = $( "#smart_me").is(':checked');
                 let smartMeIsInPlay = addSmartMeIsSelected || isSmartMeSelected;
@@ -92,13 +82,11 @@
 
                 if (isDatahubSelected) {
                     whoIsSelected = 'DATAHUB';
-                } else if (isEwiiSelected) {
-                    whoIsSelected = 'EWII';
                 } else if (isSmartMeSelected) {
                     whoIsSelected = 'SMART_ME';
                 }
 
-                updateSmartMeCheckBoxShow(isDatahubOrEwiiSelected);
+                updateSmartMeCheckBoxShow(isDatahubSelected);
                 updateCredentialsFieldsShow(whoIsSelected, addSmartMeIsSelected);
                 updateDatePicker(smartMeIsInPlay);
             });
@@ -112,7 +100,7 @@
                 }
 
             }
-            var my_bool2 = $('input[name=source][value=DATAHUB]').is(":checked") || $('input[name=source][value=EWII]').is(":checked");
+            var my_bool2 = $('input[name=source][value=DATAHUB]').is(":checked");
             updateSmartMeCheckBoxShow(my_bool2);
 
             $( "#smart_me" ).change(function() {
@@ -130,16 +118,6 @@
                 switch(source) {
                     case 'DATAHUB':
                         $('.datahub').show();
-                        $('.ewii').hide();
-                        if(isAddSmartMeChecked) {
-                            $('.smartmedetails').show();
-                        } else {
-                            $('.smartmedetails').hide();
-                        }
-                        break;
-                    case 'EWII':
-                        $('.ewii').show();
-                        $('.datahub').hide();
                         if(isAddSmartMeChecked) {
                             $('.smartmedetails').show();
                         } else {
@@ -148,7 +126,6 @@
                         break;
                     case 'SMART_ME':
                         $('.smartmedetails').show();
-                        $('.ewii').hide();
                         $('.datahub').hide();
                         break;
                 }

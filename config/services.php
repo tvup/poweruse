@@ -45,11 +45,6 @@ return [
         'app_token' => env('PUSHOVER_TOKEN'),
     ],
 
-    'ewii' => [
-        'email' => env('EWII_EMAIL'),
-        'password' => env('EWII_PASSWORD'),
-    ],
-
     'energioverblik' => [
         'refresh_token' => env('ENERGIOVERBLIK_REFRESH_TOKEN'),
     ],
