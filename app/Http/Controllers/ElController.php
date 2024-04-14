@@ -289,13 +289,14 @@ class ElController extends Controller
 
     public function getWithSmartMe() : Response|JsonResponse
     {
+        $user = auth()->user();
         try {
             $smartMeCredentials = [
-                config('services.smartme.id'),
-                config('services.smartme.username'),
-                config('services.smartme.paasword')];
+                $user->smartme_directory_id,
+                $user->smartme_username,
+                $user->smartme_password];
 
-            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::POWERUSE, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
+            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if ($code == 503 || $code == 500) {
