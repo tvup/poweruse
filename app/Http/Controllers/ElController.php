@@ -287,7 +287,7 @@ class ElController extends Controller
         }
     }
 
-    public function getWithSmartMe(string $refreshToken) : Response|JsonResponse
+    public function getWithSmartMe() : Response|JsonResponse
     {
         try {
             $smartMeCredentials = [
@@ -295,12 +295,12 @@ class ElController extends Controller
                 config('services.smartme.username'),
                 config('services.smartme.paasword')];
 
-            return $this->getPreliminaryInvoice($refreshToken, null, SourceEnum::DATAHUB, $smartMeCredentials);
+            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if ($code == 503 || $code == 500) {
                 try {
-                    if ($refreshToken != config('services.energioverblik.refresh_token')) {
+                    if (auth()->user()->refresh_token != config('services.energioverblik.refresh_token')) {
                         logger('Can\'t try with fetching from ewii');
 
                         return response($exception->getMessage(), $code)
@@ -309,7 +309,7 @@ class ElController extends Controller
                     logger('Fetch by datahub failed - trying with ewii');
                     $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
 
-                    return $this->getPreliminaryInvoice($refreshToken, $ewiiCredentials, SourceEnum::EWII, $smartMeCredentials);
+                    return $this->getPreliminaryInvoice(auth()->user()->refresh_token, $ewiiCredentials, SourceEnum::EWII, $smartMeCredentials);
                 } catch (EwiiApiException $exception) {
                     $code = $exception->getCode();
                 }
