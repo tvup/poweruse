@@ -23,6 +23,8 @@ class GetPreliminaryInvoiceTest extends TestCase
 
     protected function setUp() : void
     {
+        parent::setUp();
+
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
         $this->charges = $this->loadTestData(test_fixture_path('typical_charges.json'));
@@ -41,8 +43,6 @@ class GetPreliminaryInvoiceTest extends TestCase
         }
 
         $this->testCharges = collect($array);
-
-        parent::setUp();
     }
 
     /**
