@@ -49,7 +49,7 @@ class GetPreliminaryInvoice
      * @param string $end_date
      * @param string $price_area
      * @param array|null $smartMeCredentials
-     * @param SourceEnum|null $dataSource
+     * @param SourceEnum $dataSource
      * @param string|null $refreshToken
      * @param float|string $subscription_at_elsupplier
      * @param float|string $overhead
@@ -58,7 +58,7 @@ class GetPreliminaryInvoice
      * @throws ElOverblikApiException
      * @throws \Tvup\EwiiApi\EwiiApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = null, string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
     {
         $overhead = str_replace(',', '.', strval($overhead));
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
@@ -300,7 +300,7 @@ class GetPreliminaryInvoice
             $prices = cache($key);
             if (!$prices) {
                 $price_end_date = $end_date;
-                $spotPrices = new GetSpotPrices();
+                $spotPrices = app(GetSpotPricesInterface::class);
                 $prices = $spotPrices->getData($start_date, $price_end_date, $price_area);
                 $expiresAt = Carbon::now()->addDay()->startOfDay()->hour(13)->minute(10);
                 cache([$key => $prices], $expiresAt);

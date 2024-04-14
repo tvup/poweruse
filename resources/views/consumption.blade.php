@@ -26,7 +26,6 @@
                 <div class="form-group">
                     <label for="source">{{ __('Source:') }}:</label>
                     {{ html()->radio('source', (old('source') === 'DATAHUB' || old('source') === null), 'DATAHUB')->id('DATAHUB') }} DATAHUB
-                    {{ html()->radio('source', (old('source') === 'EWII'), 'EWII')->id('EWII') }} EWII
                     {{ html()->radio('source', (old('source') === 'SMART_ME'), 'SMART_ME')->id('SMART_ME') }} SMART_ME
                     <div class="smart_me">Tilføj data fra SMART-ME?
                         <input name="smart_me" id="smart_me" type="checkbox" {{ old('smart_me') == 'on' ? 'checked' : ''}}>

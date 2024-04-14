@@ -206,7 +206,7 @@ class GetMeteringData
         return $responseCombined;
     }
 
-    public function getCharges(string $start_date, string $end_date, ?SourceEnum $source = SourceEnum::DATAHUB, array $credentials = [], User $user = null): array
+    public function getCharges(?string $start_date, ?string $end_date, ?SourceEnum $source = SourceEnum::POWERUSE, array $credentials = [], User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);

@@ -26,12 +26,6 @@
                   </label>
                   <input class="form-check-input" type="radio" id="source" name="source_datahub" value="DATAHUB" v-model="source">
                 </div>
-                <div class="form-check form-check-inline">
-                  <label class="form-check-label" for="source_ewii">
-                    EWII
-                  </label>
-                  <input class="form-check-input" type="radio" id="source" name="source_ewii" value="EWII" v-model="source">
-                </div>
                 <div class="form-check form-check-inline" v-if="authUser && authUser!='no'">
                   <label class="form-check-label" for="source_poweruse"> POWERUSE
                   </label>
