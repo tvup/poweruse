@@ -295,7 +295,7 @@ class ElController extends Controller
                 config('services.smartme.username'),
                 config('services.smartme.paasword')];
 
-            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
+            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::POWERUSE, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
         } catch (ElOverblikApiException $exception) {
             $code = $exception->getCode();
             if ($code == 503 || $code == 500) {
