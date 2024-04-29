@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32afeb2cebb54c46c4dc8a5054f34870",
+    "content-hash": "04d1a03bed62b28cc176bd5e3415e94a",
     "packages": [
         {
             "name": "brick/math",
@@ -6696,47 +6696,6 @@
                 "source": "https://github.com/Tvup/eloverblikapi/tree/v2.0.0"
             },
             "time": "2023-01-23T22:34:52+00:00"
-        },
-        {
-            "name": "tvup/ewiiapi",
-            "version": "v2.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Tvup/ewiiapi.git",
-                "reference": "c2555d2f9cf8259234536f87b4343a1a34b77061"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Tvup/ewiiapi/zipball/c2555d2f9cf8259234536f87b4343a1a34b77061",
-                "reference": "c2555d2f9cf8259234536f87b4343a1a34b77061",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^7.5",
-                "php": ">=7.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Tvup\\EwiiApi\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tvup",
-                    "email": "tvupper@gmail.com"
-                }
-            ],
-            "description": "API for getting consumption data as an Ewii customer",
-            "support": {
-                "issues": "https://github.com/Tvup/ewiiapi/issues",
-                "source": "https://github.com/Tvup/ewiiapi/tree/v2.1.1"
-            },
-            "time": "2022-11-12T06:16:57+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
