@@ -33,10 +33,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
-            'Tvup\EwiiApi\EwiiApiInterface',
-            'Tvup\EwiiApi\EwiiApi'
-        );
         $spotServiceProvider = config('services.spot_price_provider');
         if (!$spotServiceProvider) {
             if (app()->environment('local')) {

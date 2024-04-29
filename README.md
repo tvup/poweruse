@@ -8,7 +8,6 @@ This project provides an application with tools to
 Data is retrieved from multiple sources:
 - Eloverblik
 - EnergiDataService
-- Ewii
 - Smart-Me
 
 ## Based on Laravel 10

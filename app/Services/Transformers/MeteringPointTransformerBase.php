@@ -12,8 +12,6 @@ class MeteringPointTransformerBase
         switch ($source) {
             case SourceEnum::DATAHUB:
                 return $this->transformDatahubData($data);
-            case SourceEnum::EWII:
-                return $this->transformEwiiData($data);
             case SourceEnum::POWERUSE:
                 return $this->transformPowerUseData($data);
             default:
@@ -76,23 +74,6 @@ class MeteringPointTransformerBase
         $meteringPoint->second_consumer_party_name = $data['secondConsumerPartyName'];
         $meteringPoint->hasRelation = $data['hasRelation'];
         $meteringPoint->source = $data['source'];
-
-        return $meteringPoint;
-    }
-
-    private function transformEwiiData(array $data): MeteringPoint
-    {
-        $meteringPoint = app()->make(MeteringPoint::class);
-        $meteringPoint->consumer_start_date = $data[0]['Installations'][0]['MoveInDate'];
-        $meteringPoint->balance_supplier_name = 'EWII Energi A/S';
-        $meteringPoint->street_code = $data[0]['Address']['StreetCode'];
-        $meteringPoint->street_name = $data[0]['Address']['Street'];
-        $meteringPoint->building_number = $data[0]['Address']['Number'];
-        $meteringPoint->floor_id = $data[0]['Address']['Floor'];
-        $meteringPoint->room_id = $data[0]['Address']['Side'];
-        $meteringPoint->city_name = $data[0]['Address']['City'];
-        $meteringPoint->municipality_code = $data[0]['Address']['MunicipalityCode'];
-        $meteringPoint->source = SourceEnum::EWII;
 
         return $meteringPoint;
     }

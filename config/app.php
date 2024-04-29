@@ -178,7 +178,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        App\Providers\EwiiApiServiceProvider::class,
         App\Providers\ElOverblikApiServiceProvider::class,
         //Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\MeteringPointServiceProvider::class,

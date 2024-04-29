@@ -18,7 +18,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Tvup\ElOverblikApi\ElOverblikApiException;
-use Tvup\EwiiApi\EwiiApiException;
 
 class MeteringPointController extends Controller
 {
@@ -40,8 +39,6 @@ class MeteringPointController extends Controller
         $user = $this->userIsLoggedIn ? auth('api')->user() : null;
         $credentials = [
             'refresh_token' => $refresh_token ?? $user?->refresh_token,
-            'ewii_user_name' => request()->get('ewii_user_name') ?? null,
-            'ewii_password' => request()->get('ewii_password') ?? null,
         ];
 
         //We cannot get data from datahub without refresh token
@@ -63,22 +60,6 @@ class MeteringPointController extends Controller
                     return response()->json(['error' => $message]);
                 case 401:
                     return response()->json(PaginationHelper::paginate(collect([['error' => 'Failed - cannot login with token']]), 10));
-                default:
-                    return response($e->getMessage(), $e->getCode())
-                        ->header('Content-Type', 'text/plain');
-            }
-        } catch (EwiiApiException $e) {
-            switch ($e->getCode()) {
-                case 400:
-                case 503:
-                    $error = $e->getErrors();
-                    $payload = $error['Payload'] ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
-                    $message = '<strong>Request for mertering-point data at eloverblik failed</strong>' . '<br/>';
-                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
-
-                    return response()->json(['error' => $message]);
-                case 401:
-                    return response()->json(['error' => 'Failed - cannot login with token']);
                 default:
                     return response($e->getMessage(), $e->getCode())
                         ->header('Content-Type', 'text/plain');

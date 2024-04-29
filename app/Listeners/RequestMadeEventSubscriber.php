@@ -3,34 +3,36 @@
 namespace App\Listeners;
 
 use App\Models\RequestStatistic;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tvup\ElOverblikApi\EloverblikRequestFailed;
 use Tvup\ElOverblikApi\EloverblikRequestMade;
-use Tvup\EwiiApi\EwiiRequestFailed;
-use Tvup\EwiiApi\EwiiRequestMade;
 
 class RequestMadeEventSubscriber
 {
     /**
      * Handle the event.
      *
-     * @param  EwiiRequestMade|EloverblikRequestMade  $event
+     * @param  EloverblikRequestMade  $event
      * @return void
      */
-    public function handleRequestMade(EwiiRequestMade|EloverblikRequestMade $event)
+    public function handleRequestMade(EloverblikRequestMade $event)
     {
-        $query = ['count' => \DB::raw('count + 1')];
-        RequestStatistic::updateOrCreate(['verb'=>$event->getVerb(), 'endpoint'=>$event->getEndpoint()], $query);
+        $requestStatistic = RequestStatistic::where('verb', $event->getVerb())->where('endpoint', $event->getEndpoint())->first();
+        if ($requestStatistic) {
+            $requestStatistic->count = $requestStatistic->count + 1;
+            $requestStatistic->save();
+        } else {
+            RequestStatistic::create(['verb'=>$event->getVerb(), 'endpoint'=>$event->getEndpoint(), 'count' => 0]);
+        }
     }
 
     /**
      * Handle the event.
      *
-     * @param EwiiRequestFailed|EloverblikRequestFailed $event
+     * @param EloverblikRequestFailed $event
      * @return void
      */
-    public function handleRequestFailed(EwiiRequestFailed|EloverblikRequestFailed $event)
+    public function handleRequestFailed(EloverblikRequestFailed $event)
     {
         $code = $event->getCode();
         $key = 'hasColumn ' . $code;
@@ -42,10 +44,9 @@ class RequestMadeEventSubscriber
         }
 
         if ($hasColumn) {
-            $defaultDatabaseConnectionName = config('database.default');
-            $databaseName = config('database.connections.' . $defaultDatabaseConnectionName . '.database');
-            $query = 'Update ' . $databaseName . '.request_statistics set `' . $code . '`=' . '`' . $code . '`' . ' +1 where `verb`=\'' . $event->getVerb() . '\' and `endpoint`=\'' . $event->getEndpoint() . '\'';
-            DB::statement($query);
+            $requestStatistic = RequestStatistic::where('verb', $event->getVerb())->where('endpoint', $event->getEndpoint())->first();
+            $requestStatistic->{$code} = $requestStatistic->{$code} + 1;
+            $requestStatistic->save();
 
             return;
         }
@@ -63,17 +64,8 @@ class RequestMadeEventSubscriber
     public function subscribe($events)
     {
         $events->listen(
-            EwiiRequestMade::class,
-            [RequestMadeEventSubscriber::class, 'handleRequestMade']
-        );
-
-        $events->listen(
             EloverblikRequestMade::class,
             [RequestMadeEventSubscriber::class, 'handleRequestMade']
-        );
-        $events->listen(
-            EwiiRequestFailed::class,
-            [RequestMadeEventSubscriber::class, 'handleRequestFailed']
         );
 
         $events->listen(
