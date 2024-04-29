@@ -278,49 +278,6 @@ class ElController extends Controller
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function get(string $refreshToken) : Response|JsonResponse
-    {
-        try {
-            return $this->getPreliminaryInvoice($refreshToken);
-        } catch (ElOverblikApiException | \InvalidArgumentException $e) {
-            return response($e->getMessage(), $e->getCode(), ['Content-Type' => 'text/plain']);
-        }
-    }
-
-    public function getWithSmartMe() : Response|JsonResponse
-    {
-        $user = auth()->user();
-        try {
-            $smartMeCredentials = [
-                $user->smartme_directory_id,
-                $user->smartme_username,
-                $user->smartme_password];
-
-            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
-        } catch (ElOverblikApiException $exception) {
-            $code = $exception->getCode();
-            if ($code == 503 || $code == 500) {
-                try {
-                    if (auth()->user()->refresh_token != config('services.energioverblik.refresh_token')) {
-                        logger('Can\'t try with fetching from ewii');
-
-                        return response($exception->getMessage(), $code)
-                            ->header('Content-Type', 'text/plain');
-                    }
-                    logger('Fetch by datahub failed - trying with ewii');
-                    $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-
-                    return $this->getPreliminaryInvoice(auth()->user()->refresh_token, $ewiiCredentials, SourceEnum::EWII, $smartMeCredentials);
-                } catch (EwiiApiException $exception) {
-                    $code = $exception->getCode();
-                }
-            }
-
-            return response($exception->getMessage(), $code)
-                ->header('Content-Type', 'text/plain');
-        }
-    }
-
     public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
     {
         try {
