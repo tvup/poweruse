@@ -16,7 +16,11 @@ use Laravel\Passport\HasApiTokens;
  * @property Carbon $email_verified_at
  * @property string $password
  * @property string $remember_token
- * @property string $refresh_token
+ * @property string|null $refresh_token
+ * @property string|null $api_access_token
+ * @property string|null $smartme_username
+ * @property string|null $smartme_password
+ * @property string|null $smartme_directory_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */

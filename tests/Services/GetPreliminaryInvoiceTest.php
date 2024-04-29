@@ -7,7 +7,7 @@ use App\Models\DatahubPriceList;
 use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
-use App\Services\GetSpotPrices;
+use App\Services\Interfaces\GetSpotPricesInterface;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -66,7 +66,7 @@ class GetPreliminaryInvoiceTest extends TestCase
                 ->andReturn($this->charges);
         });
 
-        $this->mock(GetSpotPrices::class, function (MockInterface $mock) {
+        $this->mock(GetSpotPricesInterface::class, function (MockInterface $mock) {
             $mock
                 ->shouldReceive('getData')
                 ->once()

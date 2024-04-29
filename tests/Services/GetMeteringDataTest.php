@@ -6,6 +6,7 @@ use App\Enums\SourceEnum;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use Tests\TestCase;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
@@ -68,7 +69,7 @@ class GetMeteringDataTest extends TestCase
         $this->assertEquals($meteringPointArray['firstConsumerPartyName'], $meteringPoint->first_consumer_party_name);
         $this->assertEquals($meteringPointArray['secondConsumerPartyName'], $meteringPoint->second_consumer_party_name);
         $this->assertEquals($meteringPointArray['meterNumber'], $meteringPoint->meter_number);
-        $this->assertEquals($meteringPointArray['consumerStartDate'], $meteringPoint->consumer_start_date);
+        $this->assertEquals(Carbon::parse($meteringPointArray['consumerStartDate'], 'UTC')->timezone('Europe/Copenhagen'), $meteringPoint->consumer_start_date);
         $this->assertEquals($meteringPointArray['meteringPointId'], $meteringPoint->metering_point_id);
         $this->assertEquals($meteringPointArray['typeOfMP'], $meteringPoint->type_of_mp);
         $this->assertEquals($meteringPointArray['balanceSupplierName'], $meteringPoint->balance_supplier_name);

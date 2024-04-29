@@ -205,32 +205,6 @@ class ElController extends Controller
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function get(string $refreshToken) : Response|JsonResponse
-    {
-        try {
-            return $this->getPreliminaryInvoice($refreshToken);
-        } catch (ElOverblikApiException | \InvalidArgumentException $e) {
-            return response($e->getMessage(), $e->getCode(), ['Content-Type' => 'text/plain']);
-        }
-    }
-
-    public function getWithSmartMe(string $refreshToken) : Response|JsonResponse
-    {
-        try {
-            $smartMeCredentials = [
-                config('services.smartme.id'),
-                config('services.smartme.username'),
-                config('services.smartme.paasword')];
-
-            return $this->getPreliminaryInvoice($refreshToken, null, request()->start_date, request()->end_date, request()->price_area, 25, 1, auth()->user());
-        } catch (ElOverblikApiException $exception) {
-            $code = $exception->getCode();
-
-            return response($exception->getMessage(), $code)
-                ->header('Content-Type', 'text/plain');
-        }
-    }
-
     public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
     {
         try {
