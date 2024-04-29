@@ -7,7 +7,7 @@ use App\Models\DatahubPriceList;
 use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
-use App\Services\GetSpotPrices;
+use App\Services\Interfaces\GetSpotPricesInterface;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -23,6 +23,8 @@ class GetPreliminaryInvoiceTest extends TestCase
 
     protected function setUp() : void
     {
+        parent::setUp();
+
         //Got hold of some real charges and decided to use them here - not so important anyway what the values are
         //but we need a reliable datastructure.
         $this->charges = $this->loadTestData(test_fixture_path('typical_charges.json'));
@@ -41,8 +43,6 @@ class GetPreliminaryInvoiceTest extends TestCase
         }
 
         $this->testCharges = collect($array);
-
-        parent::setUp();
     }
 
     /**
@@ -52,7 +52,6 @@ class GetPreliminaryInvoiceTest extends TestCase
      *
      * @throws \App\Exceptions\DataUnavailableException
      * @throws \Tvup\ElOverblikApi\ElOverblikApiException
-     * @throws \Tvup\EwiiApi\EwiiApiException
      */
     public function testGetBill() : void
     {
@@ -67,7 +66,7 @@ class GetPreliminaryInvoiceTest extends TestCase
                 ->andReturn($this->charges);
         });
 
-        $this->mock(GetSpotPrices::class, function (MockInterface $mock) {
+        $this->mock(GetSpotPricesInterface::class, function (MockInterface $mock) {
             $mock
                 ->shouldReceive('getData')
                 ->once()
@@ -176,10 +175,9 @@ class GetPreliminaryInvoiceTest extends TestCase
         $end_date = '2022-10-02';
         $price_area = 'DK2';
         $smartMeCredentials = null;
-        $dataSource = null; //At moment of writing this defaults to 'Datahub'
         $refreshToken = 'someFakeRefreshToken'; //Won't be used because we're mocking the service that contacts datahub
         //Only six parameters are needed here, the rest has defaults. We'll test the simple one for now
-        $returnArray = $preLiminaryInvoice->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);
+        $returnArray = $preLiminaryInvoice->getBill($start_date, $end_date, $price_area, $smartMeCredentials, SourceEnum::POWERUSE, $refreshToken);
         $this->assertEquals($expectedResult, $returnArray);
     }
 }

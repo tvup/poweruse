@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\ApiAccessController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SmartMeController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +30,9 @@ Route::middleware('locale')->group(function () {
     // Routes that requires auth
     Route::middleware('protected.routes')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::get('/create-api-access', [ApiAccessController::class, 'create'])->name('api.create');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::patch('/smartme', [SmartMeController::class, 'update'])->name('smartme.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 

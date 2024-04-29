@@ -23,6 +23,7 @@ parameters:
         - '#Unable to resolve the template type TKey in call to function collect#'
         - '#Unable to resolve the template type TValue in call to function collect#'
         - '#no value type specified in iterable type array#'
+        - '#Call to an undefined method Mockery\\Expectation\:\:shouldReceive\(\)#'
 #
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php

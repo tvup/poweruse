@@ -25,12 +25,6 @@
         <div class="card-body">
             <form name="get-preliminary-invoice-form" id="get-preliminary-invoice-form" method="post" action="{{url('processdata')}}">
                 {{ csrf_field() }}
-                Datahub
-                <label class="switch">
-                    <input name="de" id="de" type="checkbox" {{ old('de')=='on' ? 'checked' : ''}}>
-                    <span class="slider round"></span>
-                </label>
-                Ewii
                 @if($refresh_token)
                     <input type="hidden" name="token" id="token" value="{{ $refresh_token }}">
                 @else
@@ -39,14 +33,6 @@
                         <input type="text" name="token" id="token" class="form-control"  value="{{ old('token') ?? (Cookie::get('refresh_token') ?? '') }}">
                     </div>
                 @endif
-                <div class="form-group ewii">
-                    <label for="ewiiEmail">{{ __('Email') }}</label>
-                    <input type="text" name="ewiiEmail" id="ewiiEmail" class="form-control" value="{{ old('ewiiEmail') }}">
-                </div>
-                <div class="form-group ewii">
-                    <label for="ewiiPassword">{{ __('Password') }}</label>
-                    <input type="password" name="ewiiPassword" id="ewiiPassword" class="form-control" value="{{ old('ewiiPassword') }}">
-                </div>
                 <div class="form-group">
                     <label for="smart_me">Smart-me?</label>
                     <input name="smart_me" id="smart_me" type="checkbox" {{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : '')}}>
@@ -118,21 +104,6 @@
 
             }
             updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
-
-            $( "#de" ).change(function() {
-                updateCredentialsFieldsShow($( "#de").is(':checked'));
-            });
-
-            function updateCredentialsFieldsShow($boolean) {
-                if($boolean) {
-                    $('.ewii').show();
-                    $('.datahub').hide();
-                } else {
-                    $('.datahub').show();
-                    $('.ewii').hide();
-                }
-            }
-            updateCredentialsFieldsShow({{ old('de') == 'on' }});
 
             function updateDatePicker($boolean) {
                 const today = new Date();
