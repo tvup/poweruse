@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\CopenhagenDate;
 use App\Enums\SourceEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -43,9 +44,18 @@ class MeteringPoint extends BaseModel
 
     protected $appends = ['source'];
 
-    protected $casts = [
-        'source' => 'string',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'consumer_start_date' => CopenhagenDate::class,
+            'source' => 'string',
+        ];
+    }
 
     public function getSourceAttribute(): ?SourceEnum
     {

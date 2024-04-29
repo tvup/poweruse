@@ -12,7 +12,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Tvup\ElOverblikApi\ElOverblikApiException;
-use Tvup\EwiiApi\EwiiApiException;
 
 class ElController extends Controller
 {
@@ -41,25 +40,7 @@ class ElController extends Controller
 
             return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
         } catch (ElOverblikApiException $exception) {
-            $code = $exception->getCode();
-            if ($code == 503 || $code == 500) {
-                try {
-                    if (auth()->user()->refresh_token != config('services.energioverblik.refresh_token')) {
-                        logger('Can\'t try with fetching from ewii');
-
-                        return response($exception->getMessage(), $code)
-                            ->header('Content-Type', 'text/plain');
-                    }
-                    logger('Fetch by datahub failed - trying with ewii');
-                    $ewiiCredentials = ['ewiiEmail' => config('services.ewii.email'), 'ewiiPassword' => config('services.ewii.password')];
-
-                    return $this->getPreliminaryInvoice(auth()->user()->refresh_token, $ewiiCredentials, SourceEnum::EWII, $smartMeCredentials);
-                } catch (EwiiApiException $exception) {
-                    $code = $exception->getCode();
-                }
-            }
-
-            return response($exception->getMessage(), $code)
+            return response($exception->getMessage(), $exception->getCode())
                 ->header('Content-Type', 'text/plain');
         }
     }
@@ -67,19 +48,19 @@ class ElController extends Controller
     /**
      * @param string $refreshToken
      * @param array{'ewiiEmail': string, 'ewiiPassword': string}|null $ewiiCredentials
-     * @param SourceEnum|null $dataSource
+     * @param SourceEnum $dataSource
      * @param array|null $smartMeCredentials
      * @param string|null $start_date
      * @param string|null $end_date
      * @param string $price_area
      * @param float $subscription
      * @param float $overhead
+     * @param User|null $user
      * @return Response|JsonResponse
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
-     * @throws EwiiApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, SourceEnum $dataSource = null, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -91,7 +72,7 @@ class ElController extends Controller
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
                 ->header('Content-Type', 'text/plain');
         }
-        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken, $ewiiCredentials, $subscription, $overhead, $user);
+        $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken, $subscription, $overhead, $user);
 
         return response()->json($bill);
     }
