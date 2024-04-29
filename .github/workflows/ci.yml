@@ -5,6 +5,8 @@ on: [push]
 jobs:
   build-test:
     runs-on: ubuntu-20.04
+    env:
+      COMPOSER_ROOT_VERSION: "1.0.0"
 
     steps:
       - uses: actions/checkout@v3
