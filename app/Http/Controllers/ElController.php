@@ -490,6 +490,9 @@ class ElController extends Controller
     private function getChargePrice(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate): array
     {
         $data = $this->datahubPriceListsService->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
+        if (count($data) === 0) {
+            throw new DataUnavailableException('Data is not available for ' . $operator . ' from ' . $startDate . ' to ' . $endDate . ' with charge type ' . $chargeType . ' and charge type code ' . $chargeTypeCode . ' and note ' . $note, 1);
+        }
         $collection = collect($data[0]);
         $gridprices = [];
         $collection->each(function ($item, $key) use (&$gridprices) {
