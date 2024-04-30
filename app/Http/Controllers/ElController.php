@@ -573,21 +573,6 @@ class ElController extends Controller
      * @param string $operator
      * @return array<int, float>
      */
-    private function getTSOOperatorBalancetariff(string $operator) : array
-    {
-        $chargeType = 'D03';
-        $chargeTypeCode = '45013';
-        $note = 'Balancetarif for forbrug';
-        $startDate = '2024-01-01';
-        $endDate = '2024-12-31';
-
-        return $this->getChargePrice($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);
-    }
-
-    /**
-     * @param string $operator
-     * @return array<int, float>
-     */
     private function getTSOOperatorAfgifttariff(string $operator) : array
     {
         $chargeType = 'D03';
@@ -621,7 +606,6 @@ class ElController extends Controller
         }
         $tsoNetTariffPrices = $this->getTSOOperatorNettariff('Energinet Systemansvar A/S (SYO)');
         $tsoSystemTariffPrices = $this->getTSOOperatorSystemtariff('Energinet Systemansvar A/S (SYO)');
-        $tsoBalanceTariffPrices = $this->getTSOOperatorBalancetariff('Energinet Systemansvar A/S (SYO)');
         $tsoAfgiftTariffPrices = $this->getTSOOperatorAfgifttariff('Energinet Systemansvar A/S (SYO)');
 
         $totalPrice = [];
@@ -633,7 +617,7 @@ class ElController extends Controller
             $totalPrice[] = [
                 'time' => $now2->addHours($i)->toDateTimeString(),
                 'price' => round(
-                    ($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoBalanceTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25,
+                    ($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25,
                     2
                 ),
             ];
