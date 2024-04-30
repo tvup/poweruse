@@ -69,7 +69,7 @@
                 </div>
                 <div class="form-group">
                     <label for="overhead">{{ __('Overhead by balance supplier on spot price ex. VAT in DKK.') }}</label>
-                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.015}}">
+                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.048}}">
                 </div>
 
 

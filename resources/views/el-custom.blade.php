@@ -49,7 +49,7 @@
 
                 <div class="form-group">
                     <label for="exampleInputEmail1">Elleverandørens tillæg til spotprisen eks. moms i kr.</label>
-                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.015}}">
+                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.048}}">
                 </div>
 
 

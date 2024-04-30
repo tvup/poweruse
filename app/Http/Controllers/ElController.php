@@ -253,7 +253,7 @@ class ElController extends Controller
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -280,7 +280,7 @@ class ElController extends Controller
      * @return JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.015, User $user = null) : JsonResponse
+    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.048, User $user = null) : JsonResponse
     {
         $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead, $user);
 
