@@ -158,15 +158,15 @@ class GetPreliminaryInvoiceTest extends TestCase
             'Elafgift' => 24.35,
             'Nettarif C time' => 10.69,
             'Spotpris' => 11.38,
-            'Overhead' => 0.53,
+            'Overhead' => 1.61,
             'Netabo C forbrug skabelon/flex (forholdsvis antal dage pr. måned, månedspris: 21)' => 0.68,
             'Elabonnement (forholdsvis antal dage pr. måned, månedspris: 23.2)' => 0.75,
-            'Moms' => 13.03,
-            'Total' => 65.15,
+            'Moms' => 13.3,
+            'Total' => 66.5,
             'Statistik' => [
-                    'Gennemsnitspris, strøm inkl. moms' => '0.44 kr./kWh',
-                    'Gennemsnitspris, alt tarifering inkl. moms' => '1.88 kr./kWh',
-                    'Gennemsnitspris, i alt (abonnementer indregnet) inkl. moms' => '1.93 kr./kWh',
+                    'Gennemsnitspris, strøm inkl. moms' => '0.48 kr./kWh',
+                    'Gennemsnitspris, alt tarifering inkl. moms' => '1.92 kr./kWh',
+                    'Gennemsnitspris, i alt (abonnementer indregnet) inkl. moms' => '1.97 kr./kWh',
                 ],
         ];
 

@@ -59,7 +59,7 @@ class GetPreliminaryInvoice
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.015, User $user = null): array
+    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.048, User $user = null): array
     {
         $overhead = str_replace(',', '.', strval($overhead));
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
@@ -284,7 +284,7 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.015, User $user = null): array
+    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.048, User $user = null): array
     {
         if (is_string($overhead)) {
             $overhead = str_replace(',', '.', $overhead);

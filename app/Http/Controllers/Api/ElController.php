@@ -38,7 +38,7 @@ class ElController extends Controller
                 $user->smartme_username,
                 $user->smartme_password];
 
-            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 25, 1, auth()->user());
+            return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 23.20, 0.048, auth()->user());
         } catch (ElOverblikApiException $exception) {
             return response($exception->getMessage(), $exception->getCode())
                 ->header('Content-Type', 'text/plain');
@@ -60,7 +60,7 @@ class ElController extends Controller
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.015, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
