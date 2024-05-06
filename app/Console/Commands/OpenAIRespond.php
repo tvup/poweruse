@@ -93,7 +93,7 @@ class OpenAIRespond extends Command
 
                 $testDisk?->append($testFileName, $binary, '');
             }
-        } catch (GuzzleException $e) {
+        } catch (\Exception $e) {
             $this->output->writeln('An error occurred while sending post request to chat gtp');
             $this->output->writeln('Code: ' . $e->getCode() . ' Message: ' . $e->getMessage());
             exit(CommandAlias::FAILURE);
