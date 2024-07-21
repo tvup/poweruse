@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Models\RequestStatistic;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tvup\ElOverblikApi\EloverblikRequestFailed;
 use Tvup\ElOverblikApi\EloverblikRequestMade;
@@ -45,8 +46,9 @@ class RequestMadeEventSubscriber
 
         if ($hasColumn) {
             $requestStatistic = RequestStatistic::where('verb', $event->getVerb())->where('endpoint', $event->getEndpoint())->first();
-            $requestStatistic->{$code} = $requestStatistic->{$code} + 1;
-            $requestStatistic->save();
+
+            $sql = "UPDATE `request_statistics` SET `$code` = `$code` + 1 WHERE `id` = ?";
+            DB::update($sql, [$$requestStatistic->id]);
 
             return;
         }
