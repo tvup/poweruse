@@ -48,7 +48,7 @@ class RequestMadeEventSubscriber
             $requestStatistic = RequestStatistic::where('verb', $event->getVerb())->where('endpoint', $event->getEndpoint())->first();
 
             $sql = "UPDATE `request_statistics` SET `$code` = `$code` + 1 WHERE `id` = ?";
-            DB::update($sql, [$$requestStatistic->id]);
+            DB::update($sql, [$requestStatistic->id]);
 
             return;
         }
