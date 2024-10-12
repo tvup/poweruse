@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 use DateTime;
 use DateTimeZone;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class GetSmartMeMeterData
@@ -24,10 +23,11 @@ class GetSmartMeMeterData
         list($id, $username, $password) = $this->smartMeCredentials($smartMe);
 
         $response = Http::withBasicAuth($username, $password)->acceptJson()
-            ->retry(3, function (int $attempt, \Exception $exception)
-                {
-                    return 100;
-                }
+            ->retry(
+                3,
+                function (int $attempt, \Exception $exception) {
+                return 100;
+            }
             )
             ->get(
                 'https://smart-me.com/api/MeterValues/' . $id,

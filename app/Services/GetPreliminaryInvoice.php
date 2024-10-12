@@ -151,8 +151,6 @@ class GetPreliminaryInvoice
             throw $e;
         }
 
-
-
         $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
         if ($smartMeCredentials) {
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
