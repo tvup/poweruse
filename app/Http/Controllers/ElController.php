@@ -118,6 +118,10 @@ class ElController extends Controller
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
 
+        if( array_key_exists('warning', json_decode($data,true))) {
+            return redirect('el')->with('warning', json_decode($data,true)['warning'])->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
+        }
+
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
     }
 
@@ -449,7 +453,11 @@ class ElController extends Controller
                     $data = $this->meteringDataService->getData($request->start_date, $end_date, $refreshToken);
                     break;
                 case SourceEnum::SMARTME:
-                    $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
+                    try {
+                        $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
+                    } catch (\Exception $e) {
+                        return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
+                    }
                     break;
             }
 
@@ -458,7 +466,15 @@ class ElController extends Controller
                 $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
 
-                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date, $smartMe);
+                try {
+                    $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval(
+                        $start_from,
+                        $smart_me_end_date,
+                        $smartMe
+                    );
+                } catch (\Exception $e) {
+                    return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
+                }
                 $data = array_merge($data, $smartMeIntervalFromDate);
             }
 

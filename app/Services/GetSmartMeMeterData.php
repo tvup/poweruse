@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class GetSmartMeMeterData
@@ -21,11 +22,16 @@ class GetSmartMeMeterData
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
         }
         list($id, $username, $password) = $this->smartMeCredentials($smartMe);
-        $response = Http::withBasicAuth($username, $password)->acceptJson()
-            ->get(
-                'https://smart-me.com/api/MeterValues/' . $id,
-                ['date' => $start_date]
-            );
+        try {
+            $response = Http::withBasicAuth($username, $password)->acceptJson()
+                ->retry(3, 100)
+                ->get(
+                    'https://smart-me.com/api/MeterValues/' . $id,
+                    ['date' => $start_date]
+                );
+        } catch (RequestException $e) {
+
+        }
 
         return $response['CounterReading'];
     }
