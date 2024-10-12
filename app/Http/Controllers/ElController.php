@@ -119,7 +119,7 @@ class ElController extends Controller
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
         }
 
-        if (property_exists($data->getData(), 'warning')) {
+        if (($data instanceof JsonResponse) && property_exists($data->getData(), 'warning')) {
             return redirect('el')->with('warning', $data->getData()->warning)->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
         }
 
