@@ -22,16 +22,13 @@ class GetSmartMeMeterData
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
         }
         list($id, $username, $password) = $this->smartMeCredentials($smartMe);
-        try {
-            $response = Http::withBasicAuth($username, $password)->acceptJson()
-                ->retry(3, 100)
-                ->get(
-                    'https://smart-me.com/api/MeterValues/' . $id,
-                    ['date' => $start_date]
-                );
-        } catch (RequestException $e) {
 
-        }
+        $response = Http::withBasicAuth($username, $password)->acceptJson()
+            ->retry(3, 100)
+            ->get(
+                'https://smart-me.com/api/MeterValues/' . $id,
+                ['date' => $start_date]
+            );
 
         return $response['CounterReading'];
     }
