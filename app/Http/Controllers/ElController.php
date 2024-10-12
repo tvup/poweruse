@@ -16,6 +16,7 @@ use App\Services\GetSmartMeMeterData;
 use App\Services\GetSpotPrices;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -455,6 +456,9 @@ class ElController extends Controller
                 case SourceEnum::SMARTME:
                     try {
                         $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
+                    } catch (ConnectionException $e) {
+                        logger()->info('code: '. $e->getMessage());
+                        return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
                     } catch (\Exception $e) {
                         return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
                     }

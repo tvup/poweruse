@@ -18,15 +18,23 @@ class GetSmartMeMeterData
      */
     public function getFromDate(array $smartMe = null, string $start_date = null)
     {
+        logger()->info('attemt ssss');
+
         if (!$start_date) {
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
         }
         list($id, $username, $password) = $this->smartMeCredentials($smartMe);
 
         $response = Http::withBasicAuth($username, $password)->acceptJson()
-            ->retry(3, 100)
+            ->retry(3, function (int $attempt, \Exception $exception)
+                {
+                    logger()->info('attempt ' . $attempt);
+                    return 100;
+                }
+            )
             ->get(
-                'https://smart-me.com/api/MeterValues/' . $id,
+//                'https://smart-me.com/api/MeterValues/' . $id,
+                'https://testpu.free.beeceptor.com/todo',
                 ['date' => $start_date]
             );
 
