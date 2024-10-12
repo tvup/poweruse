@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Database\Factories\DatahubPriceListFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,6 +51,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class DatahubPriceList extends BaseModel
 {
+    /** @use HasFactory<DatahubPriceListFactory> */
     use HasFactory;
     use SoftDeletes;
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\CopenhagenDate;
 use App\Enums\SourceEnum;
 use Carbon\Carbon;
+use Database\Factories\MeteringPointFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class MeteringPoint extends BaseModel
 {
+    /** @use HasFactory<MeteringPointFactory> */
     use HasFactory;
 
     protected $appends = ['source'];

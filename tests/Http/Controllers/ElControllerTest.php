@@ -34,7 +34,6 @@ class ElControllerTest extends TestCase
         $this->smartMeData = $this->loadTestData(test_fixture_path('consumption_data3.json'));
     }
 
-    /** @test */
     public function test_it_returns_total_price_for_today() : void
     {
         $dhlistprice = [[
