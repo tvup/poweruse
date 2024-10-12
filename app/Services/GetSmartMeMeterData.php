@@ -26,8 +26,8 @@ class GetSmartMeMeterData
             ->retry(
                 3,
                 function (int $attempt, \Exception $exception) {
-                return 100;
-            }
+                    return 100;
+                }
             )
             ->get(
                 'https://smart-me.com/api/MeterValues/' . $id,
