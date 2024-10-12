@@ -1,4 +1,5 @@
 {
+  "name": "poweruse",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -7,34 +8,34 @@
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.8",
-    "@tailwindcss/forms": "^0.5.7",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "alpinejs": "^3.13.7",
-    "autoprefixer": "^10.4.19",
-    "axios": "^1.6.8",
+    "@tailwindcss/forms": "^0.5.9",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "alpinejs": "^3.14.1",
+    "autoprefixer": "^10.4.20",
+    "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
-    "laravel-vite-plugin": "^1.0.2",
+    "laravel-vite-plugin": "^1.0.5",
     "lodash": "^4.17.21",
-    "postcss": "^8.4.38",
-    "sass": "^1.72.0",
-    "vite": "^5.2.6",
-    "vite-plugin-pwa": "^0.20.0"
+    "postcss": "^8.4.47",
+    "sass": "^1.79.5",
+    "vite": "^5.4.8",
+    "vite-plugin-pwa": "^0.20.5"
   },
   "dependencies": {
-    "@fontsource/nunito": "^5.0.17",
-    "@fortawesome/fontawesome-free": "^6.5.1",
-    "@jridgewell/sourcemap-codec": "^1.4.15",
+    "@fontsource/nunito": "^5.1.0",
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@jridgewell/sourcemap-codec": "^1.5.0",
     "@rollup/plugin-terser": "^0.4.4",
-    "chart.js": "^4.4.2",
+    "chart.js": "^4.4.4",
     "flatpickr": "^4.6.13",
     "jquery": "^3.7.1",
-    "laravel-vue-i18n": "^2.7.6",
-    "sweetalert2": "^11.10.7",
+    "laravel-vue-i18n": "^2.7.7",
+    "sweetalert2": "^11.14.2",
     "vform": "^2.1.2",
     "vuejs-paginate-next": "^1.0.2",
-    "workbox-precaching": "^7.0.0",
-    "workbox-routing": "^7.0.0",
-    "workbox-window": "^7.0.0"
+    "workbox-precaching": "^7.1.0",
+    "workbox-routing": "^7.1.0",
+    "workbox-window": "^7.1.0"
   },
   "type": "module"
 }
