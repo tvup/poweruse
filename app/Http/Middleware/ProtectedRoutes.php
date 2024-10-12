@@ -14,7 +14,6 @@ class ProtectedRoutes extends IlluminateAuthenticate
             return redirect('/');
         }
 
-        // @phpstan-ignore-next-line
         return parent::handle($request, $next, ...$guards);
     }
 }
