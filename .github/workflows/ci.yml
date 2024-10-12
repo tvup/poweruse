@@ -9,7 +9,7 @@ jobs:
       COMPOSER_ROOT_VERSION: "1.0.0"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
