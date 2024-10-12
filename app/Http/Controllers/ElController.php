@@ -457,7 +457,7 @@ class ElController extends Controller
                     try {
                         $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
                     } catch (ConnectionException $e) {
-                        logger()->info('code: '. $e->getMessage());
+                        logger()->info('code: '. $e->getCode());
                         return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
                     } catch (\Exception $e) {
                         return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
