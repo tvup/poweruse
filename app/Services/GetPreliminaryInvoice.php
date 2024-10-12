@@ -107,7 +107,6 @@ class GetPreliminaryInvoice
                     $meterData = array_merge($meterData, $smartMeIntervalFromDate);
                     $source = $source->value . ', Smart-Me';
                 } catch (\Exception $e) {
-                    logger()->warning('Call to smartMe failed with code ' . $e->getCode());
                     logger()->warning('Call to smartMe failed with message ' . $e->getMessage());
                     $bill['warning'] = 'SmartMe data could not be fetched - using only Eloverblik data';
                     $smartMeCredentials = null;
