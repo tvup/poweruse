@@ -81,7 +81,7 @@ class GetPreliminaryInvoice
         $key = $refreshToken . ' ' . $start_date . ' ' . $end_date;
         $source = SourceEnum::DATAHUB;
         $meterData = cache($key);
-
+        $bill = [];
         try {
             if (!$meterData) {
                 $meterData = $this->meteringDataService->getData($start_date, $end_date, $refreshToken, false, $dataSource, $user);
@@ -91,7 +91,6 @@ class GetPreliminaryInvoice
             }
 
             if ($smartMeCredentials) {
-                $source = $source->value . ', Smart-Me';
                 $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->addDay()->startOfDay();
                 if (count($meterData) > 0) {
@@ -99,8 +98,19 @@ class GetPreliminaryInvoice
                 }
 
                 $getSmartMeMeterData = app(GetSmartMeMeterData::class);
-                $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval($start_from, $smart_me_end_date, $smartMeCredentials);
-                $meterData = array_merge($meterData, $smartMeIntervalFromDate);
+                try {
+                    $smartMeIntervalFromDate = $getSmartMeMeterData->getInterval(
+                        $start_from,
+                        $smart_me_end_date,
+                        $smartMeCredentials
+                    );
+                    $meterData = array_merge($meterData, $smartMeIntervalFromDate);
+                    $source = $source->value . ', Smart-Me';
+                } catch (\Exception $e) {
+                    logger()->warning('Call to smartMe failed with message ' . $e->getMessage());
+                    $bill['warning'] = 'SmartMe data could not be fetched - using only Eloverblik data';
+                    $smartMeCredentials = null;
+                }
             }
 
             $key = $start_date . ' ' . Carbon::parse($end_date)->addDay()->toDateString() . ' ' . $price_area;
@@ -140,8 +150,6 @@ class GetPreliminaryInvoice
             logger()->warning('Call to elOverblikApi failed with code ' . $e->getCode());
             throw $e;
         }
-
-        $bill = [];
 
         $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
         if ($smartMeCredentials) {

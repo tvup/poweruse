@@ -16,6 +16,7 @@ use App\Services\GetSmartMeMeterData;
 use App\Services\GetSpotPrices;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -116,6 +117,10 @@ class ElController extends Controller
             }
         } catch (DataUnavailableException|MissingDataException $e) {
             return redirect('el')->with('error', $e->getMessage())->withInput($request->all());
+        }
+
+        if (($data instanceof JsonResponse) && property_exists($data->getData(), 'warning')) {
+            return redirect('el')->with('warning', $data->getData()->warning)->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
         }
 
         return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
@@ -449,7 +454,17 @@ class ElController extends Controller
                     $data = $this->meteringDataService->getData($request->start_date, $end_date, $refreshToken);
                     break;
                 case SourceEnum::SMARTME:
-                    $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
+                    try {
+                        $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
+                    } catch (ConnectionException $e) {
+                        if (Str::startsWith($e->getMessage(), 'cURL error 28')) {
+                            return redirect('consumption')->with('error', 'Failed - Smart-Me service failed to reply. Request timed out.')->withInput($request->all());
+                        }
+
+                        return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
+                    } catch (\Exception $e) {
+                        return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
+                    }
                     break;
             }
 
@@ -458,7 +473,15 @@ class ElController extends Controller
                 $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
 
-                $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval($start_from, $smart_me_end_date, $smartMe);
+                try {
+                    $smartMeIntervalFromDate = $this->smartMeMeterDataService->getInterval(
+                        $start_from,
+                        $smart_me_end_date,
+                        $smartMe
+                    );
+                } catch (\Exception $e) {
+                    return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
+                }
                 $data = array_merge($data, $smartMeIntervalFromDate);
             }
 
