@@ -457,7 +457,9 @@ class ElController extends Controller
                     try {
                         $data = $this->smartMeMeterDataService->getInterval($request->start_date, $end_date, $smartMe);
                     } catch (ConnectionException $e) {
-                        logger()->info('code: '. $e->getCode());
+                        if(Str::startsWith($e->getMessage(), 'cURL error 28')) {
+                            return redirect('consumption')->with('error', 'Failed - Smart-Me service failed to reply. Request timed out.')->withInput($request->all());
+                        }
                         return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
                     } catch (\Exception $e) {
                         return redirect('consumption')->with('error', $e->getMessage())->withInput($request->all());
