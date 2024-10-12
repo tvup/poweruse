@@ -34,7 +34,7 @@ class GetSmartMeMeterData
             )
             ->get(
 //                'https://smart-me.com/api/MeterValues/' . $id,
-                'https://testpu.free.beeceptor.com/todo',
+                'https://testpu2.free.beeceptor.com/todo',
                 ['date' => $start_date]
             );
 
