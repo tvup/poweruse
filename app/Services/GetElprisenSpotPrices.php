@@ -3,9 +3,6 @@
 namespace App\Services;
 
 use App\Services\Interfaces\GetSpotPricesInterface;
-use Carbon\CarbonTimeZone;
-use DateTime;
-use DateTimeZone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -75,41 +72,12 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
 
         $array = $response->json();
 
-        $timeZone = new DateTimeZone('Europe/Copenhagen');
-
-        $start = new DateTime(
-            Carbon::parse($start_date, 'Europe/Copenhagen')->startOfYear()->toDateString(),
-            $timeZone
-        );
-        $end = new DateTime(
-            Carbon::parse($end_date, 'Europe/Copenhagen')->startOfYear()->addYear()->toDateString(),
-            $timeZone
-        );
-
-        $transitions = $timeZone->getTransitions((int) $start->format('U'), (int) $end->format('U'));
-        $year_late_transition = $transitions[2];
-        $late_transition_end_hour = Carbon::parse($year_late_transition['time'])->timezone('Europe/Copenhagen');
-
-        $first = false;
         if ($format == self::FORMAT_INTERNAL) {
             $new_array = [];
             foreach ($array as $data) {
                 $carbon = Carbon::parse($data['time_start'], 'Europe/Copenhagen');
-                if (!$first && $carbon->eq($late_transition_end_hour)) {
-                    $first = true;
-                    /** @var CarbonTimeZone $timezone */
-                    $timezone = CarbonTimeZone::create('+2');
-                    $timeZone2 = new DateTimeZone($timezone->getName());
-                    $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
-                    if (!$late_transition_end_hour2) {
-                        throw new \Exception('Could not create late_transition_end_hour2');
-                    }
-                    $nice_one = $late_transition_end_hour2->format('c');
-                    $new_array[$nice_one] = $data['DKK_per_kWh'] * 1000;
-                } else {
-                    $hour = $carbon->format('c');
-                    $new_array[$hour] = $data['DKK_per_kWh'] * 1000;
-                }
+                $hour = $carbon->format('c');
+                $new_array[$hour] = $data['DKK_per_kWh'] * 1000;
             }
             $response = $new_array;
         }

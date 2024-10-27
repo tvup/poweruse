@@ -62,10 +62,7 @@ class GetSmartMeMeterData
         /** @var CarbonTimeZone $timeZone2 */
         $timeZone2 = CarbonTimeZone::create('+2');
         $timeZone2 = new DateTimeZone($timeZone2->getName());
-        $late_transition_end_hour2 = Carbon::create(2022, 10, 30, 2, 0, 0, $timeZone2); //TODO: Should be created from $late_transition_end_hour
-        if (!$late_transition_end_hour2) {
-            throw new \Exception('Could not create late_transition_end_hour2');
-        }
+        $late_transition_end_hour2 = Carbon::parse($year_late_transition['time'])->subHour()->timezone($timeZone2);
         $nice_one = $late_transition_end_hour2->format('c');
 
         $to_date = Carbon::parse($to_date, 'Europe/Copenhagen');
