@@ -3,9 +3,6 @@
 namespace App\Services;
 
 use App\Services\Interfaces\GetSpotPricesInterface;
-use Carbon\CarbonTimeZone;
-use DateTime;
-use DateTimeZone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
