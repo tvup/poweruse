@@ -16,21 +16,13 @@ class OpenAIService
 
     public function ask(string $question): mixed
     {
-        return $this->openAiClient->send('POST', 'v1/completions', [
-            'stream' => true,
-            'laravel_data' => [
-                'scheme' => 'http',
-            ],
-            'json' => [
-                'model' => 'text-davinci-003',
-                'temperature' => 0.7,
-                'top_p' => 1,
-                'frequency_penalty' => 0,
-                'presence_penalty' => 0,
-                'max_tokens' => 1700,
-                'prompt' => "' . $question . '",
-                'stream' => true,
-            ],
+        return $this->openAiClient->withOptions([
+            'debug' => true,
+        ])->asJson()->send('POST', '/v1/chat/completions', [
+            'model' => 'gpt-3.5-turbo',
+            'messages' => [['role'=>'user', 'content' => $question ]],
+            "temperature" => 0.7,
+            "stream" => true,
         ]);
     }
 }
