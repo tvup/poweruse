@@ -106,7 +106,7 @@ class ElController extends Controller
                     $error = $e->getErrors();
                     $payload = isset($error['Payload']) ? ' with ' . json_encode($error['Payload'], JSON_PRETTY_PRINT) : '';
                     $message = '<strong>Request for mertering data at eloverblik failed</strong>' . '<br/>';
-                    $message = $message . 'Datahub-server for ' . $error['Verb'] . ' ' . '<i>' . $error['Endpoint'] . '</i>' . $payload . ' gave a code <strong>' . $error['Code'] . '</strong> and this response: ' . '<strong>' . $error['Response'] . '</strong>';
+                    $message = $message . 'Datahub-server for ' . (array_key_exists('verb', $error) ? $error['Verb'] : 'UNKNOWN VERB') . ' ' . '<i>' . (array_key_exists('Endpoint', $error) ? $error['Endpoint'] : 'UNKNOWN ENDPOINT') . '</i>' . $payload . ' gave a code <strong>' . (array_key_exists('Code', $error) ? $error['Code'] : 'UNKNOWN CODE') . '</strong> and this response: ' . '<strong>' . (array_key_exists('Response', $error) ? $error['Response'] : 'UNKNOWN RESPONSE') . '</strong>';
 
                     return redirect('el')->with('error', $message)->withInput($request->all());
                 case 401:
