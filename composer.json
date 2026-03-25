@@ -5,7 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=8.2.0",
+            "php": ">=8.5.0",
         "ext-curl": "*",
         "laravel/framework": "^11.0",
         "laravel/passport": "^12.0",
@@ -19,6 +19,7 @@
         "fakerphp/faker": "^1.23",
         "friendsofphp/php-cs-fixer": "^3.64",
         "larastan/larastan": "^2.9",
+        "laravel/boost": "^2.4",
         "laravel/breeze": "^2.2",
         "laravel/sail": "^1.35",
         "mockery/mockery": "^1.6",
