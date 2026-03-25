@@ -45,9 +45,6 @@ return [
         'app_token' => env('PUSHOVER_TOKEN'),
     ],
 
-    'energioverblik' => [
-        'refresh_token' => env('ENERGIOVERBLIK_REFRESH_TOKEN'),
-    ],
 
 
     'openai' => [

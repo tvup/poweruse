@@ -52,7 +52,7 @@ class CalculateUpcommingInvoice extends Command
         $dataSource = SourceEnum::DATAHUB;
 
         $validator = Validator::make([
-            'refresh_token' => $this->argument('refresh_token') ?: config('services.energioverblik.refresh_token'),
+            'refresh_token' => $this->argument('refresh_token'),
             'start_date' => $this->option('start-date'),
             'end_date' => $this->option('end-date'),
             'price-area' => $this->option('price-area'),
