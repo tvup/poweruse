@@ -16,6 +16,8 @@ class GetMeteringData
 {
     private ?ElOverblikApiInterface $energiOverblikApi = null;
 
+    private ?string $currentRefreshToken = null;
+
     public function __construct()
     {
     }
@@ -211,10 +213,11 @@ class GetMeteringData
      */
     private function getEloverblikApi(string $refreshToken): ElOverblikApiInterface
     {
-        if (!$this->energiOverblikApi) {
+        if (!$this->energiOverblikApi || $this->currentRefreshToken !== $refreshToken) {
             $energiOverblikApi = app()->make('Tvup\ElOverblikApi\ElOverblikApiInterface');
             $energiOverblikApi->token($refreshToken);
             $this->energiOverblikApi = $energiOverblikApi;
+            $this->currentRefreshToken = $refreshToken;
         }
 
         return $this->energiOverblikApi;
