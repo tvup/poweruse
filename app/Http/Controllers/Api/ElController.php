@@ -22,6 +22,7 @@ class ElController extends Controller
 
     public function preliminaryInvoice(Request $request) : Response|JsonResponse
     {
+        $this->logApiAccess('preliminaryInvoice', $request);
         try {
             return $this->getPreliminaryInvoice(auth()->user()->refresh_token);
         } catch (ElOverblikApiException | \InvalidArgumentException $e) {
@@ -31,6 +32,7 @@ class ElController extends Controller
 
     public function preliminaryInvoiceWithSmartMe(Request $request) : Response|JsonResponse
     {
+        $this->logApiAccess('preliminaryInvoiceWithSmartMe', $request);
         $user = auth()->user();
         try {
             $smartMeCredentials = [
@@ -43,6 +45,15 @@ class ElController extends Controller
             return response($exception->getMessage(), $exception->getCode())
                 ->header('Content-Type', 'text/plain');
         }
+    }
+
+    private function logApiAccess(string $method, Request $request): void
+    {
+        $user = auth()->user();
+        $authMethod = $request->bearerToken() ? 'Bearer token' : ($request->header('Authorization') ? 'API key' : 'Session');
+        $userName = $user ? $user->name : 'Anonymous';
+
+        logger()->info("API call: {$method} | Auth: {$authMethod} | User: {$userName} | Time: " . now('Europe/Copenhagen')->format('Y-m-d H:i:s'));
     }
 
     /**

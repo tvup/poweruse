@@ -42,15 +42,15 @@
                 @endif
                 <div class="form-group smartmedetails">
                     <label for="smartmeid">{{ __('Smart-me id:') }}</label>
-                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') }}">
+                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') ?? (auth()->user()?->smartme_directory_id ?? '') }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmeuser">{{ __('Smart-me username:') }}</label>
-                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') }}">
+                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') ?? (auth()->user()?->smartme_username ?? '') }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmepassword">{{ __('Smart-me password:') }}</label>
-                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') }}">
+                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') ?? (auth()->user()?->smartme_password ?? '') }}">
                 </div>
 
                 <div class="form-group">

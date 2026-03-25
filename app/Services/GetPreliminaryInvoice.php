@@ -94,7 +94,8 @@ class GetPreliminaryInvoice
                 $start_from = Carbon::now('Europe/Copenhagen')->startOfMonth()->startOfDay()->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->addDay()->startOfDay();
                 if (count($meterData) > 0) {
-                    $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addHour()->toDateTimeString();
+                    $meterInterval = $this->detectMeterDataInterval($meterData);
+                    $start_from = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->addMinutes($meterInterval)->toDateTimeString();
                 }
 
                 $getSmartMeMeterData = app(GetSmartMeMeterData::class);
@@ -151,7 +152,8 @@ class GetPreliminaryInvoice
             throw $e;
         }
 
-        $to_date = Carbon::parse(array_key_last($meterData))->addHour()->toDateString();
+        $meterDataInterval = $this->detectMeterDataInterval($meterData);
+        $to_date = Carbon::parse(array_key_last($meterData))->addMinutes($meterDataInterval)->toDateString();
         if ($smartMeCredentials) {
             $to_date = Carbon::parse(array_key_last($meterData), 'Europe/Copenhagen')->toDateTimeString();
         }
@@ -163,7 +165,7 @@ class GetPreliminaryInvoice
 
         $sum = 0;
 
-        $bill['meta']['Interval']['antal timer i intervallet'] = count($meterData);
+        $bill['meta']['Interval']['antal intervaller'] = count($meterData);
         foreach ($meterData as $hour => $consumption) {
             foreach ($tariffs as $tariff) {
                 $datahubPriceListsQuery = $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'], $to_date, $start_date);
@@ -207,11 +209,11 @@ class GetPreliminaryInvoice
 
             if (array_key_exists('Spotpris', $bill)) {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
-                    $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
+                    $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($this->getSpotPriceForTimestamp($prices, $hour) / 1000);
                 }
             } else {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
-                    $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
+                    $bill['Spotpris'] = $consumption * ($this->getSpotPriceForTimestamp($prices, $hour) / 1000);
                 }
             }
             $bill['Spotpris'] = round($bill['Spotpris'], 2);
@@ -333,7 +335,7 @@ class GetPreliminaryInvoice
 
         $sum = 0;
 
-        $bill['meta']['Interval']['antal timer i intervallet'] = count($meterData);
+        $bill['meta']['Interval']['antal intervaller'] = count($meterData);
 
         foreach ($meterData as $hour => $consumption) {
             //array_push($bill['meta']['Interval']['time'], $hour);
@@ -356,11 +358,11 @@ class GetPreliminaryInvoice
             }
             if (array_key_exists('Spotpris', $bill)) {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
-                    $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($prices[$hour] / 1000);
+                    $bill['Spotpris'] = $bill['Spotpris'] + $consumption * ($this->getSpotPriceForTimestamp($prices, $hour) / 1000);
                 }
             } else {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
-                    $bill['Spotpris'] = $consumption * ($prices[$hour] / 1000);
+                    $bill['Spotpris'] = $consumption * ($this->getSpotPriceForTimestamp($prices, $hour) / 1000);
                 }
             }
             $bill['Spotpris'] = round($bill['Spotpris'], 2);
@@ -435,6 +437,54 @@ class GetPreliminaryInvoice
         })->unique()->toArray());
 
         return $months;
+    }
+
+    /**
+     * Detect meter data interval in minutes from the first two entries.
+     *
+     * @param array<string, string> $meterData
+     * @return int Minutes between readings (15 or 60)
+     */
+    private function detectMeterDataInterval(array $meterData): int
+    {
+        $keys = array_keys($meterData);
+        if (count($keys) < 2) {
+            return 60;
+        }
+
+        $diff = abs(Carbon::parse($keys[1], 'Europe/Copenhagen')->diffInMinutes(Carbon::parse($keys[0], 'Europe/Copenhagen')));
+
+        return $diff <= 15 ? 15 : 60;
+    }
+
+    /**
+     * Get spot price for a given timestamp, handling mixed resolution.
+     * If prices are 15-min but consumption is hourly, returns the average of the 4 quarter prices.
+     *
+     * @param array<string, float> $prices
+     * @param string $timestamp
+     * @return float
+     */
+    private function getSpotPriceForTimestamp(array $prices, string $timestamp): float
+    {
+        if (isset($prices[$timestamp])) {
+            return $prices[$timestamp];
+        }
+
+        $hour = Carbon::parse($timestamp, 'Europe/Copenhagen');
+        $quarterPrices = [];
+        for ($i = 0; $i < 4; $i++) {
+            $quarterKey = $hour->copy()->addMinutes($i * 15)->format('c');
+            if (isset($prices[$quarterKey])) {
+                $quarterPrices[] = $prices[$quarterKey];
+            }
+        }
+
+        if (count($quarterPrices) > 0) {
+            return array_sum($quarterPrices) / count($quarterPrices);
+        }
+
+        throw new InvalidArgumentException('No spot price found for ' . $timestamp);
     }
 
     private function getGridOperatorTariffPrices(DatahubPriceList $datahubPriceList): array

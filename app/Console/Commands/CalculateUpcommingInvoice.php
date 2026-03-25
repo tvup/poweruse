@@ -82,10 +82,14 @@ class CalculateUpcommingInvoice extends Command
 
         $smartMeCredentials = null;
         if ($this->option('smartme')) {
-            $smartMeCredentials = [
-                config('services.smartme.id'),
-                config('services.smartme.username'),
-                config('services.smartme.paasword')];
+            $user = \App\Models\User::where('refresh_token', $refreshToken)->first();
+            if ($user) {
+                $smartMeCredentials = [
+                    'id' => $user->smartme_directory_id,
+                    'username' => $user->smartme_username,
+                    'password' => $user->smartme_password,
+                ];
+            }
         }
 
         $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);

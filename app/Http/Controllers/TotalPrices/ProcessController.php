@@ -98,37 +98,48 @@ class ProcessController extends Controller
 
         $totalPrice = [];
         $startOfCurrentHour = Carbon::now('Europe/Copenhagen')->startOfHour();
-        $currentHour = $startOfCurrentHour->hour;
-        $startOfCurrentDay = $startOfCurrentHour->startOfDay();
+        $startOfCurrentDay = $startOfCurrentHour->copy()->startOfDay();
 
-        $limit = $includeTomorrow ? 47 : 23;
+        // Detect spot price resolution: 15-min (96/day) or hourly (24/day)
+        // With includeTomorrow, hourly=~48, quarterly=~192
+        $spotPriceIsQuarterly = count($spotPrices) > ($includeTomorrow ? 50 : 25);
+        $intervalsPerHour = $spotPriceIsQuarterly ? 4 : 1;
+        $intervalsPerDay = $spotPriceIsQuarterly ? 96 : 24;
+
+        $currentInterval = $spotPriceIsQuarterly
+            ? $startOfCurrentHour->hour * 4 + intdiv(now('Europe/Copenhagen')->minute, 15)
+            : $startOfCurrentHour->hour;
+
+        $limit = $includeTomorrow ? ($intervalsPerDay * 2 - 1) : ($intervalsPerDay - 1);
         if ($todayIsDstEarlyTransitionDate || $tomorrowIsDstEarlyTransitionDate) {
-            $limit = $limit - 1;
+            $limit = $limit - $intervalsPerHour;
         }
         if ($todayIsDstLateTransitionDate || $tomorrowIsDstLateTransitionDate) {
-            $limit = $limit + 1;
+            $limit = $limit + $intervalsPerHour;
         }
 
-        foreach (range($currentHour, $limit) as $hour) {
-            $hourOnDay = ($hour <= 23 ? $hour : $hour - 24);
+        foreach (range($currentInterval, $limit) as $interval) {
+            $intervalOnDay = ($interval < $intervalsPerDay ? $interval : $interval - $intervalsPerDay);
+            $hourOnDay = $spotPriceIsQuarterly ? intdiv($intervalOnDay, 4) : $intervalOnDay;
 
-            if ($includeTomorrow && ($todayIsDstLateTransitionDate && ($hour >= 23 && $hour - 24 >= $todayIsDstLateTransitionDate))) {
-                $hourOnDay--;
+            if ($includeTomorrow && ($todayIsDstLateTransitionDate && ($interval >= ($intervalsPerDay - $intervalsPerHour) && $interval - $intervalsPerDay >= $todayIsDstLateTransitionDate * $intervalsPerHour))) {
+                $hourOnDay = $spotPriceIsQuarterly ? intdiv($intervalOnDay - 4, 4) : $intervalOnDay - 1;
             }
 
-            if ($includeTomorrow && ($tomorrowIsDstLateTransitionDate && ($hour >= 23 && $hour >= $tomorrowIsDstLateTransitionDate))) {
-                $hourOnDay--;
+            if ($includeTomorrow && ($tomorrowIsDstLateTransitionDate && ($interval >= ($intervalsPerDay - $intervalsPerHour) && $interval >= $tomorrowIsDstLateTransitionDate * $intervalsPerHour))) {
+                $hourOnDay = $spotPriceIsQuarterly ? intdiv($intervalOnDay - 4, 4) : $intervalOnDay - 1;
             }
 
             // Calculate total price without VAT
-            $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$hour] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0];
+            $netAmount = $gridOperatorTariffPrices[$hourOnDay] + ($spotPrices[$interval] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0];
             // Add 25% VAT
             $grossAmount = $netAmount * 1.25;
-            // Round to two decimals and add to array as datetime-index eg. "2023-02-01 02:00:00"
-            $timeOnDay = Str::replace('T', ' ', $startOfCurrentDay->copy()->addHours($hour)->toRfc3339String());
+            // Round to two decimals and add to array as datetime-index
+            $minutesFromStart = $spotPriceIsQuarterly ? $interval * 15 : $interval * 60;
+            $timeOnDay = Str::replace('T', ' ', $startOfCurrentDay->copy()->addMinutes($minutesFromStart)->toRfc3339String());
             $totalPrice[$timeOnDay] = round($grossAmount, 2);
         }
-        $companies = Operator::$operatorName;
+        $companies = cache('companies-list for total prices', []);
 
         $chart = null;
         $data = null;

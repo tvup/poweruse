@@ -1,100 +1,391 @@
 {
-  "records": [
-    {
-      "HourDK": "2022-09-02T23:00:00+02:00",
-      "SpotPriceDKK": 1562.339966
-    },
-    {
-      "HourDK": "2022-09-02T22:00:00+02:00",
-      "SpotPriceDKK": 2552.959961
-    },
-    {
-      "HourDK": "2022-09-02T21:00:00+02:00",
-      "SpotPriceDKK": 2989.620117
-    },
-    {
-      "HourDK": "2022-09-02T20:00:00+02:00",
-      "SpotPriceDKK": 4186.330078
-    },
-    {
-      "HourDK": "2022-09-02T19:00:00+02:00",
-      "SpotPriceDKK": 4271.720215
-    },
-    {
-      "HourDK": "2022-09-02T18:00:00+02:00",
-      "SpotPriceDKK": 4091.429932
-    },
-    {
-      "HourDK": "2022-09-02T17:00:00+02:00",
-      "SpotPriceDKK": 3639.889893
-    },
-    {
-      "HourDK": "2022-09-02T16:00:00+02:00",
-      "SpotPriceDKK": 2733.540039
-    },
-    {
-      "HourDK": "2022-09-02T15:00:00+02:00",
-      "SpotPriceDKK": 2305.51001
-    },
-    {
-      "HourDK": "2022-09-02T14:00:00+02:00",
-      "SpotPriceDKK": 1963.310059
-    },
-    {
-      "HourDK": "2022-09-02T13:00:00+02:00",
-      "SpotPriceDKK": 1949.920044
-    },
-    {
-      "HourDK": "2022-09-02T12:00:00+02:00",
-      "SpotPriceDKK": 2104.689941
-    },
-    {
-      "HourDK": "2022-09-02T11:00:00+02:00",
-      "SpotPriceDKK": 3080.360107
-    },
-    {
-      "HourDK": "2022-09-02T10:00:00+02:00",
-      "SpotPriceDKK": 3700.429932
-    },
-    {
-      "HourDK": "2022-09-02T09:00:00+02:00",
-      "SpotPriceDKK": 3941.120117
-    },
-    {
-      "HourDK": "2022-09-02T08:00:00+02:00",
-      "SpotPriceDKK": 4328.470215
-    },
-    {
-      "HourDK": "2022-09-02T07:00:00+02:00",
-      "SpotPriceDKK": 4210.430176
-    },
-    {
-      "HourDK": "2022-09-02T06:00:00+02:00",
-      "SpotPriceDKK": 3957.399902
-    },
-    {
-      "HourDK": "2022-09-02T05:00:00+02:00",
-      "SpotPriceDKK": 3312.860107
-    },
-    {
-      "HourDK": "2022-09-02T04:00:00+02:00",
-      "SpotPriceDKK": 2913.530029
-    },
-    {
-      "HourDK": "2022-09-02T03:00:00+02:00",
-      "SpotPriceDKK": 2697.469971
-    },
-    {
-      "HourDK": "2022-09-02T02:00:00+02:00",
-      "SpotPriceDKK": 2940.459961
-    },
-    {
-      "HourDK": "2022-09-02T01:00:00+02:00",
-      "SpotPriceDKK": 3114.419922
-    },
-    {
-      "HourDK": "2022-09-02T00:00:00+02:00",
-      "SpotPriceDKK": 3391.919922
-    }
-  ]
+    "total": 96,
+    "filters": "{\"PriceArea\":\"DK2\"}",
+    "dataset": "DayAheadPrices",
+    "records": [
+        {
+            "TimeDK": "2025-10-01T23:45:00",
+            "DayAheadPriceDKK": 637.21455
+        },
+        {
+            "TimeDK": "2025-10-01T23:30:00",
+            "DayAheadPriceDKK": 680.143475
+        },
+        {
+            "TimeDK": "2025-10-01T23:15:00",
+            "DayAheadPriceDKK": 683.503167
+        },
+        {
+            "TimeDK": "2025-10-01T23:00:00",
+            "DayAheadPriceDKK": 705.975489
+        },
+        {
+            "TimeDK": "2025-10-01T22:45:00",
+            "DayAheadPriceDKK": 659.537576
+        },
+        {
+            "TimeDK": "2025-10-01T22:30:00",
+            "DayAheadPriceDKK": 711.87355
+        },
+        {
+            "TimeDK": "2025-10-01T22:15:00",
+            "DayAheadPriceDKK": 757.863524
+        },
+        {
+            "TimeDK": "2025-10-01T22:00:00",
+            "DayAheadPriceDKK": 812.588526
+        },
+        {
+            "TimeDK": "2025-10-01T21:45:00",
+            "DayAheadPriceDKK": 724.864201
+        },
+        {
+            "TimeDK": "2025-10-01T21:30:00",
+            "DayAheadPriceDKK": 768.913026
+        },
+        {
+            "TimeDK": "2025-10-01T21:15:00",
+            "DayAheadPriceDKK": 906.434949
+        },
+        {
+            "TimeDK": "2025-10-01T21:00:00",
+            "DayAheadPriceDKK": 975.718486
+        },
+        {
+            "TimeDK": "2025-10-01T20:45:00",
+            "DayAheadPriceDKK": 806.466496
+        },
+        {
+            "TimeDK": "2025-10-01T20:30:00",
+            "DayAheadPriceDKK": 947.0494
+        },
+        {
+            "TimeDK": "2025-10-01T20:15:00",
+            "DayAheadPriceDKK": 1159.080975
+        },
+        {
+            "TimeDK": "2025-10-01T20:00:00",
+            "DayAheadPriceDKK": 1627.79017
+        },
+        {
+            "TimeDK": "2025-10-01T19:45:00",
+            "DayAheadPriceDKK": 1889.99254
+        },
+        {
+            "TimeDK": "2025-10-01T19:30:00",
+            "DayAheadPriceDKK": 2403.571861
+        },
+        {
+            "TimeDK": "2025-10-01T19:15:00",
+            "DayAheadPriceDKK": 2810.164715
+        },
+        {
+            "TimeDK": "2025-10-01T19:00:00",
+            "DayAheadPriceDKK": 3050.342815
+        },
+        {
+            "TimeDK": "2025-10-01T18:45:00",
+            "DayAheadPriceDKK": 2844.433166
+        },
+        {
+            "TimeDK": "2025-10-01T18:30:00",
+            "DayAheadPriceDKK": 2127.7815
+        },
+        {
+            "TimeDK": "2025-10-01T18:15:00",
+            "DayAheadPriceDKK": 1493.478584
+        },
+        {
+            "TimeDK": "2025-10-01T18:00:00",
+            "DayAheadPriceDKK": 1097.337952
+        },
+        {
+            "TimeDK": "2025-10-01T17:45:00",
+            "DayAheadPriceDKK": 1458.164914
+        },
+        {
+            "TimeDK": "2025-10-01T17:30:00",
+            "DayAheadPriceDKK": 1082.704848
+        },
+        {
+            "TimeDK": "2025-10-01T17:15:00",
+            "DayAheadPriceDKK": 865.297825
+        },
+        {
+            "TimeDK": "2025-10-01T17:00:00",
+            "DayAheadPriceDKK": 726.058775
+        },
+        {
+            "TimeDK": "2025-10-01T16:45:00",
+            "DayAheadPriceDKK": 793.401171
+        },
+        {
+            "TimeDK": "2025-10-01T16:30:00",
+            "DayAheadPriceDKK": 769.808956
+        },
+        {
+            "TimeDK": "2025-10-01T16:15:00",
+            "DayAheadPriceDKK": 668.571367
+        },
+        {
+            "TimeDK": "2025-10-01T16:00:00",
+            "DayAheadPriceDKK": 478.265539
+        },
+        {
+            "TimeDK": "2025-10-01T15:45:00",
+            "DayAheadPriceDKK": 724.565617
+        },
+        {
+            "TimeDK": "2025-10-01T15:30:00",
+            "DayAheadPriceDKK": 657.297843
+        },
+        {
+            "TimeDK": "2025-10-01T15:15:00",
+            "DayAheadPriceDKK": 557.180095
+        },
+        {
+            "TimeDK": "2025-10-01T15:00:00",
+            "DayAheadPriceDKK": 487.523292
+        },
+        {
+            "TimeDK": "2025-10-01T14:45:00",
+            "DayAheadPriceDKK": 605.783119
+        },
+        {
+            "TimeDK": "2025-10-01T14:30:00",
+            "DayAheadPriceDKK": 557.180095
+        },
+        {
+            "TimeDK": "2025-10-01T14:15:00",
+            "DayAheadPriceDKK": 524.479475
+        },
+        {
+            "TimeDK": "2025-10-01T14:00:00",
+            "DayAheadPriceDKK": 481.475876
+        },
+        {
+            "TimeDK": "2025-10-01T13:45:00",
+            "DayAheadPriceDKK": 528.884326
+        },
+        {
+            "TimeDK": "2025-10-01T13:30:00",
+            "DayAheadPriceDKK": 518.432111
+        },
+        {
+            "TimeDK": "2025-10-01T13:15:00",
+            "DayAheadPriceDKK": 505.590755
+        },
+        {
+            "TimeDK": "2025-10-01T13:00:00",
+            "DayAheadPriceDKK": 489.763025
+        },
+        {
+            "TimeDK": "2025-10-01T12:45:00",
+            "DayAheadPriceDKK": 486.926005
+        },
+        {
+            "TimeDK": "2025-10-01T12:30:00",
+            "DayAheadPriceDKK": 488.568511
+        },
+        {
+            "TimeDK": "2025-10-01T12:15:00",
+            "DayAheadPriceDKK": 486.926005
+        },
+        {
+            "TimeDK": "2025-10-01T12:00:00",
+            "DayAheadPriceDKK": 509.249032
+        },
+        {
+            "TimeDK": "2025-10-01T11:45:00",
+            "DayAheadPriceDKK": 464.154988
+        },
+        {
+            "TimeDK": "2025-10-01T11:30:00",
+            "DayAheadPriceDKK": 487.597914
+        },
+        {
+            "TimeDK": "2025-10-01T11:15:00",
+            "DayAheadPriceDKK": 538.142087
+        },
+        {
+            "TimeDK": "2025-10-01T11:00:00",
+            "DayAheadPriceDKK": 623.551946
+        },
+        {
+            "TimeDK": "2025-10-01T10:45:00",
+            "DayAheadPriceDKK": 510.070288
+        },
+        {
+            "TimeDK": "2025-10-01T10:30:00",
+            "DayAheadPriceDKK": 606.455079
+        },
+        {
+            "TimeDK": "2025-10-01T10:15:00",
+            "DayAheadPriceDKK": 694.925987
+        },
+        {
+            "TimeDK": "2025-10-01T10:00:00",
+            "DayAheadPriceDKK": 761.148483
+        },
+        {
+            "TimeDK": "2025-10-01T09:45:00",
+            "DayAheadPriceDKK": 628.2555
+        },
+        {
+            "TimeDK": "2025-10-01T09:30:00",
+            "DayAheadPriceDKK": 699.405512
+        },
+        {
+            "TimeDK": "2025-10-01T09:15:00",
+            "DayAheadPriceDKK": 784.14347
+        },
+        {
+            "TimeDK": "2025-10-01T09:00:00",
+            "DayAheadPriceDKK": 1041.567672
+        },
+        {
+            "TimeDK": "2025-10-01T08:45:00",
+            "DayAheadPriceDKK": 711.276271
+        },
+        {
+            "TimeDK": "2025-10-01T08:30:00",
+            "DayAheadPriceDKK": 877.392546
+        },
+        {
+            "TimeDK": "2025-10-01T08:15:00",
+            "DayAheadPriceDKK": 1070.535394
+        },
+        {
+            "TimeDK": "2025-10-01T08:00:00",
+            "DayAheadPriceDKK": 1495.345059
+        },
+        {
+            "TimeDK": "2025-10-01T07:45:00",
+            "DayAheadPriceDKK": 1273.533237
+        },
+        {
+            "TimeDK": "2025-10-01T07:30:00",
+            "DayAheadPriceDKK": 1345.952445
+        },
+        {
+            "TimeDK": "2025-10-01T07:15:00",
+            "DayAheadPriceDKK": 1355.210198
+        },
+        {
+            "TimeDK": "2025-10-01T07:00:00",
+            "DayAheadPriceDKK": 1201.935278
+        },
+        {
+            "TimeDK": "2025-10-01T06:45:00",
+            "DayAheadPriceDKK": 1135.488701
+        },
+        {
+            "TimeDK": "2025-10-01T06:30:00",
+            "DayAheadPriceDKK": 994.756553
+        },
+        {
+            "TimeDK": "2025-10-01T06:15:00",
+            "DayAheadPriceDKK": 877.168576
+        },
+        {
+            "TimeDK": "2025-10-01T06:00:00",
+            "DayAheadPriceDKK": 724.41627
+        },
+        {
+            "TimeDK": "2025-10-01T05:45:00",
+            "DayAheadPriceDKK": 811.17005
+        },
+        {
+            "TimeDK": "2025-10-01T05:30:00",
+            "DayAheadPriceDKK": 727.92525
+        },
+        {
+            "TimeDK": "2025-10-01T05:15:00",
+            "DayAheadPriceDKK": 676.78385
+        },
+        {
+            "TimeDK": "2025-10-01T05:00:00",
+            "DayAheadPriceDKK": 628.330174
+        },
+        {
+            "TimeDK": "2025-10-01T04:45:00",
+            "DayAheadPriceDKK": 662.449329
+        },
+        {
+            "TimeDK": "2025-10-01T04:30:00",
+            "DayAheadPriceDKK": 644.232518
+        },
+        {
+            "TimeDK": "2025-10-01T04:15:00",
+            "DayAheadPriceDKK": 663.793199
+        },
+        {
+            "TimeDK": "2025-10-01T04:00:00",
+            "DayAheadPriceDKK": 643.261974
+        },
+        {
+            "TimeDK": "2025-10-01T03:45:00",
+            "DayAheadPriceDKK": 670.661812
+        },
+        {
+            "TimeDK": "2025-10-01T03:30:00",
+            "DayAheadPriceDKK": 660.060249
+        },
+        {
+            "TimeDK": "2025-10-01T03:15:00",
+            "DayAheadPriceDKK": 651.101132
+        },
+        {
+            "TimeDK": "2025-10-01T03:00:00",
+            "DayAheadPriceDKK": 651.325101
+        },
+        {
+            "TimeDK": "2025-10-01T02:45:00",
+            "DayAheadPriceDKK": 630.345937
+        },
+        {
+            "TimeDK": "2025-10-01T02:30:00",
+            "DayAheadPriceDKK": 630.345937
+        },
+        {
+            "TimeDK": "2025-10-01T02:15:00",
+            "DayAheadPriceDKK": 633.70557
+        },
+        {
+            "TimeDK": "2025-10-01T02:00:00",
+            "DayAheadPriceDKK": 636.766618
+        },
+        {
+            "TimeDK": "2025-10-01T01:45:00",
+            "DayAheadPriceDKK": 626.762283
+        },
+        {
+            "TimeDK": "2025-10-01T01:30:00",
+            "DayAheadPriceDKK": 633.854925
+        },
+        {
+            "TimeDK": "2025-10-01T01:15:00",
+            "DayAheadPriceDKK": 641.395499
+        },
+        {
+            "TimeDK": "2025-10-01T01:00:00",
+            "DayAheadPriceDKK": 670.8111
+        },
+        {
+            "TimeDK": "2025-10-01T00:45:00",
+            "DayAheadPriceDKK": 636.617271
+        },
+        {
+            "TimeDK": "2025-10-01T00:30:00",
+            "DayAheadPriceDKK": 641.320825
+        },
+        {
+            "TimeDK": "2025-10-01T00:15:00",
+            "DayAheadPriceDKK": 687.609375
+        },
+        {
+            "TimeDK": "2025-10-01T00:00:00",
+            "DayAheadPriceDKK": 764.806811
+        }
+    ]
 }

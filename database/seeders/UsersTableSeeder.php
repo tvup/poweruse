@@ -14,6 +14,24 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        User::create(['name' => 'Torben Evald Hanen', 'email' => 'tvupper@gmail.com', 'password' => bcrypt('hundelort'), 'refresh_token' => config('services.energioverblik.refresh_token')]);
+        $credentialsFile = __DIR__ . '/user_credentials.json';
+
+        if (!file_exists($credentialsFile)) {
+            $this->command->warn('Skipping user seed: database/seeders/user_credentials.json not found.');
+            $this->command->info('Copy user_credentials.json.example and fill in your credentials.');
+            return;
+        }
+
+        $credentials = json_decode(file_get_contents($credentialsFile), true);
+
+        User::create([
+            'name' => $credentials['name'],
+            'email' => $credentials['email'],
+            'password' => bcrypt($credentials['password']),
+            'refresh_token' => $credentials['refresh_token'] ?? env($credentials['refresh_token_env_key'] ?? ''),
+            'smartme_username' => $credentials['smartme_username'] ?? null,
+            'smartme_password' => $credentials['smartme_password'] ?? null,
+            'smartme_directory_id' => $credentials['smartme_directory_id'] ?? null,
+        ]);
     }
 }

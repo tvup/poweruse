@@ -54,10 +54,14 @@ class GetMeteringData
                 $end_date = Carbon::now()->toDateString();
             }
             logger('Retrieving consumption data from eloverlikApi with parameters: Start date => ' . $start_date . ' End date => ' . $end_date . ' Metering point id => ' . $meteringPointId);
-            $response = $energiOverblikApi->getHourTimeSeriesFromMeterData($start_date, Carbon::parse($end_date)->toDateString(), $meteringPointId);
+            $response = $energiOverblikApi->getQuarterTimeSeriesFromMeterData($start_date, Carbon::parse($end_date)->toDateString(), $meteringPointId);
         } catch (ElOverblikApiException $e) {
             logger()->warning('Retrieving consumption data from eloverlikApi was unsuccesful (' . $e->getCode() . ') with parameters: Start date => ' . $start_date . ' End date => ' . $end_date . ' Metering point id => ' . $meteringPointId);
             throw $e;
+        }
+
+        if (empty($response)) {
+            throw new ElOverblikApiException(['No consumption data returned for the given period'], [], '0');
         }
 
         return $response;
