@@ -18,10 +18,26 @@
         </div>
     @endif
     <div class="card">
-        <div class="card-header text-center font-weight-bold">
-            {{ __('Calculation of energy data') }}
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <div class="card-icon me-3"><i class="fa-solid fa-calculator"></i></div>
+                <div>
+                    <h2 class="card-title">{{ __('Calculation of energy data') }}</h2>
+                    <p class="page-subtitle mb-0">{{ __('Calculate your electricity bill based on actual usage') }}</p>
+                </div>
+            </div>
         </div>
-        <div class="p-2"><pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre></divclass>
+        @if($data)
+        <div class="data-panel">
+            <div class="data-panel-header" onclick="this.parentElement.querySelector('.data-panel-body').classList.toggle('d-none')">
+                <span class="data-panel-title"><i class="fa-solid fa-table me-2"></i>{{ __('Results') }}</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="data-panel-body">
+                <pre>{{ json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) }}</pre>
+            </div>
+        </div>
+        @endif
         <div class="card-body">
             <form name="get-preliminary-invoice-form" id="get-preliminary-invoice-form" method="post" action="{{url('processdata')}}">
                 {{ csrf_field() }}
@@ -74,10 +90,12 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-primary mt-2" id="submit-btn">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
-                    <span id="submit-text">{{ __('Submit') }}</span>
-                </button>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
+                        <span id="submit-text">{{ __('Submit') }}</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -128,6 +146,7 @@
 
             $('#get-preliminary-invoice-form').on('submit', function() {
                 $('#submit-spinner').removeClass('d-none');
+                $('#submit-icon').addClass('d-none');
                 $('#submit-text').text('{{ __('Processing') }}...');
                 $('#submit-btn').prop('disabled', true);
             });

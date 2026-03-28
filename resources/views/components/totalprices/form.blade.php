@@ -40,7 +40,11 @@
                     />
                 </div>
 
-                {{ html()->button(__('Get'), 'submit')->class('btn btn-primary mt-2') }}
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Get') }}
+                    </button>
+                </div>
                 {{ html()->form()->close() }}
             </div>
         </div>

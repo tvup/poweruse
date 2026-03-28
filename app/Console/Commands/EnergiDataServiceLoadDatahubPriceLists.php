@@ -44,7 +44,7 @@ class EnergiDataServiceLoadDatahubPriceLists extends Command
 
         $more = 1;
         $i = 0;
-        $bar = $this->output->createProgressBar(266516);
+        $bar = $this->output->createProgressBar(423500);
         $bar->start();
         while ($more) {
             $records = $datahubPriceListsService->requestAllDatahubPriceListsFromEnergiDataService(100, $i);

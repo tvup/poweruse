@@ -2,223 +2,161 @@
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">{{ $t('Metering point') }}</h2>
-          <hr v-if="authUser && authUser!='no'" />
-          <h4 class="card-title" v-if="authUser && authUser!='no'">{{ $t('Add metering point manually') }}</h4>
-          <div class="card-tools" v-if="authUser && authUser!='no'">
-            <div class="mb-3">
-              <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-              <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
-                      @click.prevent="showModal"><i class="fas fa-bolt"></i> {{ $t('Add new metering point') }}
-              </button>
-            </div>
+        <div class="card-body">
+          <div class="form-section" v-if="authUser && authUser!='no'">
+            <div class="form-section-title">{{ $t('Add metering point manually') }}</div>
+            <button type="submit" class="btn btn-primary btn-action" data-toggle="modal" data-target="#meteringPointModal"
+                    @click.prevent="showModal">{{ $t('Add new metering point') }}
+            </button>
           </div>
-          <hr />
-          <h4 class="card-title">{{ $t('Get metering point from external source') }}</h4>
-          <div class="card-tools">
+          <div class="form-section">
+            <div class="form-section-title">{{ $t('Get metering point from external source') }}</div>
             <form class="form">
               <div class="mb-3">
-                <label class="form-check form-check-inline">{{ $t('Source') }}: </label>
-                <div class="form-check form-check-inline">
-                  <label class="form-check-label" for="source_datahub">
-                    Datahub
-                  </label>
-                  <input class="form-check-input" type="radio" id="source" name="source_datahub" value="DATAHUB" v-model="source">
-                </div>
-                <div class="form-check form-check-inline" v-if="authUser && authUser!='no'">
-                  <label class="form-check-label" for="source_poweruse"> POWERUSE
-                  </label>
-                  <input class="form-check-input" type="radio" id="source" name="source_poweruse" value="POWERUSE" v-model="source">
-                </div>
-              </div>
-              <div class="mb-3" v-if="authUser.refresh_token==null || !authUser || authUser=='no'">
-                  <label class="form-label form-control-lg" for="token" v-if="source=='DATAHUB'">{{ $t('Refresh token') }}</label>
-                  <input class="col-xs-3 form-rounded" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
-              </div>
-                <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-              <div class="mb-3">
-                  <button type="submit" class="btn btn-primary"
-                          @click.prevent="getMeteringPointsFromToken()"><i class="fas fa-bolt"></i> {{ $t('Get metering points') }}
-                  </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-        <div v-if="total==1">
-          <div class="col-md-8" v-for="metering_point in metering_points" :key="metering_point.id">
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <div class="row pv-lg">
-                  <div class="col-lg-2"></div>
-                  <div class="col-lg-8">
-                    <form class="form-horizontal ng-pristine ng-valid">
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputMeteringPointId">{{ $t('Metering point id') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputMeteringPointId" type="text"
-                                 v-model="form.metering_point_id">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputTypeOfMP">{{ $t('Type of MP') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputTypeOfMP" type="text" v-model="form.type_of_mp">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputSettlementMethod">{{ $t('Settlement method') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputSettlementMethod" type="text"
-                                 v-model="form.settlement_method">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputMeterNumber">{{ $t('Meter number') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputMeterNumber" type="text" v-model="form.meter_number">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputConsumerCVR">{{ $t('Consumer CVR') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputConsumerCVR" type="text" v-model="form.consumer_c_v_r">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputDataAccessCVR">{{ $t('Data access CVR') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputDataAccessCVR" type="text"
-                                 v-model="form.data_access_c_v_r">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputConsumerStartDate">{{ $t('Consumer start date') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputConsumerStartDate" type="text"
-                                 v-model="form.consumer_start_date">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputMeterReadingOccurrence">{{ $t('Meter reading occurrence') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputMeterReadingOccurrence" type="text"
-                                 v-model="form.meter_reading_occurrence">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputBalanceSupplierName">{{ $t('Balance supplier name') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputBalanceSupplierName" type="text"
-                                 v-model="form.balance_supplier_name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputStreetCode">{{ $t('Street code') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputStreetCode" type="text" v-model="form.street_code">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputStreetName">{{ $t('Street name') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputStreetName" type="text" v-model="form.street_name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputBuildingNumber">{{ $t('Building number') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputBuildingNumber" type="text"
-                                 v-model="form.building_number">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputFloorId">{{ $t('Floor id') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputFloorId" type="text" v-model="form.floor_id">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputRoomId">{{ $t('Room id') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputRoomId" type="text" v-model="form.room_id">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputCityName">{{ $t('City name') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputCityName" type="text" v-model="form.city_name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputCitySubDivisionName">{{ $t('City sub division name') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputCitySubDivisionName" type="text"
-                                 v-model="form.city_sub_division_name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputMunicipalityCode">{{ $t('Municipality code') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputMunicipalityCode" type="text"
-                                 v-model="form.municipality_code">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputLocationDescription">{{ $t('Location description') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputLocationDescription" type="text"
-                                 v-model="form.location_description">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputFirstConsumerPartyName">{{ $t('First consumer party name') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputFirstConsumerPartyName" type="text"
-                                 v-model="form.first_consumer_party_name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputSecondConsumerPartyName">{{ $t('Second consumer party name') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputSecondConsumerPartyName" type="text"
-                                 v-model="form.second_consumer_party_name">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputHasRelation">{{ $t('Has relation') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputHasRelation" type="text" v-model="form.hasRelation">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-6 control-label" for="inputSource">{{ $t('Source') }}</label>
-                        <div class="col-sm-10">
-                          <input class="form-control" id="inputSource" type="text" v-model="form.source">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary my-2 me-2"
-                                  v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
-                                  @click="createMeteringPoint();">{{ $t('Save to poweruse') }}
-                          </button>
-                          <button type="button" class="btn btn-info my-2 me-2"
-                                  v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click.prevent="editMeteringPoint();">{{ $t('Update') }}
-                          </button>
-                          <button type="button" class="btn btn-secondary my-2 me-2"
-                                  v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
-                          </button>
-                        </div>
-                      </div>
-                    </form>
+                <label class="form-label">{{ $t('Source') }}</label>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" id="source_datahub" name="source" value="DATAHUB" v-model="source">
+                    <label class="form-check-label" for="source_datahub">Datahub</label>
+                  </div>
+                  <div class="form-check" v-if="authUser && authUser!='no'">
+                    <input class="form-check-input" type="radio" id="source_poweruse" name="source" value="POWERUSE" v-model="source">
+                    <label class="form-check-label" for="source_poweruse">POWERUSE</label>
                   </div>
                 </div>
               </div>
-            </div>
+              <div class="mb-3" v-if="(authUser.refresh_token==null || !authUser || authUser=='no') && source=='DATAHUB'">
+                <label class="form-label" for="token">{{ $t('Refresh token') }}</label>
+                <input class="form-control" id="token" type="text" v-model="token">
+              </div>
+              <div class="mt-3">
+                <button type="submit" class="btn btn-primary btn-action"
+                        @click.prevent="getMeteringPointsFromToken()">{{ $t('Get metering points') }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="card-body" v-if="total==1">
+          <div class="card-body pt-0" v-for="metering_point in metering_points" :key="metering_point.id">
+                    <form>
+                      <div class="form-group">
+                        <label class="form-label" for="inputMeteringPointId">{{ $t('Metering point id') }}</label>
+                          <input class="form-control" id="inputMeteringPointId" type="text"
+                                 v-model="form.metering_point_id">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputTypeOfMP">{{ $t('Type of MP') }}</label>
+                          <input class="form-control" id="inputTypeOfMP" type="text" v-model="form.type_of_mp">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputSettlementMethod">{{ $t('Settlement method') }}</label>
+                          <input class="form-control" id="inputSettlementMethod" type="text"
+                                 v-model="form.settlement_method">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputMeterNumber">{{ $t('Meter number') }}</label>
+                          <input class="form-control" id="inputMeterNumber" type="text" v-model="form.meter_number">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputConsumerCVR">{{ $t('Consumer CVR') }}</label>
+                          <input class="form-control" id="inputConsumerCVR" type="text" v-model="form.consumer_c_v_r">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputDataAccessCVR">{{ $t('Data access CVR') }}</label>
+                          <input class="form-control" id="inputDataAccessCVR" type="text"
+                                 v-model="form.data_access_c_v_r">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputConsumerStartDate">{{ $t('Consumer start date') }}</label>
+                          <input class="form-control" id="inputConsumerStartDate" type="text"
+                                 v-model="form.consumer_start_date">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputMeterReadingOccurrence">{{ $t('Meter reading occurrence') }}</label>
+                          <input class="form-control" id="inputMeterReadingOccurrence" type="text"
+                                 v-model="form.meter_reading_occurrence">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputBalanceSupplierName">{{ $t('Balance supplier name') }}</label>
+                          <input class="form-control" id="inputBalanceSupplierName" type="text"
+                                 v-model="form.balance_supplier_name">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputStreetCode">{{ $t('Street code') }}</label>
+                          <input class="form-control" id="inputStreetCode" type="text" v-model="form.street_code">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputStreetName">{{ $t('Street name') }}</label>
+                          <input class="form-control" id="inputStreetName" type="text" v-model="form.street_name">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputBuildingNumber">{{ $t('Building number') }}</label>
+                          <input class="form-control" id="inputBuildingNumber" type="text"
+                                 v-model="form.building_number">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputFloorId">{{ $t('Floor id') }}</label>
+                          <input class="form-control" id="inputFloorId" type="text" v-model="form.floor_id">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputRoomId">{{ $t('Room id') }}</label>
+                          <input class="form-control" id="inputRoomId" type="text" v-model="form.room_id">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputCityName">{{ $t('City name') }}</label>
+                          <input class="form-control" id="inputCityName" type="text" v-model="form.city_name">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputCitySubDivisionName">{{ $t('City sub division name') }}</label>
+                          <input class="form-control" id="inputCitySubDivisionName" type="text"
+                                 v-model="form.city_sub_division_name">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputMunicipalityCode">{{ $t('Municipality code') }}</label>
+                          <input class="form-control" id="inputMunicipalityCode" type="text"
+                                 v-model="form.municipality_code">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputLocationDescription">{{ $t('Location description') }}</label>
+                          <input class="form-control" id="inputLocationDescription" type="text"
+                                 v-model="form.location_description">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputFirstConsumerPartyName">{{ $t('First consumer party name') }}</label>
+                          <input class="form-control" id="inputFirstConsumerPartyName" type="text"
+                                 v-model="form.first_consumer_party_name">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputSecondConsumerPartyName">{{ $t('Second consumer party name') }}</label>
+                          <input class="form-control" id="inputSecondConsumerPartyName" type="text"
+                                 v-model="form.second_consumer_party_name">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputHasRelation">{{ $t('Has relation') }}</label>
+                          <input class="form-control" id="inputHasRelation" type="text" v-model="form.hasRelation">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="inputSource">{{ $t('Source') }}</label>
+                          <input class="form-control" id="inputSource" type="text" v-model="form.source">
+                      </div>
+                      <div class="form-group">
+                          <div class="d-flex gap-2 mt-3">
+                            <button type="button" class="btn btn-primary btn-action"
+                                    v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
+                                    @click="createMeteringPoint();"> {{ $t('Save to poweruse') }}
+                            </button>
+                            <button type="button" class="btn btn-primary btn-action"
+                                    v-if="authUser && metering_point.source == 'POWERUSE'"
+                                    @click.prevent="editMeteringPoint();">{{ $t('Update') }}
+                            </button>
+                            <button type="button" class="btn btn-danger btn-action"
+                                    v-if="authUser && metering_point.source == 'POWERUSE'"
+                                    @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
+                            </button>
+                          </div>
+                      </div>
+                    </form>
           </div>
         </div>
         <div v-else>
@@ -434,9 +372,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ $t('Close') }}</button>
-              <button type="submit" class="btn btn-primary" v-show="isFormCreateMeteringPointMode">{{ $t('Save changes') }}</button>
-              <button type="submit" class="btn btn-primary" v-show="!isFormCreateMeteringPointMode">{{ $t('Update') }}</button>
+              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">{{ $t('Close') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateMeteringPointMode">{{ $t('Save changes') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateMeteringPointMode">{{ $t('Update') }}</button>
             </div>
           </form>
         </div>

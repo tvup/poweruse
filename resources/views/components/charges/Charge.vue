@@ -2,32 +2,26 @@
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h3 class="card-title"> {{ $t('Charges') }} - {{ metering_point_gsrn }}</h3>
-          <div class="card-tools" v-if="authUser && authUser!='no'">
-            <div class="input-group input-group-sm">
-              <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-              <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#chargeModal"
-                      @click.prevent="showModal"><i class="fas fa-bolt"></i> {{ $t('Add new charge') }}
-              </button>
-            </div>
+        <div class="card-body">
+          <div class="form-section" v-if="authUser && authUser!='no'">
+            <div class="form-section-title">{{ $t('Add charge manually') }}</div>
+            <button type="submit" class="btn btn-primary btn-action" data-toggle="modal" data-target="#chargeModal"
+                    @click.prevent="showModal">{{ $t('Add new charge') }}
+            </button>
           </div>
-          <hr />
-          <div class="card-tools">
-            <div class="input-group-sm">
-              <form class="form">
-                <div class="mb-3" v-if="!authUser.refresh_token">
-                  <label class="col-sm-3 control-label" for="token">{{ $t('Refresh token') }}</label>
-                  <input class="col-lg-4 form-rounded" id="token" type="text" v-model="token">
-                </div>
-                <div class="mb-3">
-                  <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-                  <button type="submit" class="btn btn-primary"
-                          @click.prevent="getChargesFromToken()"><i class="fas fa-bolt"></i>{{ $t('Get charges') }}
-                  </button>
-                </div>
-              </form>
-            </div>
+          <div class="form-section">
+            <div class="form-section-title">{{ $t('Get charges from external source') }}</div>
+            <form class="form">
+              <div class="mb-3" v-if="!authUser.refresh_token">
+                <label class="form-label" for="token">{{ $t('Refresh token') }}</label>
+                <input class="form-control" id="token" type="text" v-model="token">
+              </div>
+              <div class="mt-3">
+                <button type="submit" class="btn btn-primary btn-action"
+                        @click.prevent="getChargesFromToken()">{{ $t('Get charges') }}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -99,14 +93,16 @@
                           :pageCount="last_page" :prev-text="$t('Prev')"
                           :next-text="$t('Next')"></pagination>
             </nav>
-            <button type="button" class="btn btn-primary m-2"
-                    v-if="authUser && authUser!='no' && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
-                    @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
-            </button>
-            <button type="button" class="btn btn-danger m-2"
-                    v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'POWERUSE'"
-                    @click.prevent="deleteCharges(metering_point_id)">{{ $t('Delete all charges in DB') }}
-            </button>
+            <div class="d-flex gap-2 m-2">
+              <button type="button" class="btn btn-primary btn-action"
+                      v-if="authUser && authUser!='no' && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
+                      @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
+              </button>
+              <button type="button" class="btn btn-danger btn-action"
+                      v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'POWERUSE'"
+                      @click.prevent="deleteCharges(metering_point_id)">{{ $t('Delete all charges in DB') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -219,9 +215,9 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ $t('Close') }}</button>
-              <button type="submit" class="btn btn-primary" v-show="isFormCreateChargeMode">{{ $t('Save changes') }}</button>
-              <button type="submit" class="btn btn-primary" v-show="!isFormCreateChargeMode">{{ $t('Update') }}</button>
+              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">{{ $t('Close') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateChargeMode">{{ $t('Save changes') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateChargeMode">{{ $t('Update') }}</button>
             </div>
           </form>
         </div>
