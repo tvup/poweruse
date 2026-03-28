@@ -44,6 +44,7 @@ class DbExport extends Command
                 $count = DB::table($table)->count();
             } catch (\Illuminate\Database\QueryException $e) {
                 $this->error("Table {$table} does not exist");
+
                 return Command::FAILURE;
             }
 
