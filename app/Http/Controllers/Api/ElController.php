@@ -36,9 +36,10 @@ class ElController extends Controller
         $user = auth()->user();
         try {
             $smartMeCredentials = [
-                $user->smartme_directory_id,
-                $user->smartme_username,
-                $user->smartme_password];
+                'id' => $user->smartme_directory_id,
+                'username' => $user->smartme_username,
+                'password' => $user->smartme_password,
+            ];
 
             return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 23.20, 0.048, auth()->user());
         } catch (ElOverblikApiException $exception) {

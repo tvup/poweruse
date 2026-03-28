@@ -35,7 +35,7 @@
                 @endif
                 <div class="form-group">
                     <label for="smart_me">Smart-me?</label>
-                    <input name="smart_me" id="smart_me" type="checkbox" {{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : (auth()->user()?->smartme_directory_id ? 'checked' : ''))}}>
+                    <input name="smart_me" id="smart_me" type="checkbox" {{ old('_token') ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : (auth()->user()?->smartme_directory_id ? 'checked' : ''))}}>
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmeid">Smart-me id:</label>
@@ -66,11 +66,11 @@
 
                 <div class="form-group">
                     <label for="subscription">{{ __('Subscription price pr. month by balance supplier ex. VAT in DKK.') }}</label>
-                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ? : 23.20}}">
+                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ?: (Cookie::get('subscription') ?: 23.20) }}">
                 </div>
                 <div class="form-group">
                     <label for="overhead">{{ __('Overhead by balance supplier on spot price ex. VAT in DKK.') }}</label>
-                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.048}}">
+                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ?: (Cookie::get('overhead') ?: 0.048) }}">
                 </div>
 
 
@@ -100,9 +100,14 @@
                 }
 
             }
-            updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'true' : 'false') : (Cookie::get('smart_me') ? 'true' : (auth()->user()?->smartme_directory_id ? 'true' : 'false')) }});
+            updateSmartMeDetailFieldsShow({{ old('_token') ? (old('smart_me') == 'on' ? 'true' : 'false') : (Cookie::get('smart_me') ? 'true' : (auth()->user()?->smartme_directory_id ? 'true' : 'false')) }});
 
             function updateDatePicker($boolean) {
+                const existingValue = document.querySelector('.end_date').value;
+                if (existingValue) {
+                    flatpickr('.end_date', {defaultDate: existingValue});
+                    return;
+                }
                 const today = new Date();
                 let tomorrow = new Date();
                 tomorrow.setDate(today.getDate() + 1);
@@ -111,12 +116,11 @@
                 } else {
                     flatpickr('.end_date', {defaultDate: today});
                 }
-
             }
 
             flatpickr('.start_date, .end_date', {});
 
-            updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
+            updateDatePicker({{ old('_token') ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
 
             $(document).ready(function(){
