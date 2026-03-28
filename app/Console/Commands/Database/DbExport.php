@@ -39,7 +39,13 @@ class DbExport extends Command
 
         foreach ($tables as $table) {
             $table = trim($table);
-            $count = DB::table($table)->count();
+
+            try {
+                $count = DB::table($table)->count();
+            } catch (\Illuminate\Database\QueryException $e) {
+                $this->error("Table {$table} does not exist");
+                return Command::FAILURE;
+            }
 
             if ($count === 0) {
                 $this->warn("Skipping {$table} — table is empty");
@@ -55,15 +61,13 @@ class DbExport extends Command
                 continue;
             }
 
-            DB::table($table)->orderBy(DB::raw('1'))->chunk(1000, function ($rows) use ($handle) {
-                foreach ($rows as $row) {
-                    /** @var array<string, mixed> $fields */
-                    $fields = array_map(function ($value) {
-                        return $value === null ? 'NULL' : (string) $value;
-                    }, (array) $row);
-                    fputcsv($handle, $fields);
-                }
-            });
+            foreach (DB::table($table)->get() as $row) {
+                /** @var array<string, mixed> $fields */
+                $fields = array_map(function ($value) {
+                    return $value === null ? 'NULL' : (string) $value;
+                }, (array) $row);
+                fputcsv($handle, $fields);
+            }
 
             fclose($handle);
             $this->info("Exported {$table} successfully");
