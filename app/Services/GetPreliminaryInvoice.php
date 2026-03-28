@@ -499,7 +499,7 @@ class GetPreliminaryInvoice
      * @param string $hour
      * @return DatahubPriceList|null
      */
-    private function findDatahubPriceList(array $tariff, string $toDate, string $fromDate, string $hour): ?DatahubPriceList
+    private function findDatahubPriceList(array|\ArrayAccess $tariff, string $toDate, string $fromDate, string $hour): ?DatahubPriceList
     {
         $key = 'dpl ' . $tariff['owner'] . $tariff['name'] . ($tariff['description'] ?? '') . $toDate . $fromDate;
         if (cache()->has($key)) {
