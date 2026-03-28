@@ -1,47 +1,114 @@
 name: CI
 
-on: [push]
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COMPOSER_ROOT_VERSION: "1.0.0"
 
 jobs:
-  build-test:
+  # ── Lint ────────────────────────────────────────────────────────────────────
+  lint:
+    name: Static analysis & code style
     runs-on: ubuntu-24.04
-    env:
-      COMPOSER_ROOT_VERSION: "1.0.0"
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+          tools: composer
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: PHPStan
+        run: ./bin/phpstan
+
+      - name: Code style
+        run: ./bin/style --dry-run
+
+  # ── Tests ───────────────────────────────────────────────────────────────────
+  test:
+    name: PHPUnit tests
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: pdo_sqlite, sqlite3
+          coverage: none
+          tools: composer
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
+
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
 
-      - uses: php-actions/composer@v6
-        with:
-          php_version: "8.5"
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Create Directories
-        run: mkdir -p storage/framework/cache  && mkdir -p storage/framework/views && mkdir -p storage/framework/sessions
-      - name: Directory Permissions
-        run: sudo chmod -R 777 storage/ bootstrap/cache
-      - name: Install NPM
-        run: npm install && npm run build
-      - name: Generate key
+      - name: Create directories & set permissions
+        run: |
+          mkdir -p storage/framework/{cache,views,sessions}
+          sudo chmod -R 777 storage/ bootstrap/cache
+
+      - name: Install npm & build assets
+        run: npm ci && npm run build
+
+      - name: Generate app key
         run: php artisan key:generate
-      - name: Create Database
+
+      - name: Migrate database
         run: |
           mkdir -p database
           touch database/database.sqlite
-          php artisan migrate
-      - name: Install passport
-        run: php artisan  passport:install -n
+          php artisan migrate --force
+
+      - name: Install Passport
+        run: php artisan passport:install -n
+
       - name: Clear caches
-        run: |
-          php artisan cache:clear
-          php artisan config:clear
-          php artisan view:clear
-      - name: PHPUnit Tests
-        run: |
-          php artisan test --parallel
-      - name: Static analysis
-        run: ./bin/phpstan
-      - name: PSR
-        run: ./bin/style --dry-run
+        run: php artisan optimize:clear
+
+      - name: Run tests
+        run: php artisan test --parallel
