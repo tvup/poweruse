@@ -264,6 +264,9 @@ class ProcessController extends Controller
      */
     private function makeColors(array $array): array
     {
+        if ($array === []) {
+            return [];
+        }
         $min = (float) min($array);
         $max = (float) max($array);
         $colours = [];
@@ -308,7 +311,7 @@ class ProcessController extends Controller
         $gridOperatorTariffPrices = [];
         collect($datahubPriceList)->each(function ($item, $key) use (&$gridOperatorTariffPrices) {
             if (Str::contains((string) $key, 'Price')) {
-                $key = ((float) Str::replace('Price', '', (string) $key)) - 1;
+                $key = (int) (((float) Str::replace('Price', '', (string) $key)) - 1);
                 $gridOperatorTariffPrices[$key] = floatval($item);
             }
         });

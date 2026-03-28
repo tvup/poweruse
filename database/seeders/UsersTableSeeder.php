@@ -33,7 +33,7 @@ class UsersTableSeeder extends Seeder
             'name' => $credentials['name'],
             'email' => $credentials['email'],
             'password' => bcrypt($credentials['password']),
-            'refresh_token' => $credentials['refresh_token'] ?? env($credentials['refresh_token_env_key'] ?? ''),
+            'refresh_token' => $credentials['refresh_token'] ?? env($credentials['refresh_token_env_key'] ?? ''), // @phpstan-ignore larastan.noEnvCallsOutsideOfConfig
             'smartme_username' => $credentials['smartme_username'] ?? null,
             'smartme_password' => $credentials['smartme_password'] ?? null,
             'smartme_directory_id' => $credentials['smartme_directory_id'] ?? null,

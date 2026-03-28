@@ -16,7 +16,7 @@ class PaginationHelper
     /**
      * @param Collection<int, mixed> $results
      * @param int $showPerPage
-     * @return LengthAwarePaginator<array>
+     * @return LengthAwarePaginator<int, mixed>
      */
     public static function paginate(Collection $results, int $showPerPage): LengthAwarePaginator
     {
@@ -38,7 +38,7 @@ class PaginationHelper
      * @param int $perPage
      * @param int $currentPage
      * @param array $options
-     * @return LengthAwarePaginator<array>
+     * @return LengthAwarePaginator<int, mixed>
      * @throws BindingResolutionException
      */
     protected static function paginator(Collection $items, int $total, int $perPage, int $currentPage, array $options): LengthAwarePaginator

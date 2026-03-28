@@ -54,7 +54,7 @@ class MeteringPointControllerTest extends TestCase
         $storeMeteringPointRequest->shouldReceive('validated')
             ->andReturn($meteringPoint->toArray());
         $response = $this->meteringPointController->store($storeMeteringPointRequest);
-        $this->assertIsArray($response);
+        $this->assertNotEmpty($response);
     }
 
     /**

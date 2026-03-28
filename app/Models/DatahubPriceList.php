@@ -88,7 +88,7 @@ class DatahubPriceList extends BaseModel
 
     /**
      * @param Builder<DatahubPriceList> $query
-     * @return Builder<DatahubPriceList>s
+     * @return Builder<DatahubPriceList>
      */
     public function scopeIsValid(Builder $query, Carbon $at): Builder
     {
