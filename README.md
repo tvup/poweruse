@@ -1,3 +1,4 @@
+[![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2F454ef724-eb70-4aaf-b396-ab7d9ca383cf&style=plastic)](https://forge.laravel.com/torben-evald-hansen/tall-hamlet-iuu/2642934)
 # Introduction
 This project provides an application with tools to
 - calculate electricity bill before it's received from your vendor
