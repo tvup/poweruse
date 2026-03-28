@@ -29,15 +29,25 @@
             </div>
         @endif
         @if(@isset($data))
-        <div class="card">
-            <pre class="json-output">{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        <div class="data-panel">
+            <div class="data-panel-header" onclick="this.parentElement.querySelector('.data-panel-body').classList.toggle('d-none')">
+                <span class="data-panel-title"><i class="fa-solid fa-table me-2"></i>{{ __('Results') }}</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="data-panel-body">
+                <pre class="json-output">{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : '' }}</pre>
+            </div>
         </div>
         @endif
-        <div class="card">
-            <div class="card-header font-weight-bold">
-                <h2 class="card-title text-lg leading-6 font-medium text-gray-900">
-                    {{ __('Get total prices for next hours') }}
-                </h2>
+        <div class="card card-premium">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <div class="card-icon me-3"><i class="fa-solid fa-chart-bar"></i></div>
+                    <div>
+                        <h2 class="card-title">{{ __('Get total prices for next hours') }}</h2>
+                        <p class="page-subtitle mb-0">{{ __('Hourly prices including all tariffs') }}</p>
+                    </div>
+                </div>
             </div>
             <x-totalprices.form :companies="$companies"/>
         </div>

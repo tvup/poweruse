@@ -18,10 +18,26 @@
         </div>
     @endif
     <div class="card">
-        <div class="card-header text-center font-weight-bold">
-            Beregning af et bestemt forbrug i dag
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <div class="card-icon me-3"><i class="fa-solid fa-sliders"></i></div>
+                <div>
+                    <h2 class="card-title">Beregning af et bestemt forbrug i dag</h2>
+                    <p class="page-subtitle mb-0">{{ __('Calculate costs for custom hourly usage') }}</p>
+                </div>
+            </div>
         </div>
-        <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        @if($data)
+        <div class="data-panel">
+            <div class="data-panel-header" onclick="this.parentElement.querySelector('.data-panel-body').classList.toggle('d-none')">
+                <span class="data-panel-title"><i class="fa-solid fa-table me-2"></i>{{ __('Results') }}</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="data-panel-body">
+                <pre>{{ json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) }}</pre>
+            </div>
+        </div>
+        @endif
         <div class="card-body">
             <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('processcustom')}}">
                 {{ csrf_field() }}
