@@ -8,11 +8,14 @@ use App\Models\User;
 use App\Services\GetMeteringData;
 use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
 
 class GetMeteringDataTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function testGetMeteringPointDataDatahub(): void
     {
         $meteringPointArray = [

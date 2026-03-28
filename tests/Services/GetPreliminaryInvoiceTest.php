@@ -9,10 +9,13 @@ use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
 use App\Services\Interfaces\GetSpotPricesInterface;
 use Mockery\MockInterface;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class GetPreliminaryInvoiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     private array $charges;
 
     private mixed $spotPrices;

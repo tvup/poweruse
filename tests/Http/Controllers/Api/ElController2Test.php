@@ -8,11 +8,14 @@ use App\Services\GetPreliminaryInvoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\MockObject\MockObject;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class ElController2Test extends TestCase
 {
+    use RefreshDatabase;
+
     protected ElController $controller;
 
     protected MockObject $invoiceServiceMock;

@@ -14,10 +14,13 @@ use PHPUnit\Framework\MockObject\Exception;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class MeteringPointControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     private MeteringPointController $meteringPointController;
 
     /**
