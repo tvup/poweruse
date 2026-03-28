@@ -96,11 +96,11 @@
             <div class="d-flex gap-2 m-2">
               <button type="button" class="btn btn-primary btn-action"
                       v-if="authUser && authUser!='no' && ((charges && charges[0]) ? charges[0].source : '') != 'POWERUSE'"
-                      @click.prevent="saveCharges()"><i class="fa-solid fa-floppy-disk"></i> {{ $t('Save all charges to DB') }}
+                      @click.prevent="saveCharges()">{{ $t('Save all charges to DB') }}
               </button>
               <button type="button" class="btn btn-danger btn-action"
                       v-if="authUser && ((charges && charges[0]) ? charges[0].source : '') == 'POWERUSE'"
-                      @click.prevent="deleteCharges(metering_point_id)"><i class="fa-solid fa-trash"></i> {{ $t('Delete all charges in DB') }}
+                      @click.prevent="deleteCharges(metering_point_id)">{{ $t('Delete all charges in DB') }}
               </button>
             </div>
           </div>
@@ -215,9 +215,9 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> {{ $t('Close') }}</button>
-              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateChargeMode"><i class="fa-solid fa-floppy-disk"></i> {{ $t('Save changes') }}</button>
-              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateChargeMode"><i class="fa-solid fa-pen"></i> {{ $t('Update') }}</button>
+              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">{{ $t('Close') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateChargeMode">{{ $t('Save changes') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateChargeMode">{{ $t('Update') }}</button>
             </div>
           </form>
         </div>

@@ -372,9 +372,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> {{ $t('Close') }}</button>
-              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateMeteringPointMode"><i class="fa-solid fa-floppy-disk"></i> {{ $t('Save changes') }}</button>
-              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateMeteringPointMode"><i class="fa-solid fa-pen"></i> {{ $t('Update') }}</button>
+              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal">{{ $t('Close') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateMeteringPointMode">{{ $t('Save changes') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateMeteringPointMode">{{ $t('Update') }}</button>
             </div>
           </form>
         </div>
