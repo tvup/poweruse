@@ -183,10 +183,10 @@ class GetPreliminaryInvoice
                     $tariffName = $datahubPriceList->Note;
                     if (count($netPrices) > 1) {
                         $price = $datahubPriceList->getPriceForTimestamp($parsedHour);
-                        if (!isset($debugLoggedDpl[$tariffName]) || $debugLoggedDpl[$tariffName] < 30) {
+                        if ($parsedHour->hour >= 6 && (!isset($debugLoggedDpl[$tariffName]) || $debugLoggedDpl[$tariffName] < 8)) {
                             if (!isset($debugLoggedDpl[$tariffName])) { $debugLoggedDpl[$tariffName] = 0; }
                             $debugLoggedDpl[$tariffName]++;
-                            logger()->debug('TARIFF_DEBUG dpl', ['t' => $tariffName, 'h' => $parsedHour->hour . ':' . $parsedHour->minute, 'price' => $price, 'col' => 'Price' . ($parsedHour->hour + 1)]);
+                            logger()->debug('TARIFF_DEBUG dpl', ['t' => $tariffName, 'h' => $parsedHour->hour . ':' . $parsedHour->minute, 'price' => $price, 'col' => 'Price' . ($parsedHour->hour + 1), 'P7' => $datahubPriceList->Price7, 'P18' => $datahubPriceList->Price18]);
                         }
                     } else {
                         $price = $netPrices[0];
