@@ -166,15 +166,6 @@ class GetPreliminaryInvoice
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days]];
 
         $sum = 0;
-        $debugLoggedInline = [];
-        $debugLoggedDpl = [];
-        $debugHourDist = [];
-        foreach (array_keys($meterData) as $k) {
-            $h = Carbon::parse($k, 'Europe/Copenhagen')->hour;
-            $debugHourDist[$h] = ($debugHourDist[$h] ?? 0) + 1;
-        }
-        ksort($debugHourDist);
-        logger()->debug('TARIFF_DEBUG hour distribution', ['dist' => $debugHourDist, 'totalKeys' => count($meterData), 'firstKey' => array_key_first($meterData), 'lastKey' => array_key_last($meterData)]);
 
         $bill['meta']['Interval']['antal intervaller'] = count($meterData);
         foreach ($meterData as $hour => $consumption) {
@@ -190,20 +181,10 @@ class GetPreliminaryInvoice
                     $tariffName = $datahubPriceList->Note;
                     if (count($netPrices) > 1) {
                         $price = $datahubPriceList->getPriceForTimestamp($parsedHour);
-                        if ($parsedHour->hour >= 6 && (!isset($debugLoggedDpl[$tariffName]) || $debugLoggedDpl[$tariffName] < 8)) {
-                            if (!isset($debugLoggedDpl[$tariffName])) { $debugLoggedDpl[$tariffName] = 0; }
-                            $debugLoggedDpl[$tariffName]++;
-                            logger()->debug('TARIFF_DEBUG dpl', ['t' => $tariffName, 'h' => $parsedHour->hour . ':' . $parsedHour->minute, 'price' => $price, 'col' => 'Price' . ($parsedHour->hour + 1), 'P7' => $datahubPriceList->Price7, 'P18' => $datahubPriceList->Price18]);
-                        }
                     } else {
                         $price = $netPrices[0];
-                        logger()->debug('TARIFF_DEBUG single price', ['tariff' => $tariffName, 'price' => $price, 'hour' => $hour, 'netPricesCount' => count($netPrices)]);
                     }
                 } elseif (isset($tariff['prices'])) {
-                    if (!isset($debugLoggedInline[$tariff['name']])) {
-                        logger()->debug('TARIFF_DEBUG using inline prices', ['tariff' => $tariff['name'], 'owner' => $tariff['owner'], 'pricesType' => gettype($tariff['prices'])]);
-                        $debugLoggedInline[$tariff['name']] = true;
-                    }
                     $tariffName = $tariff['name'];
                     $tariffPrices = $tariff['prices'];
                     $priceCount = count($tariffPrices);
@@ -225,7 +206,6 @@ class GetPreliminaryInvoice
                 } else {
                     $bill[$tariffName] = $price * $consumption;
                 }
-                $bill[$tariffName] = round($bill[$tariffName], 2);
             }
 
             if (array_key_exists('Spotpris', $bill)) {
@@ -237,7 +217,6 @@ class GetPreliminaryInvoice
                     $bill['Spotpris'] = $consumption * ($this->getSpotPriceForTimestamp($prices, $hour) / 1000);
                 }
             }
-            $bill['Spotpris'] = round($bill['Spotpris'], 2);
 
             if (array_key_exists('Overhead', $bill)) {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
@@ -248,8 +227,13 @@ class GetPreliminaryInvoice
                     $bill['Overhead'] = $consumption * $overhead;
                 }
             }
-            $bill['Overhead'] = round($bill['Overhead'], 2);
             $sum = $sum + $consumption;
+        }
+
+        foreach ($bill as $key => $value) {
+            if ($key !== 'meta' && is_numeric($value)) {
+                $bill[$key] = round($value, 2);
+            }
         }
 
         $bill['meta']['Forbrug'] = round($sum, 2) . ' kWh';
