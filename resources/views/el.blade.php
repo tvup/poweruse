@@ -74,7 +74,10 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-primary mt-2">{{ __('Submit') }}</button>
+                <button type="submit" class="btn btn-primary mt-2" id="submit-btn">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
+                    <span id="submit-text">{{ __('Submit') }}</span>
+                </button>
             </form>
         </div>
     </div>
@@ -122,6 +125,12 @@
 
             updateDatePicker({{ old('_token') ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
+
+            $('#get-preliminary-invoice-form').on('submit', function() {
+                $('#submit-spinner').removeClass('d-none');
+                $('#submit-text').text('{{ __('Processing') }}...');
+                $('#submit-btn').prop('disabled', true);
+            });
 
             $(document).ready(function(){
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
