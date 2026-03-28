@@ -21,7 +21,7 @@
         <div class="card-header text-center font-weight-bold">
             {{ __('Calculation of energy data') }}
         </div>
-        <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        <div class="p-2"><pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre></divclass>
         <div class="card-body">
             <form name="get-preliminary-invoice-form" id="get-preliminary-invoice-form" method="post" action="{{url('processdata')}}">
                 {{ csrf_field() }}
