@@ -66,11 +66,11 @@
 
                 <div class="form-group">
                     <label for="subscription">{{ __('Subscription price pr. month by balance supplier ex. VAT in DKK.') }}</label>
-                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ? : 23.20}}">
+                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ?: (Cookie::get('subscription') ?: 23.20) }}">
                 </div>
                 <div class="form-group">
                     <label for="overhead">{{ __('Overhead by balance supplier on spot price ex. VAT in DKK.') }}</label>
-                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.048}}">
+                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ?: (Cookie::get('overhead') ?: 0.048) }}">
                 </div>
 
 
