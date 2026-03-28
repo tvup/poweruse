@@ -166,6 +166,7 @@ class GetPreliminaryInvoice
         $bill['meta'] = ['Interval' => ['fra' => $start_date, 'til' => $to_date, 'antal dage' => $diff_in_days]];
 
         $sum = 0;
+        $debugLoggedInline = [];
 
         $bill['meta']['Interval']['antal intervaller'] = count($meterData);
         foreach ($meterData as $hour => $consumption) {
@@ -183,8 +184,13 @@ class GetPreliminaryInvoice
                         $price = $datahubPriceList->getPriceForTimestamp($parsedHour);
                     } else {
                         $price = $netPrices[0];
+                        logger()->debug('TARIFF_DEBUG single price', ['tariff' => $tariffName, 'price' => $price, 'hour' => $hour, 'netPricesCount' => count($netPrices)]);
                     }
                 } elseif (isset($tariff['prices'])) {
+                    if (!isset($debugLoggedInline[$tariff['name']])) {
+                        logger()->debug('TARIFF_DEBUG using inline prices', ['tariff' => $tariff['name'], 'owner' => $tariff['owner'], 'pricesType' => gettype($tariff['prices'])]);
+                        $debugLoggedInline[$tariff['name']] = true;
+                    }
                     $tariffName = $tariff['name'];
                     $tariffPrices = $tariff['prices'];
                     $priceCount = count($tariffPrices);
