@@ -22,3 +22,4 @@ yarn-error.log
 ./revision
 .phpunit.cache/
 database/seeders/user_credentials.json
+/lang/

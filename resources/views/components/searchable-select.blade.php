@@ -9,7 +9,7 @@
             }
         }
     }
-    $uid = 'ss_' . md5($name);
+    $uid = 'ss_' . md5($name . Str::random(8));
 @endphp
 
 <div id="{{ $uid }}" class="position-relative">
@@ -38,7 +38,7 @@
 </div>
 
 <script>
-setTimeout(function() {
+document.addEventListener('DOMContentLoaded', function() {
     var options = @js($flatOptions);
     var uid = @js($uid);
     var selectedValue = @js($selected ?? '');
@@ -117,6 +117,9 @@ setTimeout(function() {
     });
 
     searchInput.addEventListener('keydown', function(e) {
+        var isOpen = listEl.style.display !== 'none';
+        if (!isOpen) return;
+
         var filtered = filter(searchInput.value);
         if (e.key === 'ArrowDown') {
             e.preventDefault();
@@ -162,5 +165,5 @@ setTimeout(function() {
             clearBtn.style.display = 'inline-block';
         }
     }
-}, 500);
+});
 </script>
