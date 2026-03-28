@@ -45,44 +45,30 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav me-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('el-meteringpoint*') ? 'active' : '' }}" href="{{ route('el-meteringpoint') }}">
-                            <i class="fa-solid fa-gauge me-1"></i>{{ __('Metering point') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-meteringpoint*') ? 'active' : '' }}" href="{{ route('el-meteringpoint') }}">{{ __('Metering point') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('el-charges*') ? 'active' : '' }}" href="{{ route('el-charges') }}">
-                            <i class="fa-solid fa-file-invoice me-1"></i>{{ __('Charges') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-charges*') ? 'active' : '' }}" href="{{ route('el-charges') }}">{{ __('Charges') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('consumption*') ? 'active' : '' }}" href="{{ route('consumption') }}">
-                            <i class="fa-solid fa-bolt me-1"></i>{{ __('Consumption') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('consumption*') ? 'active' : '' }}" href="{{ route('consumption') }}">{{ __('Consumption') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('el-spotprices*') ? 'active' : '' }}" href="{{ route('el-spotprices') }}">
-                            <i class="fa-solid fa-chart-line me-1"></i>{{ __('Spot prices') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-spotprices*') ? 'active' : '' }}" href="{{ route('el-spotprices') }}">{{ __('Spot prices') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('el') ? 'active' : '' }}" href="{{ route('el') }}">
-                            <i class="fa-solid fa-calculator me-1"></i>{{ __('Calculate your bill') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el') ? 'active' : '' }}" href="{{ route('el') }}">{{ __('Calculate your bill') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('el-custom*') ? 'active' : '' }}" href="{{ route('el-custom') }}">
-                            <i class="fa-solid fa-sliders me-1"></i>{{ __('Scheme usage') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-custom*') ? 'active' : '' }}" href="{{ route('el-custom') }}">{{ __('Scheme usage') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('totalprices*') ? 'active' : '' }}" href="{{ route('totalprices') }}">
-                            <i class="fa-solid fa-chart-bar me-1"></i>{{ __('Total prices') }}
-                        </a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('totalprices*') ? 'active' : '' }}" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="function openPwaNudge() {
+                        <a class="nav-link d-flex align-items-center" href="#" onclick="function openPwaNudge() {
                             $('.box').css('z-index', 1055);
                             $('.box').css('display', 'block');
                             $('#pwaModal').css('z-index', 1055);
