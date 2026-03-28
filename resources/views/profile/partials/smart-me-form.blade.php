@@ -23,7 +23,7 @@
                             <div class="col-md-12"><label class="labels">{{ __('Password') }}</label><input type="text" class="form-control" name="password" value="{{old('password', $user->smartme_password)}}"></div>
                             <div class="col-md-12"><label class="labels">{{ __('Directory id') }}</label><input type="text" class="form-control" name="directory_id" value="{{old('directory_id', $user->smartme_directory_id)}}"></div>
                         </div>
-                        <div class="mt-5 text-left"><button  class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> {{ __('Save') }}</button>
+                        <div class="mt-5 text-left"><button  class="btn btn-primary">{{ __('Save') }}</button>
                         </div>
                     </div>
                 </div>

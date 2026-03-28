@@ -14,7 +14,7 @@
                     </div>
                     <p>{{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}</p>
                     <div class="mt-5 text-left">
-                        <button  class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount"><i class="fa-solid fa-trash"></i> {{ __('Delete account') }}</button>
+                        <button  class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccount"> {{ __('Delete account') }}</button>
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="deleteAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="deleteAccountLabel">

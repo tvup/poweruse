@@ -71,7 +71,6 @@
 
                 <div class="mt-3">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-paper-plane"></i>
                         {{ __('Submit') }}
                     </button>
                 </div>
