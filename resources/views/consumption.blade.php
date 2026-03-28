@@ -13,11 +13,25 @@
         </div>
     @endif
     <div class="card">
-        <div class="card-header text-center font-weight-bold">
-            Hent forbrug
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <div class="card-icon me-3"><i class="fa-solid fa-bolt"></i></div>
+                <div>
+                    <h2 class="card-title">Hent forbrug</h2>
+                    <p class="page-subtitle mb-0">{{ __('Retrieve consumption data from Datahub or Smart-ME') }}</p>
+                </div>
+            </div>
         </div>
         @if(@isset($data))
-            <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        <div class="data-panel">
+            <div class="data-panel-header" onclick="this.parentElement.querySelector('.data-panel-body').classList.toggle('d-none')">
+                <span class="data-panel-title"><i class="fa-solid fa-table me-2"></i>{{ __('Results') }}</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="data-panel-body">
+                <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : '' }}</pre>
+            </div>
+        </div>
         @endif
         <div class="card-body">
             <form name="add-blog-post-form" id="add-blog-post-form" method="post" action="{{url('getConsumption')}}">
@@ -62,7 +76,11 @@
                     <input name="end_date" class="date form-control end_date" type="text" value="{{ old('end_date') ? : \Carbon\Carbon::now()->toDateString() }}">
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-2">{{ __('Submit') }}</button>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Submit') }}
+                    </button>
+                </div>
             </form>
         </div>
     </div>

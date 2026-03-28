@@ -31,7 +31,8 @@
 <body>
 @include('components.nudge-pwa')
 <div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+    <div class="navbar-accent-bar"></div>
+    <nav class="navbar navbar-expand-md navbar-light bg-white navbar-main sticky-top" id="mainNavbar">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url('/') }}">
                 <img src="{{ Vite::asset('resources/images/icons/512x512.png')}}" alt="" width="30" height="30">
@@ -44,31 +45,30 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{{ route('el-meteringpoint') }}">{{__('Metering point') }}</a>
+                <ul class="navbar-nav me-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-meteringpoint*') ? 'active' : '' }}" href="{{ route('el-meteringpoint') }}">{{ __('Metering point') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('el-charges') }}">{{__('Charges') }}</a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-charges*') ? 'active' : '' }}" href="{{ route('el-charges') }}">{{ __('Charges') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('consumption') }}">{{__('Consumption') }}</a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('consumption*') ? 'active' : '' }}" href="{{ route('consumption') }}">{{ __('Consumption') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('el-spotprices') }}">{{__('Spot prices') }}</a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-spotprices*') ? 'active' : '' }}" href="{{ route('el-spotprices') }}">{{ __('Spot prices') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('el') }}">{{__('Calculate your bill') }}</a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el') ? 'active' : '' }}" href="{{ route('el') }}">{{ __('Calculate your bill') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
-                           href="{{ route('el-custom') }}">{{__('Scheme usage') }}</a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('el-custom*') ? 'active' : '' }}" href="{{ route('el-custom') }}">{{ __('Scheme usage') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
+                        <a class="nav-link d-flex align-items-center {{ request()->is('totalprices*') ? 'active' : '' }}" href="{{ route('totalprices') }}">{{ __('Total prices') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="function openPwaNudge() {
+                        <a class="nav-link d-flex align-items-center" href="#" onclick="function openPwaNudge() {
                             $('.box').css('z-index', 1055);
                             $('.box').css('display', 'block');
                             $('#pwaModal').css('z-index', 1055);
@@ -138,7 +138,7 @@
     </x-modal>
 
 
-    <footer class="p-2 rounded bg-white shadow-sm w-100">
+    <footer class="footer-main">
         @include('components.footer')
     </footer>
 </div>
@@ -187,6 +187,11 @@
 
         @yield('javaScript')
     }
+</script>
+<script>
+window.addEventListener('scroll', function() {
+    document.getElementById('mainNavbar').classList.toggle('scrolled', window.scrollY > 10);
+});
 </script>
 </body>
 </html>

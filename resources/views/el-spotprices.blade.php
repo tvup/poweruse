@@ -13,15 +13,29 @@
         </div>
     @endif
     <div class="card">
-        <div class="card-header text-center font-weight-bold">
-            Hent spotpriser
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <div class="card-icon me-3"><i class="fa-solid fa-chart-line"></i></div>
+                <div>
+                    <h2 class="card-title">Hent spotpriser</h2>
+                    <p class="page-subtitle mb-0">{{ __('View spot prices from EnergiDataService') }}</p>
+                </div>
+            </div>
         </div>
         @if(@isset($data))
-            @if(old('outputformat')=='SQL')
-                <pre>{{ $data ? $data : '' }}</pre>
-            @else
-                <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
-            @endif
+        <div class="data-panel">
+            <div class="data-panel-header" onclick="this.parentElement.querySelector('.data-panel-body').classList.toggle('d-none')">
+                <span class="data-panel-title"><i class="fa-solid fa-table me-2"></i>{{ __('Results') }}</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="data-panel-body">
+                @if(old('outputformat')=='SQL')
+                    <pre>{{ $data ? $data : '' }}</pre>
+                @else
+                    <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) : '' }}</pre>
+                @endif
+            </div>
+        </div>
         @endif
         <div class="card-body">
             <form name="get-spot-prices-form" id="get-spot-prices-form" method="post" action="{{url('getSpotprices')}}">
@@ -58,7 +72,11 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Submit') }}
+                    </button>
+                </div>
             </form>
         </div>
     </div>

@@ -19,7 +19,7 @@ class ChargesManualLoad extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Manually load hardcoded charges into cache';
 
     /**
      * Execute the console command.

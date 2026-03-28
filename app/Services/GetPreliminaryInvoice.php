@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\SourceEnum;
 use App\Exceptions\DataUnavailableException;
 use App\Exceptions\MissingDataException;
+use App\Models\ChargeTariffMapping;
 use App\Models\DatahubPriceList;
 use App\Models\User;
 use App\Services\Interfaces\GetSpotPricesInterface;
@@ -508,14 +509,73 @@ class GetPreliminaryInvoice
         if (cache()->has($key)) {
             $datahubPriceLists = cache($key);
         } else {
-            $datahubPriceLists = $this->datahubPriceListService->getFromQuery(
-                $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'] ?? '', $toDate, $fromDate)
-            );
+            $datahubPriceLists = collect();
+
+            $mapping = ChargeTariffMapping::where('charge_name', $tariff['name'])
+                ->where('charge_owner_gln', $tariff['owner'])
+                ->first();
+
+            if ($mapping) {
+                $datahubPriceLists = $this->datahubPriceListService->getFromQuery(
+                    $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB(
+                        $mapping->datahub_note,
+                        $mapping->datahub_gln,
+                        $mapping->datahub_description ?? '',
+                        $toDate,
+                        $fromDate
+                    )
+                );
+            }
+
+            if ($datahubPriceLists->isEmpty()) {
+                $datahubPriceLists = $this->datahubPriceListService->getFromQuery(
+                    $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'] ?? '', $toDate, $fromDate)
+                );
+
+                if ($datahubPriceLists->isNotEmpty() && !$mapping) {
+                    $first = $datahubPriceLists->first();
+                    ChargeTariffMapping::updateOrCreate(
+                        ['charge_name' => $tariff['name'], 'charge_owner_gln' => $tariff['owner']],
+                        [
+                            'datahub_note' => $first->Note,
+                            'datahub_gln' => $first->GLN_Number,
+                            'datahub_charge_type' => $first->ChargeType,
+                            'datahub_description' => $first->Description,
+                            'verified' => true,
+                        ]
+                    );
+                }
+            }
+
             if ($datahubPriceLists->isEmpty()) {
                 $datahubPriceLists = $this->datahubPriceListService->getFromQuery(
                     $this->datahubPriceListService->getQueryForFetchingTariffByGlnAndNameLike($tariff['name'], $tariff['owner'], $toDate, $fromDate)
                 );
+
+                if ($datahubPriceLists->isNotEmpty() && !$mapping) {
+                    $first = $datahubPriceLists->first();
+                    ChargeTariffMapping::updateOrCreate(
+                        ['charge_name' => $tariff['name'], 'charge_owner_gln' => $tariff['owner']],
+                        [
+                            'datahub_note' => $first->Note,
+                            'datahub_gln' => $first->GLN_Number,
+                            'datahub_charge_type' => $first->ChargeType,
+                            'datahub_description' => $first->Description,
+                            'verified' => false,
+                        ]
+                    );
+                }
             }
+
+            if ($datahubPriceLists->isEmpty()) {
+                logger()->warning('No DatahubPriceList match found for tariff', [
+                    'name' => $tariff['name'],
+                    'owner' => $tariff['owner'],
+                    'fromDate' => $fromDate,
+                    'toDate' => $toDate,
+                ]);
+            }
+
             if ($datahubPriceLists->isNotEmpty()) {
                 cache([$key => $datahubPriceLists], 2592000);
             }
