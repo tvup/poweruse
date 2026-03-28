@@ -147,11 +147,13 @@ class ChargeTariffMappingTest extends TestCase
                     }
                     if ($note && $isLike) {
                         $prefix = rtrim($note, '%');
+
                         return $this->testCharges->filter(fn ($item) => str_starts_with($item->Note, $prefix));
                     }
                     if ($note) {
                         return $this->testCharges->filter(fn ($item) => $item->Note === $note);
                     }
+
                     return collect();
                 }
             );
