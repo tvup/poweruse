@@ -37,7 +37,7 @@
             </form>
           </div>
         </div>
-        <div v-if="total==1">
+        <div class="card-body" v-if="total==1">
           <div class="card-body pt-0" v-for="metering_point in metering_points" :key="metering_point.id">
                     <form>
                       <div class="form-group">
