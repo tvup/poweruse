@@ -47,11 +47,10 @@ class GetSpotPricesTest extends TestCase
     }
 
     /**
-     * @depends('testGetData')
-     * @return void
      * @throws \Exception
      */
-    public function testGetData2()
+    #[\PHPUnit\Framework\Attributes\Depends('testGetData')]
+    public function testGetData2(): void
     {
         $response = [];
 
@@ -437,7 +436,8 @@ class GetSpotPricesTest extends TestCase
 
         $array = $getSpotPrices->getData(self::START_DATE_2, self::END_DATE_2, self::PRICE_AREA);
 
-        $expected = Arr::pluck(array_values($response['records']), 'DayAheadPriceDKK', 'TimeDK');
+        $records = array_map(fn (array $record): array => $record, $response['records']);
+        $expected = Arr::pluck(array_values($records), 'DayAheadPriceDKK', 'TimeDK');
         Arr::pull($expected, '2022-10-30T03:00:00+02:00');
         $this->assertEquals($expected, $array);
 

@@ -93,12 +93,12 @@ class ElOverblikGetMeteringData extends Command
         $refresh_token = $safeValues['refresh_token'];
         $start_date = $safeValues['start_date'];
         $end_date = $safeValues['end_date'];
-        /** @var int $optionShowCount */
+        /** @var int|string $optionShowCount */
         $optionShowCount = $safeValues['show-count'];
 
-        switch ($optionShowCount) {
+        switch (true) {
             case is_numeric($optionShowCount):
-                $this->showCount = $optionShowCount;
+                $this->showCount = (int) $optionShowCount;
                 break;
             case 'ALL':
                 $this->showAll = true;
