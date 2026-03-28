@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                         </div>
-                        <div class="mt-5 text-left"><button  class="btn btn-primary">{{ __('Save') }}</button>
+                        <div class="mt-5 text-left"><button  class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> {{ __('Save') }}</button>
                         </div>
                     </div>
                 </div>

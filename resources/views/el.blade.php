@@ -90,10 +90,13 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-primary mt-2" id="submit-btn">
-                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
-                    <span id="submit-text">{{ __('Submit') }}</span>
-                </button>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
+                        <i class="fa-solid fa-paper-plane" id="submit-icon"></i>
+                        <span id="submit-text">{{ __('Submit') }}</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -144,6 +147,7 @@
 
             $('#get-preliminary-invoice-form').on('submit', function() {
                 $('#submit-spinner').removeClass('d-none');
+                $('#submit-icon').addClass('d-none');
                 $('#submit-text').text('{{ __('Processing') }}...');
                 $('#submit-btn').prop('disabled', true);
             });

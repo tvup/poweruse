@@ -23,7 +23,7 @@
                             <div class="col-md-12"><label class="labels">{{ __('New password') }}</label><input type="password" class="form-control" name="password"></div>
                             <div class="col-md-12"><label class="labels">{{ __('Confirm password') }}</label><input type="password" class="form-control" name="password_confirmation"></div>
                         </div>
-                        <div class="mt-5 text-left"><button  class="btn btn-primary">{{ __('Save') }}</button>
+                        <div class="mt-5 text-left"><button  class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> {{ __('Save') }}</button>
                         </div>
                     </div>
                 </div>

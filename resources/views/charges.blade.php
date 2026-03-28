@@ -24,7 +24,7 @@
         </div>
             <form name="save-charges-form" id="save-charges-form" method="post" >
                 {{ csrf_field() }}
-                <button type="submit" class="btn btn-primary" @click="createCharges();">{{ __('Save to DB') }}</button>
+                <button type="submit" class="btn btn-primary" @click="createCharges();"><i class="fa-solid fa-floppy-disk"></i> {{ __('Save to DB') }}</button>
             </form>
         @endif
         <div id="app">

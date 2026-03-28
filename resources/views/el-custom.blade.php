@@ -69,7 +69,12 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-primary mt-2">{{ __('Submit') }}</button>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        {{ __('Submit') }}
+                    </button>
+                </div>
             </form>
         </div>
     </div>
