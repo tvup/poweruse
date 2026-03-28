@@ -22,7 +22,12 @@ class UsersTableSeeder extends Seeder
             return;
         }
 
-        $credentials = json_decode(file_get_contents($credentialsFile), true);
+        $fileContents = file_get_contents($credentialsFile);
+        if ($fileContents === false) {
+            $this->command->error('Could not read database/seeders/user_credentials.json.');
+            return;
+        }
+        $credentials = json_decode($fileContents, true);
 
         User::create([
             'name' => $credentials['name'],

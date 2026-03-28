@@ -210,7 +210,7 @@ class ElController extends Controller
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
+    public function getFromDate(string $start_date, string $end_date, string $price_area, ?string $refreshToken = null) : Response|JsonResponse
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken, null, $start_date, $end_date, $price_area, 25, 1, auth()->user());
@@ -258,7 +258,7 @@ class ElController extends Controller
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, ?array $smartMeCredentials = null, ?string $start_date = null, ?string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, ?User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -285,14 +285,14 @@ class ElController extends Controller
      * @return JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.048, User $user = null) : JsonResponse
+    private function getUsageCost(array $meterData, ?string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.048, ?User $user = null) : JsonResponse
     {
         $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead, $user);
 
         return response()->json($bill);
     }
 
-    public function getCharges(string $refreshToken = null) : Response|JsonResponse
+    public function getCharges(?string $refreshToken = null) : Response|JsonResponse
     {
         if ($refreshToken == 'MIT_LÆKRE_TOKEN_HER') {
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
@@ -567,7 +567,7 @@ class ElController extends Controller
      * @param Carbon|null $from
      * @return array<float>
      */
-    private function doGetSpotPrices(string $area, Carbon $from = null) : array
+    private function doGetSpotPrices(string $area, ?Carbon $from = null) : array
     {
         if (!$from) {
             $from = Carbon::now('Europe/Copenhagen')->startOfDay();

@@ -15,7 +15,7 @@ class GetSmartMeMeterData
      *
      * @return mixed
      */
-    public function getFromDate(array $smartMe = null, string $start_date = null)
+    public function getFromDate(?array $smartMe = null, ?string $start_date = null)
     {
         if (!$start_date) {
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
@@ -44,7 +44,7 @@ class GetSmartMeMeterData
      * @return array
      * @throws \Exception
      */
-    public function getInterval(string $start_date_copenhagen, string $to_date = null, array $smartMe = []): array
+    public function getInterval(string $start_date_copenhagen, ?string $to_date = null, array $smartMe = []): array
     {
         $newResponse = null;
         $start_date_copenhagen = Carbon::parse($start_date_copenhagen, 'Europe/Copenhagen');
@@ -102,7 +102,7 @@ class GetSmartMeMeterData
      * @param $smartMe
      * @return array
      */
-    private function smartMeCredentials(array $smartMe = null): array
+    private function smartMeCredentials(?array $smartMe = null): array
     {
         $id = $smartMe['id'] ?? null;
         $username = $smartMe['username'] ?? null;

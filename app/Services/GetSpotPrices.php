@@ -41,7 +41,7 @@ class GetSpotPrices implements GetSpotPricesInterface
      * @return array|JsonResponse
      * @throws \Exception
      */
-    public function getData(string $start_date = null, string $end_date = null, string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
+    public function getData(?string $start_date = null, ?string $end_date = null, ?string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
     {
         $parameters = [];
         if (!$start_date) {
@@ -116,6 +116,6 @@ class GetSpotPrices implements GetSpotPricesInterface
             return $responseData;
         }
 
-        return is_array($response) ? $response : $response->json();
+        return $response;
     }
 }

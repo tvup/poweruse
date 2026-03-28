@@ -59,9 +59,9 @@ class GetPreliminaryInvoice
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    public function getBill(string $start_date, string $end_date, string $price_area, array $smartMeCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.048, User $user = null): array
+    public function getBill(string $start_date, string $end_date, string $price_area, ?array $smartMeCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, ?string $refreshToken = null, float|string $subscription_at_elsupplier = 23.20, float|string $overhead = 0.048, ?User $user = null): array
     {
-        $overhead = str_replace(',', '.', strval($overhead));
+        $overhead = (float) str_replace(',', '.', strval($overhead));
         if (Carbon::parse($end_date)->greaterThan(Carbon::now()->startOfDay())) {
             $end_date = Carbon::now()->startOfDay()->toDateString();
             if ($smartMeCredentials) {
@@ -142,7 +142,7 @@ class GetPreliminaryInvoice
                     $message = $message . PHP_EOL . $e->getMessage();
                     throw new MissingDataException($message, $e->getCode(), $e->getPrevious());
                 }
-                if ((empty($charges[0]) && empty($charges[1])) && $dataSource !== SourceEnum::DATAHUB && $refreshToken) {
+                if ((empty($charges[0]) && empty($charges[1])) && $dataSource !== SourceEnum::DATAHUB) {
                     $charges = $this->meteringDataService->getCharges($start_date, $end_date, SourceEnum::DATAHUB, ['refresh_token'=>$refreshToken], $user);
                 }
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
@@ -232,7 +232,7 @@ class GetPreliminaryInvoice
 
         foreach ($bill as $key => $value) {
             if ($key !== 'meta' && is_numeric($value)) {
-                $bill[$key] = round($value, 2);
+                $bill[$key] = round((float) $value, 2);
             }
         }
 
@@ -299,7 +299,7 @@ class GetPreliminaryInvoice
         return $bill;
     }
 
-    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.048, User $user = null): array
+    public function getCostOfCustomUsage(array $meterData, string $refreshToken, string $price_area, float|string $overhead = 0.048, ?User $user = null): array
     {
         if (is_string($overhead)) {
             $overhead = str_replace(',', '.', $overhead);
@@ -496,7 +496,7 @@ class GetPreliminaryInvoice
      * Try to find a matching DatahubPriceList entry for a tariff.
      * First tries exact match, then relaxed GLN + name LIKE match.
      *
-     * @param array $tariff
+     * @param array<string, mixed>|\ArrayAccess<string, mixed> $tariff
      * @param string $toDate
      * @param string $fromDate
      * @param string $hour

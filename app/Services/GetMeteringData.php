@@ -30,7 +30,7 @@ class GetMeteringData
      * @return array<string, string>
      * @throws ElOverblikApiException
      */
-    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false, SourceEnum $source = SourceEnum::DATAHUB, User $user = null): array
+    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false, SourceEnum $source = SourceEnum::DATAHUB, ?User $user = null): array
     {
         logger('Accessing EloverblikApi. MD5 of refresh token: ' . md5($refreshToken));
         try {
@@ -69,7 +69,7 @@ class GetMeteringData
         return $response;
     }
 
-    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ? MeteringPoint
+    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], ?User $user = null): ? MeteringPoint
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $exception = null;
@@ -136,7 +136,7 @@ class GetMeteringData
         return null;
     }
 
-    public function getCharges(?string $start_date, ?string $end_date, ?SourceEnum $source = SourceEnum::POWERUSE, array $credentials = [], User $user = null): array
+    public function getCharges(?string $start_date, ?string $end_date, ?SourceEnum $source = SourceEnum::POWERUSE, array $credentials = [], ?User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);

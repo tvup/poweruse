@@ -70,7 +70,7 @@ class MeteringPoint extends BaseModel
     }
 
     /**
-     * @return BelongsTo<User, MeteringPoint>
+     * @return BelongsTo<User, $this>
      */
     public function user() : BelongsTo
     {

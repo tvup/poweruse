@@ -33,9 +33,7 @@ class Charge extends BaseModel
         return $this->exists ? self::SOURCE : null;
     }
 
-    /**
-     * @return HasMany<ChargePrice>
-     */
+    /** @return HasMany<ChargePrice, static> */
     public function chargePrices() : HasMany
     {
         return $this->hasMany(ChargePrice::class);
@@ -44,7 +42,7 @@ class Charge extends BaseModel
     /**
      * We need this fake relation as well because the datadefinition for chargePrices on charge is simply called "prices".
      *
-     * @return HasMany<ChargePrice>
+     * @return HasMany<ChargePrice, static>
      */
     public function prices() : HasMany
     {

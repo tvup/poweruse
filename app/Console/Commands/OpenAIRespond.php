@@ -80,7 +80,7 @@ class OpenAIRespond extends Command
         return $fileContent;
     }
 
-    private function requestOpenAI(string $question, FilesystemAdapter $testDisk = null, string $testFileName = null): void
+    private function requestOpenAI(string $question, ?FilesystemAdapter $testDisk = null, ?string $testFileName = null): void
     {
         try {
             $response = app(OpenAIService::class)->ask($question);

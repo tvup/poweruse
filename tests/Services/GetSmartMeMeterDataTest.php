@@ -23,7 +23,7 @@ class GetSmartMeMeterDataTest extends TestCase
      * Consumption per 15-min interval is the difference between consecutive readings.
      * Readings plateau at 100080 from 03:00 UTC onward to terminate the loop.
      *
-     * @var array<string, float>
+     * @var array<string, int>
      */
     public const COUNTER_READINGS_15MIN = [
         '2022-09-01T01:00:00Z' => 100000,
@@ -43,7 +43,7 @@ class GetSmartMeMeterDataTest extends TestCase
      * Start at 01:00 UTC (02:00 CET). DST transition at 01:00 UTC (03:00 CEST -> 02:00 CET).
      * Readings plateau at 02:00 UTC onward to terminate the loop.
      *
-     * @var array<string, float>
+     * @var array<string, int>
      */
     public const COUNTER_READINGS_DST = [
         '2022-10-30T01:00:00Z' => 200000,
@@ -69,7 +69,7 @@ class GetSmartMeMeterDataTest extends TestCase
     /**
      * Build Http::fake URL map from a counter readings array.
      *
-     * @param array<string, float> $readings
+     * @param array<string, int> $readings
      * @return void
      */
     private function fakeSmartMeResponses(array $readings): void
