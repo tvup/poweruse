@@ -9,7 +9,7 @@
             }
         }
     }
-    $uid = 'ss_' . md5($name . Str::random(8));
+    $uid = 'ss_' . md5($name . \Illuminate\Support\Str::random(8));
 @endphp
 
 <div id="{{ $uid }}" class="position-relative">
@@ -19,6 +19,10 @@
         <input type="text"
                id="{{ $uid }}_search"
                placeholder="{{ $placeholder }}"
+               aria-label="{{ $placeholder }}"
+               role="combobox"
+               aria-expanded="false"
+               aria-controls="{{ $uid }}_list"
                class="form-control"
                autocomplete="off"
                value="">
@@ -32,6 +36,7 @@
     </div>
 
     <ul id="{{ $uid }}_list"
+        role="listbox"
         class="list-group position-absolute w-100 shadow-sm overflow-auto"
         style="max-height: 280px; z-index: 1050; cursor: pointer; display: none;">
     </ul>
@@ -55,16 +60,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!term) return options;
         var terms = term.toLowerCase().split(/\s+/);
         return options.filter(function(o) {
-            var label = o.label.toLowerCase();
+            var label = String(o.label).toLowerCase();
             return terms.every(function(t) { return label.indexOf(t) !== -1; });
         });
+    }
+
+    function showList() {
+        listEl.style.display = 'block';
+        searchInput.setAttribute('aria-expanded', 'true');
+    }
+
+    function hideList() {
+        listEl.style.display = 'none';
+        searchInput.setAttribute('aria-expanded', 'false');
     }
 
     function render(filtered) {
         listEl.innerHTML = '';
         if (filtered.length === 0) {
             listEl.innerHTML = '<li class="list-group-item py-2 px-3 small text-muted">' + @js(__('No results')) + '</li>';
-            listEl.style.display = 'block';
+            showList();
             return;
         }
         filtered.forEach(function(option, index) {
@@ -79,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             listEl.appendChild(li);
         });
-        listEl.style.display = 'block';
+        showList();
     }
 
     function updateHighlight() {
@@ -95,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.value = option.label;
         selectedLabel = option.label;
         selectedValue = option.value;
-        listEl.style.display = 'none';
+        hideList();
         highlightIndex = -1;
         clearBtn.style.display = 'inline-block';
     }
@@ -135,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 select(filtered[highlightIndex]);
             }
         } else if (e.key === 'Escape') {
-            listEl.style.display = 'none';
+            hideList();
             highlightIndex = -1;
         }
     });
@@ -152,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('click', function(e) {
         if (!container.contains(e.target)) {
-            listEl.style.display = 'none';
+            hideList();
         }
     });
 
