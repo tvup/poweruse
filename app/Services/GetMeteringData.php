@@ -179,6 +179,19 @@ class GetMeteringData
                     }
                     $fees = [];
                     if (count($subscriptions) > 0 && count($tariffs) > 0) {
+                        $tariffs = array_values(array_filter($tariffs, function ($tariff) use ($start_date, $end_date) {
+                            $validFrom = Carbon::parse($tariff['validFromDate']);
+                            $validTo = isset($tariff['validToDate']) ? Carbon::parse($tariff['validToDate']) : Carbon::parse('2030-01-01');
+
+                            return !($validFrom->gt(Carbon::parse($end_date)) || $validTo->lt(Carbon::parse($start_date)));
+                        }));
+                        $subscriptions = array_values(array_filter($subscriptions, function ($subscription) use ($start_date, $end_date) {
+                            $validFrom = Carbon::parse($subscription['validFromDate']);
+                            $validTo = isset($subscription['validToDate']) ? Carbon::parse($subscription['validToDate']) : Carbon::parse('2030-01-01');
+
+                            return !($validFrom->gt(Carbon::parse($end_date)) || $validTo->lt(Carbon::parse($start_date)));
+                        }));
+
                         return [$subscriptions, $tariffs, $fees];
                     }
                 } else {
