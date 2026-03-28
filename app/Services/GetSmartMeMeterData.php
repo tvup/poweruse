@@ -15,7 +15,7 @@ class GetSmartMeMeterData
      *
      * @return mixed
      */
-    public function getFromDate(array $smartMe = null, string $start_date = null)
+    public function getFromDate(?array $smartMe = null, ?string $start_date = null)
     {
         if (!$start_date) {
             $start_date = Carbon::now('Europe/Copenhagen')->startOfHour()->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z');
@@ -44,7 +44,7 @@ class GetSmartMeMeterData
      * @return array
      * @throws \Exception
      */
-    public function getInterval(string $start_date_copenhagen, string $to_date = null, array $smartMe = []): array
+    public function getInterval(string $start_date_copenhagen, ?string $to_date = null, array $smartMe = []): array
     {
         $newResponse = null;
         $start_date_copenhagen = Carbon::parse($start_date_copenhagen, 'Europe/Copenhagen');
@@ -77,7 +77,7 @@ class GetSmartMeMeterData
 
             $rtn_start_date = clone $start_date_copenhagen;
             $rtn_start_date_formatted = $rtn_start_date->format('c');
-            $start_date_copenhagen->addHour();
+            $start_date_copenhagen->addMinutes(15);
             $another = clone $start_date_copenhagen;
             $new_start_date_utc = $another->timezone('UTC');
             $new_start_date_formatted = $new_start_date_utc->format('Y-m-d\TH:i:s\Z');
@@ -102,11 +102,11 @@ class GetSmartMeMeterData
      * @param $smartMe
      * @return array
      */
-    private function smartMeCredentials(array $smartMe = null): array
+    private function smartMeCredentials(?array $smartMe = null): array
     {
-        $id = ($smartMe && array_key_exists('id', $smartMe)) ? $smartMe['id'] : config('services.smartme.id');
-        $username = ($smartMe && array_key_exists('username', $smartMe)) ? $smartMe['username'] : config('services.smartme.username');
-        $password = ($smartMe && array_key_exists('password', $smartMe)) ? $smartMe['password'] : config('services.smartme.paasword');
+        $id = $smartMe['id'] ?? null;
+        $username = $smartMe['username'] ?? null;
+        $password = $smartMe['password'] ?? null;
 
         return [$id, $username, $password];
     }

@@ -92,9 +92,9 @@ class ElController extends Controller
             $smartMeCredentials = null;
             if ($request->boolean('smart_me')) {
                 $smartMeCredentials = [];
-                $smartMeCredentials['username'] = $request->smartmeuser;
-                $smartMeCredentials['password'] = $request->smartmepassword;
-                $smartMeCredentials['id'] = $request->smartmeid;
+                $smartMeCredentials['username'] = $request->smartmeuser ?: $user?->smartme_username;
+                $smartMeCredentials['password'] = $request->smartmepassword ?: $user?->smartme_password;
+                $smartMeCredentials['id'] = $request->smartmeid ?: $user?->smartme_directory_id;
             }
             $data = $this->getPreliminaryInvoice($refreshToken, $smartMeCredentials, $request->start_date, $request->end_date, $request->area, $request->subscription, $request->overhead, $user);
         } catch (ElOverblikApiException $e) {
@@ -120,10 +120,10 @@ class ElController extends Controller
         }
 
         if (($data instanceof JsonResponse) && property_exists($data->getData(), 'warning')) {
-            return redirect('el')->with('warning', $data->getData()->warning)->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
+            return redirect('el')->with('warning', $data->getData()->warning)->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600)->withCookie('area', $request->area, 525600)->withCookie('overhead', $request->overhead, 525600)->withCookie('subscription', $request->subscription, 525600);
         }
 
-        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600);
+        return redirect('el')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all())->withCookie('refresh_token', $refreshToken, 525600)->withCookie('smartmeid', $request->smartmeid, 525600)->withCookie('smartmeuser', $request->smartmeuser, 525600)->withCookie('smartmepassword', $request->smartmepassword, 525600)->withCookie('smart_me', $request->smart_me, 525600)->withCookie('area', $request->area, 525600)->withCookie('overhead', $request->overhead, 525600)->withCookie('subscription', $request->subscription, 525600);
     }
 
     public function processCustom(Request $request) : RedirectResponse|Response
@@ -210,7 +210,7 @@ class ElController extends Controller
         return redirect('el-meteringpoint')->with('status', 'Alt data hentet')->with(['data' => $data])->withInput($request->all());
     }
 
-    public function getFromDate(string $start_date, string $end_date, string $price_area, string $refreshToken = null) : Response|JsonResponse
+    public function getFromDate(string $start_date, string $end_date, string $price_area, ?string $refreshToken = null) : Response|JsonResponse
     {
         try {
             return $this->getPreliminaryInvoice($refreshToken, null, $start_date, $end_date, $price_area, 25, 1, auth()->user());
@@ -258,7 +258,7 @@ class ElController extends Controller
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, ?array $smartMeCredentials = null, ?string $start_date = null, ?string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, ?User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();
@@ -285,14 +285,14 @@ class ElController extends Controller
      * @return JsonResponse
      * @throws ElOverblikApiException
      */
-    private function getUsageCost(array $meterData, string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.048, User $user = null) : JsonResponse
+    private function getUsageCost(array $meterData, ?string $refreshToken = null, string $price_area = 'DK2', float $overhead = 0.048, ?User $user = null) : JsonResponse
     {
         $bill = $this->preliminaryInvoiceService->getCostOfCustomUsage($meterData, $refreshToken, $price_area, $overhead, $user);
 
         return response()->json($bill);
     }
 
-    public function getCharges(string $refreshToken = null) : Response|JsonResponse
+    public function getCharges(?string $refreshToken = null) : Response|JsonResponse
     {
         if ($refreshToken == 'MIT_LÆKRE_TOKEN_HER') {
             return response('Hov :) Du fik vist ikke læst, hvad jeg skrev', 200)
@@ -429,12 +429,13 @@ class ElController extends Controller
         $addSmartMe = $request->smart_me === 'on';
         $end_date = $request->end_date;
 
+        $user = auth()->check() ? auth()->user() : null;
         $smartMe = null;
         if ($dataSource === SourceEnum::SMARTME || $addSmartMe) {
             $smartMe = [];
-            $smartMe['username'] = $request->smartmeuser;
-            $smartMe['password'] = $request->smartmepassword;
-            $smartMe['id'] = $request->smartmeid;
+            $smartMe['username'] = $request->smartmeuser ?: $user?->smartme_username;
+            $smartMe['password'] = $request->smartmepassword ?: $user?->smartme_password;
+            $smartMe['id'] = $request->smartmeid ?: $user?->smartme_directory_id;
         }
         $data = [];
         try {
@@ -470,7 +471,7 @@ class ElController extends Controller
 
             if ($request->smart_me) {
                 $dataSource = $dataSource->value . ', Smart-Me';
-                $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addHour()->toDateTimeString();
+                $start_from = Carbon::parse(array_key_last($data), 'Europe/Copenhagen')->addMinutes(15)->toDateTimeString();
                 $smart_me_end_date = Carbon::parse($end_date, 'Europe/Copenhagen')->toDateTimeString();
 
                 try {
@@ -490,6 +491,9 @@ class ElController extends Controller
             $data = array_merge($data, ['Source' => $dataSource]);
         } catch (ElOverblikApiException $e) {
             return match ($e->getCode()) {
+                0 => tap(redirect('consumption')->with('error', $e->getMessage())->withInput($request->all()), function () use ($e) {
+                    logger()->warning('ElOverblikApiException with code 0: ' . $e->getMessage());
+                }),
                 401 => redirect('consumption')->with('error', 'Failed - cannot login with credentials.')->withInput(
                     $request->all()
                 ),
@@ -563,7 +567,7 @@ class ElController extends Controller
      * @param Carbon|null $from
      * @return array<float>
      */
-    private function doGetSpotPrices(string $area, Carbon $from = null) : array
+    private function doGetSpotPrices(string $area, ?Carbon $from = null) : array
     {
         if (!$from) {
             $from = Carbon::now('Europe/Copenhagen')->startOfDay();
@@ -633,14 +637,15 @@ class ElController extends Controller
 
         $totalPrice = [];
         $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
-        $limit = $includeTomorrow ? 47 : 23;
+        $limit = $includeTomorrow ? 191 : 95;
         for ($i = 0; $i <= $limit; $i++) {
-            $j = ($i <= 23 ? $i : $i - 24);
+            $quarterOnDay = ($i <= 95 ? $i : $i - 96);
+            $hourOnDay = intdiv($quarterOnDay, 4);
             $now2 = clone $now;
             $totalPrice[] = [
-                'time' => $now2->addHours($i)->toDateTimeString(),
+                'time' => $now2->addMinutes($i * 15)->toDateTimeString(),
                 'price' => round(
-                    ($gridprices[$j] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25,
+                    ($gridprices[$hourOnDay] + ($spotPrices[$i] / 1000) + $tsoNetTariffPrices[0] + $tsoSystemTariffPrices[0] + $tsoAfgiftTariffPrices[0]) * 1.25,
                     2
                 ),
             ];

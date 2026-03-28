@@ -17,7 +17,7 @@ class RetrieveTariffFromOperator
      * @return array<int, float>
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function handle(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, string $endDate = null): array
+    public function handle(string $operator, string $chargeType, string $chargeTypeCode, string $note, string $startDate, ?string $endDate = null): array
     {
         $service = app()->make(GetDatahubPriceLists::class);
         $data = $service->requestDatahubPriceListsFromEnergiDataService($operator, $chargeType, $chargeTypeCode, $note, $startDate, $endDate);

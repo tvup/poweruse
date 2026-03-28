@@ -39,7 +39,7 @@ class ChargeController extends Controller
      * @param string|null $refresh_token
      * @return JsonResponse
      */
-    public function index(string $refresh_token = null): JsonResponse
+    public function index(?string $refresh_token = null): JsonResponse
     {
         $meteringPointId = '';
         $meteringPoint = null;

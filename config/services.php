@@ -45,16 +45,6 @@ return [
         'app_token' => env('PUSHOVER_TOKEN'),
     ],
 
-    'energioverblik' => [
-        'refresh_token' => env('ENERGIOVERBLIK_REFRESH_TOKEN'),
-    ],
-
-    'smartme' => [
-        'id' => env('SMART_ME_ID', 'test-id'),
-        'username' => env('SMART_ME_USERNAME', 'test-user-name'),
-        'paasword' => env('SMART_ME_PASSWORD', 'test-password'),
-    ],
-
     'openai' => [
         'base_url' => env('OPENAI_API_URL', 'https://api.openai.com'),
         'key' => env('OPENAI_API_KEY'),

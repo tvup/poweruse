@@ -74,7 +74,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 24;
+            return count($value) === 96;
         });
     }
 
@@ -131,7 +131,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 13;
+            return count($value) === 52;
         });
     }
 
@@ -191,7 +191,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 34 && $value['2023-01-01 14:00:00+01:00'] == 39.09 && $value['2023-01-02 00:00:00+01:00'] == 39.19;
+            return count($value) === 136 && $value['2023-01-01 14:00:00+01:00'] == 39.09 && $value['2023-01-02 00:00:00+01:00'] == 39.19;
         });
     }
 
@@ -317,7 +317,7 @@ class ProcessControllerTest extends TestCase
         });
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 10 && $value['2023-01-01 14:00:00+01:00'] == 39.09;
+            return count($value) === 40 && $value['2023-01-01 14:00:00+01:00'] == 39.09;
         });
     }
 
@@ -381,7 +381,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 22;
+            return count($value) === 88;
         });
     }
 
@@ -439,7 +439,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 33 && $value['2023-03-26 16:00:00+02:00'] == 39.1 && $value['2023-03-27 00:00:00+02:00'] == 39.19;
+            return count($value) === 132 && $value['2023-03-26 16:00:00+02:00'] == 39.1 && $value['2023-03-27 00:00:00+02:00'] == 39.19;
         });
     }
 
@@ -497,7 +497,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 33 && $value['2023-03-25 15:00:00+01:00'] == 39.1 && $value['2023-03-26 00:00:00+01:00'] == 39.19;
+            return count($value) === 132 && $value['2023-03-25 15:00:00+01:00'] == 39.1 && $value['2023-03-26 00:00:00+01:00'] == 39.19;
         });
     }
 
@@ -554,7 +554,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 24;
+            return count($value) === 96;
         });
     }
 
@@ -612,7 +612,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 35 && $value['2023-10-29 15:00:00+01:00'] == 39.35 && $value['2023-10-30 00:00:00+01:00'] == 39.19;
+            return count($value) === 140 && $value['2023-10-29 15:00:00+01:00'] == 39.35 && $value['2023-10-30 00:00:00+01:00'] == 39.19;
         });
     }
 
@@ -670,7 +670,7 @@ class ProcessControllerTest extends TestCase
         }
 
         $response->assertSessionHas('data', function ($value) {
-            return count($value) === 35 && $value['2023-10-28 15:00:00+02:00'] == 39.1 && $value['2023-10-29 00:00:00+02:00'] == 39.19;
+            return count($value) === 140 && $value['2023-10-28 15:00:00+02:00'] == 39.1 && $value['2023-10-29 00:00:00+02:00'] == 39.19;
         });
     }
 
@@ -785,32 +785,15 @@ class ProcessControllerTest extends TestCase
      */
     public function getTodaySpotPrices(): array
     {
-        return [
-            0 => 160,
-            1 => 168.0,
-            2 => 176.0,
-            3 => 184,
-            4 => 192.0,
-            5 => 200.0,
-            6 => 208.0,
-            7 => 216.0,
-            8 => 224.0,
-            9 => 232.0,
-            10 => 240.0,
-            11 => 248.0,
-            12 => 256.0,
-            13 => 264.0,
-            14 => 272.0,
-            15 => 280.0,
-            16 => 288.0,
-            17 => 296.0,
-            18 => 304.0,
-            19 => 312.0,
-            20 => 320.0,
-            21 => 328.0,
-            22 => 336.0,
-            23 => 344.0,
-        ];
+        $hourlyPrices = [160, 168.0, 176.0, 184, 192.0, 200.0, 208.0, 216.0, 224.0, 232.0, 240.0, 248.0, 256.0, 264.0, 272.0, 280.0, 288.0, 296.0, 304.0, 312.0, 320.0, 328.0, 336.0, 344.0];
+        $quarterPrices = [];
+        foreach ($hourlyPrices as $price) {
+            for ($i = 0; $i < 4; $i++) {
+                $quarterPrices[] = $price;
+            }
+        }
+
+        return $quarterPrices;
     }
 
     /**
@@ -818,32 +801,15 @@ class ProcessControllerTest extends TestCase
      */
     public function getTommorwSpotPrices(): array
     {
-        return [
-            0 => 352.0,
-            1 => 360.0,
-            2 => 368.0,
-            3 => 376.0,
-            4 => 384.0,
-            5 => 392.0,
-            6 => 400.0,
-            7 => 408.0,
-            8 => 416.0,
-            9 => 424.0,
-            10 => 432.0,
-            11 => 440.0,
-            12 => 448.0,
-            13 => 456.0,
-            14 => 464.0,
-            15 => 472.0,
-            16 => 480.0,
-            17 => 488.0,
-            18 => 496.0,
-            19 => 504.0,
-            20 => 512.0,
-            21 => 520.0,
-            22 => 528.0,
-            23 => 536.0,
-        ];
+        $hourlyPrices = [352.0, 360.0, 368.0, 376.0, 384.0, 392.0, 400.0, 408.0, 416.0, 424.0, 432.0, 440.0, 448.0, 456.0, 464.0, 472.0, 480.0, 488.0, 496.0, 504.0, 512.0, 520.0, 528.0, 536.0];
+        $quarterPrices = [];
+        foreach ($hourlyPrices as $price) {
+            for ($i = 0; $i < 4; $i++) {
+                $quarterPrices[] = $price;
+            }
+        }
+
+        return $quarterPrices;
     }
 
     /**
@@ -851,31 +817,16 @@ class ProcessControllerTest extends TestCase
      */
     public function getTodaySpotPricesEarlyDst(): array
     {
-        return [
-            0 => 160,
-            1 => 168.0,
-            2 => 176.0,
-            3 => 184,
-            4 => 192.0,
-            5 => 200.0,
-            6 => 208.0,
-            7 => 216.0,
-            8 => 224.0,
-            9 => 232.0,
-            10 => 240.0,
-            11 => 248.0,
-            12 => 256.0,
-            13 => 264.0,
-            14 => 272.0,
-            15 => 280.0,
-            16 => 288.0,
-            17 => 296.0,
-            18 => 304.0,
-            19 => 312.0,
-            20 => 320.0,
-            21 => 328.0,
-            22 => 336.0,
-        ];
+        // 23 hours = 92 quarters (DST spring forward loses 1 hour)
+        $hourlyPrices = [160, 168.0, 176.0, 184, 192.0, 200.0, 208.0, 216.0, 224.0, 232.0, 240.0, 248.0, 256.0, 264.0, 272.0, 280.0, 288.0, 296.0, 304.0, 312.0, 320.0, 328.0, 336.0];
+        $quarterPrices = [];
+        foreach ($hourlyPrices as $price) {
+            for ($i = 0; $i < 4; $i++) {
+                $quarterPrices[] = $price;
+            }
+        }
+
+        return $quarterPrices;
     }
 
     /**
@@ -883,92 +834,43 @@ class ProcessControllerTest extends TestCase
      */
     public function getTommorwSpotPricesEarlyDst(): array
     {
-        return [
-            0 => 352.0,
-            1 => 360.0,
-            2 => 368.0,
-            3 => 376.0,
-            4 => 384.0,
-            5 => 392.0,
-            6 => 400.0,
-            7 => 408.0,
-            8 => 416.0,
-            9 => 424.0,
-            10 => 432.0,
-            11 => 440.0,
-            12 => 448.0,
-            13 => 456.0,
-            14 => 464.0,
-            15 => 472.0,
-            16 => 480.0,
-            17 => 488.0,
-            18 => 496.0,
-            19 => 504.0,
-            20 => 512.0,
-            21 => 520.0,
-            22 => 528.0,
-        ];
+        // 23 hours = 92 quarters (DST spring forward loses 1 hour)
+        $hourlyPrices = [352.0, 360.0, 368.0, 376.0, 384.0, 392.0, 400.0, 408.0, 416.0, 424.0, 432.0, 440.0, 448.0, 456.0, 464.0, 472.0, 480.0, 488.0, 496.0, 504.0, 512.0, 520.0, 528.0];
+        $quarterPrices = [];
+        foreach ($hourlyPrices as $price) {
+            for ($i = 0; $i < 4; $i++) {
+                $quarterPrices[] = $price;
+            }
+        }
+
+        return $quarterPrices;
     }
 
     private function getTodaySpotPricesLateDst() : array
     {
-        return [
-            0 => 352.0,
-            1 => 360.0,
-            2 => 368.0,
-            3 => 376.0,
-            4 => 384.0,
-            5 => 392.0,
-            6 => 400.0,
-            7 => 408.0,
-            8 => 416.0,
-            9 => 424.0,
-            10 => 432.0,
-            11 => 440.0,
-            12 => 448.0,
-            13 => 456.0,
-            14 => 464.0,
-            15 => 472.0,
-            16 => 480.0,
-            17 => 488.0,
-            18 => 496.0,
-            19 => 504.0,
-            20 => 512.0,
-            21 => 520.0,
-            22 => 528.0,
-            23 => 536.0,
-            24 => 544.0,
-        ];
+        // 25 hours = 100 quarters (DST fall back gains 1 hour)
+        $hourlyPrices = [352.0, 360.0, 368.0, 376.0, 384.0, 392.0, 400.0, 408.0, 416.0, 424.0, 432.0, 440.0, 448.0, 456.0, 464.0, 472.0, 480.0, 488.0, 496.0, 504.0, 512.0, 520.0, 528.0, 536.0, 544.0];
+        $quarterPrices = [];
+        foreach ($hourlyPrices as $price) {
+            for ($i = 0; $i < 4; $i++) {
+                $quarterPrices[] = $price;
+            }
+        }
+
+        return $quarterPrices;
     }
 
     private function getTommorwSpotPricesLateDst() : array
     {
-        return [
-            0 => 352.0,
-            1 => 360.0,
-            2 => 368.0,
-            3 => 376.0,
-            4 => 384.0,
-            5 => 392.0,
-            6 => 400.0,
-            7 => 408.0,
-            8 => 416.0,
-            9 => 424.0,
-            10 => 432.0,
-            11 => 440.0,
-            12 => 448.0,
-            13 => 456.0,
-            14 => 464.0,
-            15 => 472.0,
-            16 => 480.0,
-            17 => 488.0,
-            18 => 496.0,
-            19 => 504.0,
-            20 => 512.0,
-            21 => 520.0,
-            22 => 528.0,
-            23 => 536.0,
-            24 => 544.0,
-        ];
+        // 25 hours = 100 quarters (DST fall back gains 1 hour)
+        $hourlyPrices = [352.0, 360.0, 368.0, 376.0, 384.0, 392.0, 400.0, 408.0, 416.0, 424.0, 432.0, 440.0, 448.0, 456.0, 464.0, 472.0, 480.0, 488.0, 496.0, 504.0, 512.0, 520.0, 528.0, 536.0, 544.0];
+        $quarterPrices = [];
+        foreach ($hourlyPrices as $price) {
+            for ($i = 0; $i < 4; $i++) {
+                $quarterPrices[] = $price;
+            }
+        }
+
+        return $quarterPrices;
     }
 }

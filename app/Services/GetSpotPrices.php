@@ -16,6 +16,22 @@ class GetSpotPrices implements GetSpotPricesInterface
 
     public const FORMAT_JSON = 'JSON';
 
+    private const COLUMN_MAP = [
+        'HourUTC' => 'TimeUTC',
+        'HourDK' => 'TimeDK',
+        'SpotPriceDKK' => 'DayAheadPriceDKK',
+        'SpotPriceEUR' => 'DayAheadPriceEUR',
+        'PriceArea' => 'PriceArea',
+    ];
+
+    private const REVERSE_COLUMN_MAP = [
+        'TimeUTC' => 'HourUTC',
+        'TimeDK' => 'HourDK',
+        'DayAheadPriceDKK' => 'SpotPriceDKK',
+        'DayAheadPriceEUR' => 'SpotPriceEUR',
+        'PriceArea' => 'PriceArea',
+    ];
+
     /**
      * @param string|null $start_date
      * @param string|null $end_date
@@ -25,7 +41,7 @@ class GetSpotPrices implements GetSpotPricesInterface
      * @return array|JsonResponse
      * @throws \Exception
      */
-    public function getData(string $start_date = null, string $end_date = null, string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
+    public function getData(?string $start_date = null, ?string $end_date = null, ?string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
     {
         $parameters = [];
         if (!$start_date) {
@@ -44,11 +60,13 @@ class GetSpotPrices implements GetSpotPricesInterface
         if ($price_area != 'ALL') {
             $parameters = array_merge($parameters, ['filter' => '{"PriceArea":"' . $price_area . '"}']);
         }
-        if (count($columns) > 0) {
-            $parameters = array_merge($parameters, ['columns' => implode(',', $columns)]);
+
+        $apiColumns = array_map(fn ($col) => self::COLUMN_MAP[$col] ?? $col, $columns);
+        if (count($apiColumns) > 0) {
+            $parameters = array_merge($parameters, ['columns' => implode(',', $apiColumns)]);
         }
 
-        $url = 'https://api.energidataservice.dk/dataset/Elspotprices';
+        $url = 'https://api.energidataservice.dk/dataset/DayAheadPrices';
         $response = Http::acceptJson()
             ->get($url, $parameters);
 
@@ -68,7 +86,7 @@ class GetSpotPrices implements GetSpotPricesInterface
             $array = array_reverse($response['records']);
             $new_array = [];
             foreach ($array as $data) {
-                $carbon = Carbon::parse($data['HourDK'], 'Europe/Copenhagen');
+                $carbon = Carbon::parse($data['TimeDK'], 'Europe/Copenhagen');
                 if (!$first && $carbon->eq($late_transition_end_hour)) {
                     $first = true;
                     /** @var CarbonTimeZone $timezone */
@@ -76,15 +94,30 @@ class GetSpotPrices implements GetSpotPricesInterface
                     $timeZone2 = new DateTimeZone($timezone->getName());
                     $late_transition_end_hour2 = Carbon::parse($year_late_transition['time'])->subHour()->timezone($timeZone2);
                     $nice_one = $late_transition_end_hour2->format('c');
-                    $new_array[$nice_one] = $data['SpotPriceDKK'];
+                    $new_array[$nice_one] = $data['DayAheadPriceDKK'];
                 } else {
                     $hour = $carbon->format('c');
-                    $new_array[$hour] = $data['SpotPriceDKK'];
+                    $new_array[$hour] = $data['DayAheadPriceDKK'];
                 }
             }
             $response = $new_array;
+        } else {
+            $records = $response['records'];
+            $mappedRecords = array_map(function ($record) {
+                $mapped = [];
+                foreach ($record as $key => $value) {
+                    $mapped[self::REVERSE_COLUMN_MAP[$key] ?? $key] = $value;
+                }
+
+                return $mapped;
+            }, $records);
+
+            $responseData = $response->json();
+            $responseData['records'] = $mappedRecords;
+
+            return $responseData;
         }
 
-        return is_array($response) ? $response : $response->json();
+        return $response;
     }
 }

@@ -98,4 +98,24 @@ class DatahubPriceList extends BaseModel
                     ->orWhereNull('ValidTo');
             });
     }
+
+    /**
+     * Get the price for a given timestamp, respecting the ResolutionDuration.
+     *
+     * @param Carbon $timestamp
+     * @return float
+     */
+    public function getPriceForTimestamp(Carbon $timestamp): float
+    {
+        if ($this->ResolutionDuration === 'PT15M') {
+            $quarterInPattern = ($timestamp->hour * 4 + intdiv($timestamp->minute, 15)) % 24;
+            $column = 'Price' . ($quarterInPattern + 1);
+        } elseif ($this->ResolutionDuration === 'PT1H') {
+            $column = 'Price' . ($timestamp->hour + 1);
+        } else {
+            $column = 'Price1';
+        }
+
+        return (float) $this->$column;
+    }
 }

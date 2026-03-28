@@ -14,6 +14,7 @@ use App\Services\GetSmartMeMeterData;
 use App\Services\GetSpotPrices;
 use App\Services\Interfaces\GetSpotPricesInterface;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Mockery;
 use Tests\TestCase;
@@ -21,6 +22,7 @@ use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class ElControllerTest extends TestCase
 {
+    use RefreshDatabase;
     use WithoutMiddleware; // Brug denne trait, hvis du vil ignorere middleware under testen.
 
     private array $consumption;

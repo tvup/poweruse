@@ -52,7 +52,7 @@ class CalculateUpcommingInvoice extends Command
         $dataSource = SourceEnum::DATAHUB;
 
         $validator = Validator::make([
-            'refresh_token' => $this->argument('refresh_token') ?: config('services.energioverblik.refresh_token'),
+            'refresh_token' => $this->argument('refresh_token'),
             'start_date' => $this->option('start-date'),
             'end_date' => $this->option('end-date'),
             'price-area' => $this->option('price-area'),
@@ -82,10 +82,14 @@ class CalculateUpcommingInvoice extends Command
 
         $smartMeCredentials = null;
         if ($this->option('smartme')) {
-            $smartMeCredentials = [
-                config('services.smartme.id'),
-                config('services.smartme.username'),
-                config('services.smartme.paasword')];
+            $user = \App\Models\User::where('refresh_token', $refreshToken)->first();
+            if ($user) {
+                $smartMeCredentials = [
+                    'id' => $user->smartme_directory_id,
+                    'username' => $user->smartme_username,
+                    'password' => $user->smartme_password,
+                ];
+            }
         }
 
         $bill = $this->preliminaryInvoiceService->getBill($start_date, $end_date, $price_area, $smartMeCredentials, $dataSource, $refreshToken);

@@ -20,7 +20,7 @@ class GetElprisenSpotPrices implements GetSpotPricesInterface
      * @return array|JsonResponse
      * @throws \Exception
      */
-    public function getData(string $start_date = null, string $end_date = null, string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
+    public function getData(?string $start_date = null, ?string $end_date = null, ?string $price_area = null, $columns = ['HourDK', 'SpotPriceDKK'], $format = self::FORMAT_INTERNAL) : array|JsonResponse
     {
         if (!$start_date) {
             $start_date = now()->toDateTimeString();

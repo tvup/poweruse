@@ -5,6 +5,7 @@ namespace Tests\Http\Controllers\Api;
 use App\Http\Controllers\Api\ElController;
 use App\Models\User;
 use App\Services\GetPreliminaryInvoice;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -13,6 +14,8 @@ use Tvup\ElOverblikApi\ElOverblikApiException;
 
 class ElController2Test extends TestCase
 {
+    use RefreshDatabase;
+
     protected ElController $controller;
 
     protected MockObject $invoiceServiceMock;

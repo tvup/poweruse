@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class RetrieveSpotPrices
 {
-    public function handle(string $area, Carbon $from = null) : array
+    public function handle(string $area, ?Carbon $from = null) : array
     {
         if (!$from) {
             $from = Carbon::now('Europe/Copenhagen')->startOfDay();

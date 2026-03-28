@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ChargePrice extends Model
 {
     /**
-     * @return BelongsTo<Charge, ChargePrice>
+     * @return BelongsTo<Charge, $this>
      */
     public function charge() : BelongsTo
     {

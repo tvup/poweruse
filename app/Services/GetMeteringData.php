@@ -16,6 +16,8 @@ class GetMeteringData
 {
     private ?ElOverblikApiInterface $energiOverblikApi = null;
 
+    private ?string $currentRefreshToken = null;
+
     public function __construct()
     {
     }
@@ -28,7 +30,7 @@ class GetMeteringData
      * @return array<string, string>
      * @throws ElOverblikApiException
      */
-    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false, SourceEnum $source = SourceEnum::DATAHUB, User $user = null): array
+    public function getData(string $start_date, string $end_date, string $refreshToken, bool $debug = false, SourceEnum $source = SourceEnum::DATAHUB, ?User $user = null): array
     {
         logger('Accessing EloverblikApi. MD5 of refresh token: ' . md5($refreshToken));
         try {
@@ -54,16 +56,20 @@ class GetMeteringData
                 $end_date = Carbon::now()->toDateString();
             }
             logger('Retrieving consumption data from eloverlikApi with parameters: Start date => ' . $start_date . ' End date => ' . $end_date . ' Metering point id => ' . $meteringPointId);
-            $response = $energiOverblikApi->getHourTimeSeriesFromMeterData($start_date, Carbon::parse($end_date)->toDateString(), $meteringPointId);
+            $response = $energiOverblikApi->getQuarterTimeSeriesFromMeterData($start_date, Carbon::parse($end_date)->toDateString(), $meteringPointId);
         } catch (ElOverblikApiException $e) {
             logger()->warning('Retrieving consumption data from eloverlikApi was unsuccesful (' . $e->getCode() . ') with parameters: Start date => ' . $start_date . ' End date => ' . $end_date . ' Metering point id => ' . $meteringPointId);
             throw $e;
         }
 
+        if (empty($response)) {
+            throw new ElOverblikApiException(['No consumption data returned for the given period'], [], '0');
+        }
+
         return $response;
     }
 
-    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], User $user = null): ? MeteringPoint
+    public function getMeteringPointData(?SourceEnum $source = null, array $credentials = [], ?User $user = null): ? MeteringPoint
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $exception = null;
@@ -130,7 +136,7 @@ class GetMeteringData
         return null;
     }
 
-    public function getCharges(?string $start_date, ?string $end_date, ?SourceEnum $source = SourceEnum::POWERUSE, array $credentials = [], User $user = null): array
+    public function getCharges(?string $start_date, ?string $end_date, ?SourceEnum $source = SourceEnum::POWERUSE, array $credentials = [], ?User $user = null): array
     {
         $refresh_token = isset($credentials['refresh_token']) ? $credentials['refresh_token'] : null;
         $meteringPoint = $this->getMeteringPointData($source, $credentials, $user);
@@ -173,6 +179,21 @@ class GetMeteringData
                     }
                     $fees = [];
                     if (count($subscriptions) > 0 && count($tariffs) > 0) {
+                        if ($start_date && $end_date) {
+                            $tariffs = array_values(array_filter($tariffs, function ($tariff) use ($start_date, $end_date) {
+                                $validFrom = Carbon::parse($tariff['validFromDate']);
+                                $validTo = isset($tariff['validToDate']) ? Carbon::parse($tariff['validToDate']) : Carbon::parse('2030-01-01');
+
+                                return !($validFrom->gt(Carbon::parse($end_date)) || $validTo->lt(Carbon::parse($start_date)));
+                            }));
+                            $subscriptions = array_values(array_filter($subscriptions, function ($subscription) use ($start_date, $end_date) {
+                                $validFrom = Carbon::parse($subscription['validFromDate']);
+                                $validTo = isset($subscription['validToDate']) ? Carbon::parse($subscription['validToDate']) : Carbon::parse('2030-01-01');
+
+                                return !($validFrom->gt(Carbon::parse($end_date)) || $validTo->lt(Carbon::parse($start_date)));
+                            }));
+                        }
+
                         return [$subscriptions, $tariffs, $fees];
                     }
                 } else {
@@ -207,10 +228,11 @@ class GetMeteringData
      */
     private function getEloverblikApi(string $refreshToken): ElOverblikApiInterface
     {
-        if (!$this->energiOverblikApi) {
+        if (!$this->energiOverblikApi || $this->currentRefreshToken !== $refreshToken) {
             $energiOverblikApi = app()->make('Tvup\ElOverblikApi\ElOverblikApiInterface');
             $energiOverblikApi->token($refreshToken);
             $this->energiOverblikApi = $energiOverblikApi;
+            $this->currentRefreshToken = $refreshToken;
         }
 
         return $this->energiOverblikApi;

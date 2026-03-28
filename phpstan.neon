@@ -24,6 +24,9 @@ parameters:
         - '#Unable to resolve the template type TValue in call to function collect#'
         - '#no value type specified in iterable type array#'
         - '#Call to an undefined method Mockery\\Expectation\:\:shouldReceive\(\)#'
+        -
+            message: '#should return Illuminate\\Database\\Eloquent\\Relations\\HasMany.+but returns#'
+            reportUnmatched: false
 #
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php

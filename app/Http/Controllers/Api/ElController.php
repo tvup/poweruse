@@ -22,6 +22,7 @@ class ElController extends Controller
 
     public function preliminaryInvoice(Request $request) : Response|JsonResponse
     {
+        $this->logApiAccess('preliminaryInvoice', $request);
         try {
             return $this->getPreliminaryInvoice(auth()->user()->refresh_token);
         } catch (ElOverblikApiException | \InvalidArgumentException $e) {
@@ -31,18 +32,29 @@ class ElController extends Controller
 
     public function preliminaryInvoiceWithSmartMe(Request $request) : Response|JsonResponse
     {
+        $this->logApiAccess('preliminaryInvoiceWithSmartMe', $request);
         $user = auth()->user();
         try {
             $smartMeCredentials = [
-                $user->smartme_directory_id,
-                $user->smartme_username,
-                $user->smartme_password];
+                'id' => $user->smartme_directory_id,
+                'username' => $user->smartme_username,
+                'password' => $user->smartme_password,
+            ];
 
             return $this->getPreliminaryInvoice(auth()->user()->refresh_token, null, SourceEnum::DATAHUB, $smartMeCredentials, now()->startOfMonth(), now(), 'DK2', 23.20, 0.048, auth()->user());
         } catch (ElOverblikApiException $exception) {
             return response($exception->getMessage(), $exception->getCode())
                 ->header('Content-Type', 'text/plain');
         }
+    }
+
+    private function logApiAccess(string $method, Request $request): void
+    {
+        $user = auth()->user();
+        $authMethod = $request->bearerToken() ? 'Bearer token' : ($request->header('Authorization') ? 'API key' : 'Session');
+        $userName = $user ? $user->name : 'Anonymous';
+
+        logger()->info("API call: {$method} | Auth: {$authMethod} | User: {$userName} | Time: " . now('Europe/Copenhagen')->format('Y-m-d H:i:s'));
     }
 
     /**
@@ -60,7 +72,7 @@ class ElController extends Controller
      * @throws DataUnavailableException
      * @throws ElOverblikApiException
      */
-    private function getPreliminaryInvoice(string $refreshToken, array $ewiiCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, array $smartMeCredentials = null, string $start_date = null, string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, User $user = null) : Response|JsonResponse
+    private function getPreliminaryInvoice(string $refreshToken, ?array $ewiiCredentials = null, SourceEnum $dataSource = SourceEnum::POWERUSE, ?array $smartMeCredentials = null, ?string $start_date = null, ?string $end_date = null, string $price_area = 'DK2', float $subscription = 23.20, float $overhead = 0.048, ?User $user = null) : Response|JsonResponse
     {
         if (!$start_date) {
             $start_date = Carbon::now()->startOfMonth()->toDateString();

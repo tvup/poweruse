@@ -29,10 +29,15 @@
                 </div>
 
                 <div class="sm:col-span-3">
-                    <label for="grid_operator" class="block text-sm font-medium text-gray-700">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ __('Grid operator') }}
                     </label>
-                    {{ html()->select('netcompany', $companies, old('netcompany') ?: (Cookie::get('netcompany') ?? null))->class('form-select shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md') }}
+                    <x-searchable-select
+                        name="netcompany"
+                        :options="$companies"
+                        :selected="old('netcompany') ?: (Cookie::get('netcompany') ?? null)"
+                        placeholder="{{ __('Type to search for grid operator...') }}"
+                    />
                 </div>
 
                 {{ html()->button(__('Get'), 'submit')->class('btn btn-primary mt-2') }}

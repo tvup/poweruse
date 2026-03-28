@@ -63,9 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'refresh_token' => 'encrypted',
     ];
 
-    /**
-     * @return HasMany<MeteringPoint>
-     */
+    /** @return HasMany<MeteringPoint, static> */
     public function meteringPoints() : HasMany
     {
         return $this->hasMany(MeteringPoint::class);

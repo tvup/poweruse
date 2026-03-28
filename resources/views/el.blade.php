@@ -21,7 +21,7 @@
         <div class="card-header text-center font-weight-bold">
             {{ __('Calculation of energy data') }}
         </div>
-        <pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre>
+        <div class="p-2"><pre>{{ $data ? json_encode($data, JSON_UNESCAPED_SLASHES+JSON_UNESCAPED_UNICODE+JSON_PRETTY_PRINT) : '' }}</pre></divclass>
         <div class="card-body">
             <form name="get-preliminary-invoice-form" id="get-preliminary-invoice-form" method="post" action="{{url('processdata')}}">
                 {{ csrf_field() }}
@@ -35,19 +35,19 @@
                 @endif
                 <div class="form-group">
                     <label for="smart_me">Smart-me?</label>
-                    <input name="smart_me" id="smart_me" type="checkbox" {{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : '')}}>
+                    <input name="smart_me" id="smart_me" type="checkbox" {{ old('_token') ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : (auth()->user()?->smartme_directory_id ? 'checked' : ''))}}>
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmeid">Smart-me id:</label>
-                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') ?? (Cookie::get('smartmeid') ?? '') }}">
+                    <input name="smartmeid" id="smartmeid" class="form-control" type="text" value="{{ old('smartmeid') ?: (Cookie::get('smartmeid') ?: (auth()->user()?->smartme_directory_id ?? '')) }}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmeuser">{{ __('Smart-me username') }}:</label>
-                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') ?? (Cookie::get('smartmeuser') ?? '')}}">
+                    <input name="smartmeuser" id="smartmeuser" class="form-control" type="text" value="{{ old('smartmeuser') ?: (Cookie::get('smartmeuser') ?: (auth()->user()?->smartme_username ?? ''))}}">
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmepassword">{{ __('Smart-me password') }}:</label>
-                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') ?? (Cookie::get('smartmepassword') ?? '')}}">
+                    <input name="smartmepassword" id="smartmepassword" class="form-control" type="password" value="{{ old('smartmepassword') ?: (Cookie::get('smartmepassword') ?: (auth()->user()?->smartme_password ?? ''))}}">
                 </div>
                 <div class="form-group">
                     <label for="start_date">{{ __('Start date') }}</label>
@@ -59,21 +59,25 @@
                 </div>
                 <div class="form-group">
                     {!! html()->label(__('Price area')) !!}
-                    {!! html()->radio('area', 'DK1')->checked(old('area') ? old('area') == 'DK1' : true)->value('DK1') !!} DK1
-                    {!! html()->radio('area', 'DK2')->checked(old('area') == 'DK2')->value('DK2') !!} DK2
+                    @php $selectedArea = old('area') ?: Cookie::get('area') ?: 'DK1'; @endphp
+                    {!! html()->radio('area', 'DK1')->checked($selectedArea == 'DK1')->value('DK1') !!} DK1
+                    {!! html()->radio('area', 'DK2')->checked($selectedArea == 'DK2')->value('DK2') !!} DK2
                 </div>
 
                 <div class="form-group">
                     <label for="subscription">{{ __('Subscription price pr. month by balance supplier ex. VAT in DKK.') }}</label>
-                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ? : 23.20}}">
+                    <input type="text" name="subscription" id="subscription" class="form-control" required="" value="{{ old('subscription') ?: (Cookie::get('subscription') ?: 23.20) }}">
                 </div>
                 <div class="form-group">
                     <label for="overhead">{{ __('Overhead by balance supplier on spot price ex. VAT in DKK.') }}</label>
-                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ? : 0.048}}">
+                    <input type="text" name="overhead" id="overhead" class="form-control" required="" value="{{ old('overhead') ?: (Cookie::get('overhead') ?: 0.048) }}">
                 </div>
 
 
-                <button type="submit" class="btn btn-primary mt-2">{{ __('Submit') }}</button>
+                <button type="submit" class="btn btn-primary mt-2" id="submit-btn">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
+                    <span id="submit-text">{{ __('Submit') }}</span>
+                </button>
             </form>
         </div>
     </div>
@@ -96,16 +100,17 @@
                     $('.smartmedetails').show();
                 } else {
                     $('.smartmedetails').hide();
-                    $('.smartmedetails').each (function(){
-                        $(this).find('input').val('');
-                    });
-
                 }
 
             }
-            updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
+            updateSmartMeDetailFieldsShow({{ old('_token') ? (old('smart_me') == 'on' ? 'true' : 'false') : (Cookie::get('smart_me') ? 'true' : (auth()->user()?->smartme_directory_id ? 'true' : 'false')) }});
 
             function updateDatePicker($boolean) {
+                const existingValue = document.querySelector('.end_date').value;
+                if (existingValue) {
+                    flatpickr('.end_date', {defaultDate: existingValue});
+                    return;
+                }
                 const today = new Date();
                 let tomorrow = new Date();
                 tomorrow.setDate(today.getDate() + 1);
@@ -114,13 +119,18 @@
                 } else {
                     flatpickr('.end_date', {defaultDate: today});
                 }
-
             }
 
             flatpickr('.start_date, .end_date', {});
 
-            updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
+            updateDatePicker({{ old('_token') ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
+
+            $('#get-preliminary-invoice-form').on('submit', function() {
+                $('#submit-spinner').removeClass('d-none');
+                $('#submit-text').text('{{ __('Processing') }}...');
+                $('#submit-btn').prop('disabled', true);
+            });
 
             $(document).ready(function(){
                 $(".alert").slideDown(300).delay(10000).slideUp(300);
