@@ -18,6 +18,15 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
+// Font Awesome 7 alias — SCSS only defines .fas, not .fa-solid
+.fa-solid {
+  @extend .fas;
+}
+
+.fa-regular {
+  @extend .far;
+}
+
 // Design tokens
 :root {
   --pu-accent: #F59E0B;
