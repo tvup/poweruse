@@ -6,9 +6,9 @@ use App\Enums\SourceEnum;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tvup\ElOverblikApi\ElOverblikApiInterface;
 

@@ -8,8 +8,8 @@ use App\Services\GetDatahubPriceLists;
 use App\Services\GetMeteringData;
 use App\Services\GetPreliminaryInvoice;
 use App\Services\Interfaces\GetSpotPricesInterface;
-use Mockery\MockInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class GetPreliminaryInvoiceTest extends TestCase

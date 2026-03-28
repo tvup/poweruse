@@ -108,11 +108,13 @@ class GetSpotPrices implements GetSpotPricesInterface
                 foreach ($record as $key => $value) {
                     $mapped[self::REVERSE_COLUMN_MAP[$key] ?? $key] = $value;
                 }
+
                 return $mapped;
             }, $records);
 
             $responseData = $response->json();
             $responseData['records'] = $mappedRecords;
+
             return $responseData;
         }
 

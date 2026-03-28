@@ -33,7 +33,7 @@ class PaginationHelper
     /**
      * Create a new length-aware paginator instance.
      *
-     * @param \Illuminate\Support\Collection<int, mixed> $items
+     * @param Collection<int, mixed> $items
      * @param int $total
      * @param int $perPage
      * @param int $currentPage

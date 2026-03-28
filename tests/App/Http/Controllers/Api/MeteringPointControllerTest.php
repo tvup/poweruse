@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMeteringPointRequest;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Passport;
 use Mockery;
 use Mockery\MockInterface;
@@ -15,7 +16,6 @@ use PHPUnit\Framework\MockObject\Exception;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class MeteringPointControllerTest extends TestCase

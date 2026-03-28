@@ -18,6 +18,7 @@ class UserChangePassword extends Command
 
         if (!$user) {
             $this->error('User not found.');
+
             return self::FAILURE;
         }
 
@@ -28,11 +29,13 @@ class UserChangePassword extends Command
 
         if ($password !== $confirmation) {
             $this->error('Passwords do not match.');
+
             return self::FAILURE;
         }
 
         if (strlen($password) < 8) {
             $this->error('Password must be at least 8 characters.');
+
             return self::FAILURE;
         }
 
