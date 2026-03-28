@@ -142,6 +142,9 @@ class GetPreliminaryInvoice
                     $message = $message . PHP_EOL . $e->getMessage();
                     throw new MissingDataException($message, $e->getCode(), $e->getPrevious());
                 }
+                if ((empty($charges[0]) && empty($charges[1])) && $dataSource !== SourceEnum::DATAHUB && $refreshToken) {
+                    $charges = $this->meteringDataService->getCharges($start_date, $end_date, SourceEnum::DATAHUB, ['refresh_token'=>$refreshToken], $user);
+                }
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
             }
