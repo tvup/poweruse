@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43bf1ace4190fd8e8cbb7efdf59641ca",
+    "content-hash": "191541dc0d29748a46645d45137427ef",
     "packages": [
         {
             "name": "brick/math",
@@ -6773,16 +6773,16 @@
         },
         {
             "name": "tvup/eloverblikapi",
-            "version": "v2.0.0",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Tvup/eloverblikapi.git",
-                "reference": "8846879f6d22842c017554d9e42ea5bf4c68ba67"
+                "url": "https://github.com/tvup/eloverblikapi.git",
+                "reference": "65a2162f6ecb8e9bbbe5ce4bab06ac165803290d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tvup/eloverblikapi/zipball/8846879f6d22842c017554d9e42ea5bf4c68ba67",
-                "reference": "8846879f6d22842c017554d9e42ea5bf4c68ba67",
+                "url": "https://api.github.com/repos/tvup/eloverblikapi/zipball/65a2162f6ecb8e9bbbe5ce4bab06ac165803290d",
+                "reference": "65a2162f6ecb8e9bbbe5ce4bab06ac165803290d",
                 "shasum": ""
             },
             "require": {
@@ -6807,10 +6807,10 @@
             ],
             "description": "API for getting consumption data from energioverblik",
             "support": {
-                "issues": "https://github.com/Tvup/eloverblikapi/issues",
-                "source": "https://github.com/Tvup/eloverblikapi/tree/v2.0.0"
+                "issues": "https://github.com/tvup/eloverblikapi/issues",
+                "source": "https://github.com/tvup/eloverblikapi/tree/v2.1.1"
             },
-            "time": "2023-01-23T22:34:52+00:00"
+            "time": "2026-03-28T07:32:20+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -11713,9 +11713,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2.0",
+        "php": ">=8.5.0",
         "ext-curl": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

@@ -131,17 +131,19 @@ class GetPreliminaryInvoice
                 cache([$key => $prices], $expiresAt);
             }
 
-            $key = 'charges ' . $refreshToken;
+            $key = 'charges ' . $refreshToken . ' ' . $dataSource->value;
 
             $charges = cache($key);
-            if (!$charges) {
-                $dataSource = SourceEnum::POWERUSE;
+            if (!$charges || (empty($charges[0]) && empty($charges[1]))) {
                 try {
                     $charges = $this->meteringDataService->getCharges($start_date, $end_date, $dataSource, ['refresh_token'=>$refreshToken], $user);
                 } catch (ModelNotFoundException $e) {
                     $message = 'When EWII is queried, a metering point has to be saved to POWERUSE beforehand';
                     $message = $message . PHP_EOL . $e->getMessage();
                     throw new MissingDataException($message, $e->getCode(), $e->getPrevious());
+                }
+                if ((empty($charges[0]) && empty($charges[1])) && $dataSource !== SourceEnum::DATAHUB && $refreshToken) {
+                    $charges = $this->meteringDataService->getCharges($start_date, $end_date, SourceEnum::DATAHUB, ['refresh_token'=>$refreshToken], $user);
                 }
                 $expiresAt = Carbon::now()->addMonthsNoOverflow(1)->startOfMonth();
                 cache([$key => $charges], $expiresAt);
@@ -168,43 +170,42 @@ class GetPreliminaryInvoice
         $bill['meta']['Interval']['antal intervaller'] = count($meterData);
         foreach ($meterData as $hour => $consumption) {
             foreach ($tariffs as $tariff) {
-                $datahubPriceListsQuery = $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'], $to_date, $start_date);
-                $key = $tariff['owner'] . $tariff['name'] . $tariff['description'] . $to_date . $start_date;
-                if (cache()->has($key)) {
-                    $datahubPriceLists = cache($key);
-                } else {
-                    $datahubPriceLists = $this->datahubPriceListService->getFromQuery($datahubPriceListsQuery);
-                    if ($datahubPriceLists->count() > 0) {
-                        cache([$key => $datahubPriceLists], 2592000);
-                    }
-                }
-                $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
-                    $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo ?? '2030-01-01', 'Europe/Copenhagen'));
+                $datahubPriceList = $this->findDatahubPriceList($tariff, $to_date, $start_date, $hour);
 
-                    return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
-                });
-                $datahubPriceList = $datahubPriceLists->first();
-                if (!$datahubPriceList) {
+                if ($datahubPriceList) {
+                    $parsedHour = Carbon::parse($hour, 'Europe/Copenhagen');
+                    $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
+                    $netPrices = array_filter($netPrices, function ($value) {
+                        return strlen($value) > 0;
+                    });
+                    $tariffName = $datahubPriceList->Note;
+                    if (count($netPrices) > 1) {
+                        $price = $datahubPriceList->getPriceForTimestamp($parsedHour);
+                    } else {
+                        $price = $netPrices[0];
+                    }
+                } elseif (isset($tariff['prices'])) {
+                    $tariffName = $tariff['name'];
+                    $tariffPrices = $tariff['prices'];
+                    $priceCount = count($tariffPrices);
+                    $parsedHour = Carbon::parse($hour, 'Europe/Copenhagen');
+                    if ($priceCount >= 96) {
+                        $index = $parsedHour->hour * 4 + intdiv($parsedHour->minute, 15);
+                        $price = $tariffPrices[$index]['price'];
+                    } elseif ($priceCount > 1) {
+                        $price = $tariffPrices[$parsedHour->hour]['price'];
+                    } else {
+                        $price = $tariffPrices[0]['price'];
+                    }
+                } else {
                     throw new InvalidArgumentException('Price element for tariff ' . $tariff['name'] . ' by operator ' . $tariff['owner'] . ' with validity period from: ' . $start_date . ' to: ' . $to_date . ' not found');
                 }
-                $netPrices = $this->getGridOperatorTariffPrices($datahubPriceList);
-                $netPrices = array_filter($netPrices, function ($value) {
-                    return strlen($value) > 0;
-                });
-                if (count($netPrices) > 1) {
-                    if (array_key_exists($datahubPriceList->Note, $bill)) {
-                        $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $netPrices[Carbon::parse($hour)->hour] * $consumption;
-                    } else {
-                        $bill[$datahubPriceList->Note] = $netPrices[Carbon::parse($hour)->hour] * $consumption;
-                    }
+
+                if (array_key_exists($tariffName, $bill)) {
+                    $bill[$tariffName] = $bill[$tariffName] + $price * $consumption;
                 } else {
-                    if (array_key_exists($datahubPriceList->Note, $bill)) {
-                        $bill[$datahubPriceList->Note] = $bill[$datahubPriceList->Note] + $netPrices[0] * $consumption;
-                    } else {
-                        $bill[$datahubPriceList->Note] = $netPrices[0] * $consumption;
-                    }
+                    $bill[$tariffName] = $price * $consumption;
                 }
-                $bill[$datahubPriceList->Note] = round($bill[$datahubPriceList->Note], 2);
             }
 
             if (array_key_exists('Spotpris', $bill)) {
@@ -216,7 +217,6 @@ class GetPreliminaryInvoice
                     $bill['Spotpris'] = $consumption * ($this->getSpotPriceForTimestamp($prices, $hour) / 1000);
                 }
             }
-            $bill['Spotpris'] = round($bill['Spotpris'], 2);
 
             if (array_key_exists('Overhead', $bill)) {
                 if (Carbon::parse($hour, 'Europe/Copenhagen')->lessThanOrEqualTo(now()->startOfHour())) {
@@ -227,8 +227,13 @@ class GetPreliminaryInvoice
                     $bill['Overhead'] = $consumption * $overhead;
                 }
             }
-            $bill['Overhead'] = round($bill['Overhead'], 2);
             $sum = $sum + $consumption;
+        }
+
+        foreach ($bill as $key => $value) {
+            if ($key !== 'meta' && is_numeric($value)) {
+                $bill[$key] = round($value, 2);
+            }
         }
 
         $bill['meta']['Forbrug'] = round($sum, 2) . ' kWh';
@@ -485,6 +490,44 @@ class GetPreliminaryInvoice
         }
 
         throw new InvalidArgumentException('No spot price found for ' . $timestamp);
+    }
+
+    /**
+     * Try to find a matching DatahubPriceList entry for a tariff.
+     * First tries exact match, then relaxed GLN + name LIKE match.
+     *
+     * @param array $tariff
+     * @param string $toDate
+     * @param string $fromDate
+     * @param string $hour
+     * @return DatahubPriceList|null
+     */
+    private function findDatahubPriceList(array|\ArrayAccess $tariff, string $toDate, string $fromDate, string $hour): ?DatahubPriceList
+    {
+        $key = 'dpl ' . $tariff['owner'] . $tariff['name'] . ($tariff['description'] ?? '') . $toDate . $fromDate;
+        if (cache()->has($key)) {
+            $datahubPriceLists = cache($key);
+        } else {
+            $datahubPriceLists = $this->datahubPriceListService->getFromQuery(
+                $this->datahubPriceListService->getQueryForFetchingSpecificTariffFromDB($tariff['name'], $tariff['owner'], $tariff['description'] ?? '', $toDate, $fromDate)
+            );
+            if ($datahubPriceLists->isEmpty()) {
+                $datahubPriceLists = $this->datahubPriceListService->getFromQuery(
+                    $this->datahubPriceListService->getQueryForFetchingTariffByGlnAndNameLike($tariff['name'], $tariff['owner'], $toDate, $fromDate)
+                );
+            }
+            if ($datahubPriceLists->isNotEmpty()) {
+                cache([$key => $datahubPriceLists], 2592000);
+            }
+        }
+
+        $datahubPriceLists = $datahubPriceLists->filter(function ($item) use ($hour) {
+            $bool = Carbon::parse($hour, 'Europe/Copenhagen')->isBetween(Carbon::parse($item->ValidFrom, 'Europe/Copenhagen'), Carbon::parse($item->ValidTo ?? '2030-01-01', 'Europe/Copenhagen'));
+
+            return $bool && Carbon::parse($hour, 'Europe/Copenhagen')->notEqualTo(Carbon::parse($item->ValidTo, 'Europe/Copenhagen'));
+        });
+
+        return $datahubPriceLists->first();
     }
 
     private function getGridOperatorTariffPrices(DatahubPriceList $datahubPriceList): array

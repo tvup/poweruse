@@ -72,6 +72,18 @@ class GetDatahubPriceLists
     }
 
     /**
+     * @param string $name
+     * @param string $gln_number
+     * @param string $toDate
+     * @param string $fromDate
+     * @return Builder
+     */
+    public function getQueryForFetchingTariffByGlnAndNameLike(string $name, string $gln_number, string $toDate, string $fromDate): Builder
+    {
+        return DatahubPriceList::where('Note', 'LIKE', $name . '%')->whereGlnNumber($gln_number)->whereRaw('NOT (ValidFrom > \'' . $toDate . '\' OR (IF(ValidTo is null,\'2030-01-01\',ValidTo) < \'' . $fromDate . '\' ))');
+    }
+
+    /**
      * @param Builder $query
      * @return Collection<int, DatahubPriceList>
      */
