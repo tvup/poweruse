@@ -173,8 +173,13 @@ class GetPreliminaryInvoice
                 if (isset($tariff['prices'])) {
                     $tariffName = $tariff['name'];
                     $tariffPrices = $tariff['prices'];
-                    if (count($tariffPrices) > 1) {
-                        $price = $tariffPrices[Carbon::parse($hour)->hour]['price'];
+                    $priceCount = count($tariffPrices);
+                    $parsedHour = Carbon::parse($hour, 'Europe/Copenhagen');
+                    if ($priceCount >= 96) {
+                        $index = $parsedHour->hour * 4 + intdiv($parsedHour->minute, 15);
+                        $price = $tariffPrices[$index]['price'];
+                    } elseif ($priceCount > 1) {
+                        $price = $tariffPrices[$parsedHour->hour]['price'];
                     } else {
                         $price = $tariffPrices[0]['price'];
                     }
