@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMeteringPointRequest;
 use App\Models\MeteringPoint;
 use App\Models\User;
 use App\Services\GetMeteringData;
+use Laravel\Passport\Passport;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\Exception;
@@ -29,6 +30,9 @@ class MeteringPointControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        if (!file_exists(storage_path('oauth-private.key'))) {
+            $this->artisan('passport:keys', ['--force' => true]);
+        }
         $meteringDataService = $this->createMock(GetMeteringData::class);
         $this->meteringPointController = new MeteringPointController($meteringDataService);
     }
@@ -42,7 +46,7 @@ class MeteringPointControllerTest extends TestCase
     public function testStore() : void
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'api');
+        Passport::actingAs($user);
         $storeMeteringPointRequest = Mockery::mock(StoreMeteringPointRequest::class)->makePartial();
         $meteringPoint = MeteringPoint::factory()->create(['metering_point_id' => 'dsfdsfds', 'type_of_mp' => '1', 'settlement_method' => 'D02', 'meter_number' => '1234', 'meter_reading_occurrence' => 'PYTH1', 'balance_supplier_name' => 'supplier', 'street_code' => '123', 'street_name' => 'Omvejen', 'building_number' => '12', 'city_name' => 'Ørsted', 'municipality_code' => '123', 'hasRelation' => 0]);
         $storeMeteringPointRequest->shouldReceive('all')
@@ -87,7 +91,7 @@ class MeteringPointControllerTest extends TestCase
     public function testGetMeteringPointDataDatahub() : void
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'api');
+        Passport::actingAs($user);
 
         $meteringPoint = MeteringPoint::factory()->create([
             'metering_point_id' => '571313174112923291',
@@ -130,7 +134,7 @@ class MeteringPointControllerTest extends TestCase
     public function testGetMeteringPointDataPoweruse() : void
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'api');
+        Passport::actingAs($user);
         $meteringPoint = MeteringPoint::factory()->create(
             [
             'metering_point_id' => 'et',
