@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "18aeaf7a2904a461685f414d9a04a4f2",
+    "content-hash": "191541dc0d29748a46645d45137427ef",
     "packages": [
         {
             "name": "brick/math",
@@ -6773,16 +6773,16 @@
         },
         {
             "name": "tvup/eloverblikapi",
-            "version": "v2.1.0",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tvup/eloverblikapi.git",
-                "reference": "d58c9735471b9a45fbd3c0d7d44553510bd0f5ba"
+                "reference": "65a2162f6ecb8e9bbbe5ce4bab06ac165803290d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tvup/eloverblikapi/zipball/d58c9735471b9a45fbd3c0d7d44553510bd0f5ba",
-                "reference": "d58c9735471b9a45fbd3c0d7d44553510bd0f5ba",
+                "url": "https://api.github.com/repos/tvup/eloverblikapi/zipball/65a2162f6ecb8e9bbbe5ce4bab06ac165803290d",
+                "reference": "65a2162f6ecb8e9bbbe5ce4bab06ac165803290d",
                 "shasum": ""
             },
             "require": {
@@ -6808,9 +6808,9 @@
             "description": "API for getting consumption data from energioverblik",
             "support": {
                 "issues": "https://github.com/tvup/eloverblikapi/issues",
-                "source": "https://github.com/tvup/eloverblikapi/tree/v2.1.0"
+                "source": "https://github.com/tvup/eloverblikapi/tree/v2.1.1"
             },
-            "time": "2026-03-28T05:37:03+00:00"
+            "time": "2026-03-28T07:32:20+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -11717,5 +11717,5 @@
         "ext-curl": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
