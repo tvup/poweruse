@@ -103,6 +103,11 @@
             updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'true' : 'false') : (Cookie::get('smart_me') ? 'true' : (auth()->user()?->smartme_directory_id ? 'true' : 'false')) }});
 
             function updateDatePicker($boolean) {
+                const existingValue = document.querySelector('.end_date').value;
+                if (existingValue) {
+                    flatpickr('.end_date', {defaultDate: existingValue});
+                    return;
+                }
                 const today = new Date();
                 let tomorrow = new Date();
                 tomorrow.setDate(today.getDate() + 1);
@@ -111,7 +116,6 @@
                 } else {
                     flatpickr('.end_date', {defaultDate: today});
                 }
-
             }
 
             flatpickr('.start_date, .end_date', {});
