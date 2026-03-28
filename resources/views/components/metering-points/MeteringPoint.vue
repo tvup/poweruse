@@ -2,47 +2,38 @@
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">{{ $t('Metering point') }}</h2>
-          <hr v-if="authUser && authUser!='no'" />
-          <h4 class="card-title" v-if="authUser && authUser!='no'">{{ $t('Add metering point manually') }}</h4>
-          <div class="card-tools" v-if="authUser && authUser!='no'">
-            <div class="mb-3">
-              <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-              <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#meteringPointModal"
-                      @click.prevent="showModal"><i class="fas fa-bolt"></i> {{ $t('Add new metering point') }}
-              </button>
-            </div>
+        <div class="card-body">
+          <div class="form-section" v-if="authUser && authUser!='no'">
+            <div class="form-section-title">{{ $t('Add metering point manually') }}</div>
+            <button type="submit" class="btn btn-primary btn-action" data-toggle="modal" data-target="#meteringPointModal"
+                    @click.prevent="showModal"><i class="fa-solid fa-plus"></i> {{ $t('Add new metering point') }}
+            </button>
           </div>
-          <hr />
-          <h4 class="card-title">{{ $t('Get metering point from external source') }}</h4>
-          <div class="card-tools">
+          <div class="form-section">
+            <div class="form-section-title">{{ $t('Get metering point from external source') }}</div>
             <form class="form">
               <div class="mb-3">
-                <label class="form-check form-check-inline">{{ $t('Source') }}: </label>
-                <div class="form-check form-check-inline">
-                  <label class="form-check-label" for="source_datahub">
-                    Datahub
-                  </label>
-                  <input class="form-check-input" type="radio" id="source" name="source_datahub" value="DATAHUB" v-model="source">
+                <label class="form-label">{{ $t('Source') }}</label>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" id="source_datahub" name="source" value="DATAHUB" v-model="source">
+                    <label class="form-check-label" for="source_datahub">Datahub</label>
+                  </div>
+                  <div class="form-check" v-if="authUser && authUser!='no'">
+                    <input class="form-check-input" type="radio" id="source_poweruse" name="source" value="POWERUSE" v-model="source">
+                    <label class="form-check-label" for="source_poweruse">POWERUSE</label>
+                  </div>
                 </div>
-                <div class="form-check form-check-inline" v-if="authUser && authUser!='no'">
-                  <label class="form-check-label" for="source_poweruse"> POWERUSE
-                  </label>
-                  <input class="form-check-input" type="radio" id="source" name="source_poweruse" value="POWERUSE" v-model="source">
-                </div>
               </div>
-              <div class="mb-3" v-if="authUser.refresh_token==null || !authUser || authUser=='no'">
-                  <label class="form-label form-control-lg" for="token" v-if="source=='DATAHUB'">{{ $t('Refresh token') }}</label>
-                  <input class="col-xs-3 form-rounded" id="token" type="text" v-if="source=='DATAHUB'" v-model="token">
+              <div class="mb-3" v-if="(authUser.refresh_token==null || !authUser || authUser=='no') && source=='DATAHUB'">
+                <label class="form-label" for="token">{{ $t('Refresh token') }}</label>
+                <input class="form-control" id="token" type="text" v-model="token">
               </div>
-                <!-- Button "add new metering point". When clicked, it will call /showModal function (function to display modal pop up containing "add new metering point" form). -->
-              <div class="mb-3">
-                  <button type="submit" class="btn btn-primary"
-                          @click.prevent="getMeteringPointsFromToken()"><i class="fas fa-bolt"></i> {{ $t('Get metering points') }}
-                  </button>
+              <div class="mt-3">
+                <button type="submit" class="btn btn-primary btn-action"
+                        @click.prevent="getMeteringPointsFromToken()"><i class="fa-solid fa-download"></i> {{ $t('Get metering points') }}
+                </button>
               </div>
-
             </form>
           </div>
         </div>
@@ -200,18 +191,20 @@
                       </div>
                       <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="button" class="btn btn-primary my-2 me-2"
-                                  v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
-                                  @click="createMeteringPoint();">{{ $t('Save to poweruse') }}
-                          </button>
-                          <button type="button" class="btn btn-info my-2 me-2"
-                                  v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click.prevent="editMeteringPoint();">{{ $t('Update') }}
-                          </button>
-                          <button type="button" class="btn btn-secondary my-2 me-2"
-                                  v-if="authUser && metering_point.source == 'POWERUSE'"
-                                  @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
-                          </button>
+                          <div class="d-flex gap-2 mt-3">
+                            <button type="button" class="btn btn-primary btn-action"
+                                    v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
+                                    @click="createMeteringPoint();"><i class="fa-solid fa-floppy-disk"></i> {{ $t('Save to poweruse') }}
+                            </button>
+                            <button type="button" class="btn btn-primary btn-action"
+                                    v-if="authUser && metering_point.source == 'POWERUSE'"
+                                    @click.prevent="editMeteringPoint();"><i class="fa-solid fa-pen"></i> {{ $t('Update') }}
+                            </button>
+                            <button type="button" class="btn btn-danger btn-action"
+                                    v-if="authUser && metering_point.source == 'POWERUSE'"
+                                    @click="deleteMeteringPoint(metering_point.id)"><i class="fa-solid fa-trash"></i> {{ $t('Delete') }}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </form>
@@ -434,9 +427,9 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ $t('Close') }}</button>
-              <button type="submit" class="btn btn-primary" v-show="isFormCreateMeteringPointMode">{{ $t('Save changes') }}</button>
-              <button type="submit" class="btn btn-primary" v-show="!isFormCreateMeteringPointMode">{{ $t('Update') }}</button>
+              <button type="button" class="btn btn-secondary btn-action" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> {{ $t('Close') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="isFormCreateMeteringPointMode"><i class="fa-solid fa-floppy-disk"></i> {{ $t('Save changes') }}</button>
+              <button type="submit" class="btn btn-primary btn-action" v-show="!isFormCreateMeteringPointMode"><i class="fa-solid fa-pen"></i> {{ $t('Update') }}</button>
             </div>
           </form>
         </div>

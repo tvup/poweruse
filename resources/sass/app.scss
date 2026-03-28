@@ -204,11 +204,6 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
   border-radius: 0.5rem;
   font-size: 0.875rem;
   padding: 0.625rem 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
   &:hover {
     transform: translateY(-1px);
   }
@@ -223,7 +218,8 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
     box-shadow: none;
   }
 
-  i, .spinner-border {
+  > i, > .spinner-border {
+    margin-right: 0.375rem;
     font-size: 0.8em;
   }
 }
@@ -285,6 +281,12 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
     text-decoration: underline;
     transform: none;
   }
+}
+
+// Action buttons — uniform width for side-by-side alignment
+.btn-action {
+  min-width: 12rem;
+  text-align: center;
 }
 
 // Consistent button sizing
