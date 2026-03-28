@@ -283,9 +283,11 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
   }
 }
 
-// Action buttons — uniform width for side-by-side alignment
+// Action buttons — uniform width and block display
 .btn-action {
-  min-width: 12rem;
+  display: block;
+  width: 100%;
+  max-width: 18rem;
   text-align: center;
 }
 
