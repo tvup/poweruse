@@ -6,7 +6,7 @@
           <div class="form-section" v-if="authUser && authUser!='no'">
             <div class="form-section-title">{{ $t('Add metering point manually') }}</div>
             <button type="submit" class="btn btn-primary btn-action" data-toggle="modal" data-target="#meteringPointModal"
-                    @click.prevent="showModal"><i class="fa-solid fa-plus"></i> {{ $t('Add new metering point') }}
+                    @click.prevent="showModal">{{ $t('Add new metering point') }}
             </button>
           </div>
           <div class="form-section">
@@ -31,7 +31,7 @@
               </div>
               <div class="mt-3">
                 <button type="submit" class="btn btn-primary btn-action"
-                        @click.prevent="getMeteringPointsFromToken()"><i class="fa-solid fa-download"></i> {{ $t('Get metering points') }}
+                        @click.prevent="getMeteringPointsFromToken()">{{ $t('Get metering points') }}
                 </button>
               </div>
             </form>
@@ -194,15 +194,15 @@
                           <div class="d-flex gap-2 mt-3">
                             <button type="button" class="btn btn-primary btn-action"
                                     v-if="authUser && authUser!='no' && metering_point.source != 'POWERUSE'"
-                                    @click="createMeteringPoint();"><i class="fa-solid fa-floppy-disk"></i> {{ $t('Save to poweruse') }}
+                                    @click="createMeteringPoint();"> {{ $t('Save to poweruse') }}
                             </button>
                             <button type="button" class="btn btn-primary btn-action"
                                     v-if="authUser && metering_point.source == 'POWERUSE'"
-                                    @click.prevent="editMeteringPoint();"><i class="fa-solid fa-pen"></i> {{ $t('Update') }}
+                                    @click.prevent="editMeteringPoint();">{{ $t('Update') }}
                             </button>
                             <button type="button" class="btn btn-danger btn-action"
                                     v-if="authUser && metering_point.source == 'POWERUSE'"
-                                    @click="deleteMeteringPoint(metering_point.id)"><i class="fa-solid fa-trash"></i> {{ $t('Delete') }}
+                                    @click="deleteMeteringPoint(metering_point.id)">{{ $t('Delete') }}
                             </button>
                           </div>
                         </div>

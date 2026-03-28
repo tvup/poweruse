@@ -6,7 +6,7 @@
           <div class="form-section" v-if="authUser && authUser!='no'">
             <div class="form-section-title">{{ $t('Add charge manually') }}</div>
             <button type="submit" class="btn btn-primary btn-action" data-toggle="modal" data-target="#chargeModal"
-                    @click.prevent="showModal"><i class="fa-solid fa-plus"></i> {{ $t('Add new charge') }}
+                    @click.prevent="showModal">{{ $t('Add new charge') }}
             </button>
           </div>
           <div class="form-section">
@@ -18,7 +18,7 @@
               </div>
               <div class="mt-3">
                 <button type="submit" class="btn btn-primary btn-action"
-                        @click.prevent="getChargesFromToken()"><i class="fa-solid fa-download"></i> {{ $t('Get charges') }}
+                        @click.prevent="getChargesFromToken()">{{ $t('Get charges') }}
                 </button>
               </div>
             </form>

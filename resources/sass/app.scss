@@ -292,13 +292,12 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
   }
 }
 
-// Action buttons — uniform width with centered content
+// Action buttons — uniform width with centered text
 .btn-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 18rem;
   max-width: 100%;
+  text-align: center;
 }
 
 // Consistent button sizing
