@@ -1,4 +1,4 @@
-@props(['name', 'options' => [], 'selected' => null, 'placeholder' => 'Skriv for at søge...'])
+@props(['name', 'options' => [], 'selected' => null, 'placeholder' => __('Type to search...')])
 
 @php
     $flatOptions = [];
@@ -39,9 +39,9 @@
 
 <script>
 setTimeout(function() {
-    var options = {!! json_encode($flatOptions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
-    var uid = '{{ $uid }}';
-    var selectedValue = '{{ addslashes($selected ?? '') }}';
+    var options = @js($flatOptions);
+    var uid = @js($uid);
+    var selectedValue = @js($selected ?? '');
 
     var container = document.getElementById(uid);
     var hiddenInput = document.getElementById(uid + '_value');
@@ -63,7 +63,7 @@ setTimeout(function() {
     function render(filtered) {
         listEl.innerHTML = '';
         if (filtered.length === 0) {
-            listEl.innerHTML = '<li class="list-group-item py-2 px-3 small text-muted">Ingen resultater</li>';
+            listEl.innerHTML = '<li class="list-group-item py-2 px-3 small text-muted">' + @js(__('No results')) + '</li>';
             listEl.style.display = 'block';
             return;
         }
