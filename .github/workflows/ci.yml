@@ -16,7 +16,7 @@ jobs:
 
       - uses: php-actions/composer@v6
         with:
-          php_version: "8.2"
+          php_version: "8.5"
 
       - name: Create Directories
         run: mkdir -p storage/framework/cache  && mkdir -p storage/framework/views && mkdir -p storage/framework/sessions
