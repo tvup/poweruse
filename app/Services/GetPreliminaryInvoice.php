@@ -131,10 +131,10 @@ class GetPreliminaryInvoice
                 cache([$key => $prices], $expiresAt);
             }
 
-            $key = 'charges ' . $refreshToken;
+            $key = 'charges ' . $refreshToken . ' ' . $dataSource->value;
 
             $charges = cache($key);
-            if (!$charges) {
+            if (!$charges || (empty($charges[0]) && empty($charges[1]))) {
                 try {
                     $charges = $this->meteringDataService->getCharges($start_date, $end_date, $dataSource, ['refresh_token'=>$refreshToken], $user);
                 } catch (ModelNotFoundException $e) {
