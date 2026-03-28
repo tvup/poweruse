@@ -135,7 +135,6 @@ class GetPreliminaryInvoice
 
             $charges = cache($key);
             if (!$charges) {
-                $dataSource = SourceEnum::POWERUSE;
                 try {
                     $charges = $this->meteringDataService->getCharges($start_date, $end_date, $dataSource, ['refresh_token'=>$refreshToken], $user);
                 } catch (ModelNotFoundException $e) {
