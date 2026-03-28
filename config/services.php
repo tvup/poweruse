@@ -45,6 +45,8 @@ return [
         'app_token' => env('PUSHOVER_TOKEN'),
     ],
 
+
+    
     'openai' => [
         'base_url' => env('OPENAI_API_URL', 'https://api.openai.com'),
         'key' => env('OPENAI_API_KEY'),
