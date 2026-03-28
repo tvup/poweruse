@@ -168,6 +168,13 @@ class GetPreliminaryInvoice
         $sum = 0;
         $debugLoggedInline = [];
         $debugLoggedDpl = [];
+        $debugHourDist = [];
+        foreach (array_keys($meterData) as $k) {
+            $h = Carbon::parse($k, 'Europe/Copenhagen')->hour;
+            $debugHourDist[$h] = ($debugHourDist[$h] ?? 0) + 1;
+        }
+        ksort($debugHourDist);
+        logger()->debug('TARIFF_DEBUG hour distribution', ['dist' => $debugHourDist, 'totalKeys' => count($meterData), 'firstKey' => array_key_first($meterData), 'lastKey' => array_key_last($meterData)]);
 
         $bill['meta']['Interval']['antal intervaller'] = count($meterData);
         foreach ($meterData as $hour => $consumption) {
