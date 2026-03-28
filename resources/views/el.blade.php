@@ -35,7 +35,7 @@
                 @endif
                 <div class="form-group">
                     <label for="smart_me">Smart-me?</label>
-                    <input name="smart_me" id="smart_me" type="checkbox" {{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : (auth()->user()?->smartme_directory_id ? 'checked' : ''))}}>
+                    <input name="smart_me" id="smart_me" type="checkbox" {{ old('_token') ? (old('smart_me') == 'on' ? 'checked' : '') : (Cookie::get('smart_me') ? 'checked' : (auth()->user()?->smartme_directory_id ? 'checked' : ''))}}>
                 </div>
                 <div class="form-group smartmedetails">
                     <label for="smartmeid">Smart-me id:</label>
@@ -100,7 +100,7 @@
                 }
 
             }
-            updateSmartMeDetailFieldsShow({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? 'true' : 'false') : (Cookie::get('smart_me') ? 'true' : (auth()->user()?->smartme_directory_id ? 'true' : 'false')) }});
+            updateSmartMeDetailFieldsShow({{ old('_token') ? (old('smart_me') == 'on' ? 'true' : 'false') : (Cookie::get('smart_me') ? 'true' : (auth()->user()?->smartme_directory_id ? 'true' : 'false')) }});
 
             function updateDatePicker($boolean) {
                 const existingValue = document.querySelector('.end_date').value;
@@ -120,7 +120,7 @@
 
             flatpickr('.start_date, .end_date', {});
 
-            updateDatePicker({{ !empty(old('smart_me')) ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
+            updateDatePicker({{ old('_token') ? (old('smart_me') == 'on' ? true : false) : (Cookie::get('smart_me') ? true : false) }});
 
 
             $(document).ready(function(){
