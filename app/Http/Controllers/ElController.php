@@ -627,6 +627,7 @@ class ElController extends Controller
         $gridprices = $this->getGridOperatorNettariff($operatorName);
         $priceArea = Operator::$gridOperatorArea[$operatorName];
         $spotPrices = $this->doGetSpotPrices($priceArea);
+        $toMorrowSpotPrices = [];
         if ($includeTomorrow) {
             $toMorrowSpotPrices = $this->doGetSpotPrices($priceArea, Carbon::now('Europe/Copenhagen')->startOfDay()->addDay());
             $spotPrices = array_merge($spotPrices, $toMorrowSpotPrices);
@@ -637,9 +638,10 @@ class ElController extends Controller
 
         $totalPrice = [];
         $now = Carbon::now('Europe/Copenhagen')->startOfHour()->startOfDay();
-        $limit = $includeTomorrow ? 191 : 95;
+        $todayQuarters = count($spotPrices) - ($includeTomorrow ? count($toMorrowSpotPrices) : 0);
+        $limit = $includeTomorrow ? count($spotPrices) - 1 : $todayQuarters - 1;
         for ($i = 0; $i <= $limit; $i++) {
-            $quarterOnDay = ($i <= 95 ? $i : $i - 96);
+            $quarterOnDay = ($i < $todayQuarters ? $i : $i - $todayQuarters);
             $hourOnDay = intdiv($quarterOnDay, 4);
             $now2 = clone $now;
             $totalPrice[] = [
